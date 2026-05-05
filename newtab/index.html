@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Custom New Tab</title>
+</head>
+<body>
+    <div class="container" id="main-container">
+        <h1>Новая вкладка</h1>
+
+        <div id="search-container">
+            <div class="search-row">
+                <input type="text" id="search-input" placeholder="Поиск..." autocomplete="off">
+                <select id="search-engine-select"></select>
+                <button id="search-button">Найти</button>
+            </div>
+        </div>
+
+        <section id="bookmarks-section">
+            <h2>Закладки</h2>
+            <div id="bookmarks-container"></div>
+        </section>
+    </div>
+
+    <button id="settings-button" class="settings-fab">⚙️</button>
+
+    <div id="custom-context-menu" class="context-menu hidden">
+        <ul>
+            <li data-action="openSettings">Настройки</li>
+        </ul>
+    </div>
+
+    <div id="overlay" class="hidden"></div>
+
+    <div id="settings-modal" class="modal hidden">
+        <h3>Настройки</h3>
+        <div class="settings-tabs">
+            <button class="settings-tab active" data-tab="bookmarks">Закладки</button>
+            <button class="settings-tab" data-tab="backgrounds">Фоны</button>
+            <button class="settings-tab" data-tab="search-engines">Поисковые системы</button>
+        </div>
+        <div class="settings-content">
+            <div class="settings-pane active" data-pane="bookmarks">
+                <div id="bookmark-manager-list" class="modal-list"></div>
+                <input type="text" id="bookmark-title-input" placeholder="Название">
+                <input type="url" id="bookmark-url-input" placeholder="URL">
+                <input type="url" id="bookmark-icon-input" placeholder="URL логотипа (опционально)">
+                <div class="modal-actions">
+                    <button id="find-bookmark-logo">Найти логотип</button>
+                    <button id="save-bookmark">Добавить</button>
+                </div>
+            </div>
+            <div class="settings-pane" data-pane="backgrounds">
+                <div id="background-manager-list" class="modal-list"></div>
+                <input type="text" id="background-title-input" placeholder="Название фона">
+                <input type="url" id="background-url-input" placeholder="URL изображения (оставьте пустым для по умолчанию)">
+                <div class="modal-actions">
+                    <button id="save-background">Добавить</button>
+                </div>
+            </div>
+            <div class="settings-pane" data-pane="search-engines">
+                <div id="search-engines-list" class="modal-list"></div>
+                <input type="text" id="new-search-engine-name" placeholder="Название">
+                <input type="text" id="new-search-engine-url" placeholder="URL с %s (например https://www.google.com/search?q=%s)">
+                <input type="url" id="new-search-engine-logo" placeholder="URL логотипа (опционально)">
+                <div class="modal-actions">
+                    <button id="find-search-engine-logo">Найти логотип</button>
+                    <button id="add-search-engine">Добавить</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button id="import-settings-json">Импорт настроек (JSON)</button>
+            <button id="export-settings-json">Экспорт настроек (JSON)</button>
+            <button id="close-settings">Закрыть</button>
+        </div>
+        <input id="import-settings-file" type="file" accept="application/json" style="display:none" />
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

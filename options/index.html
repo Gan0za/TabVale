@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки - Custom New Tab</title>
+    <link rel="stylesheet" href="../newtab/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Настройки расширения</h1>
+
+        <section>
+            <h2>Поисковые системы</h2>
+            <div id="search-engines-list"></div>
+            <input type="text" id="new-search-engine-name" placeholder="Название">
+            <input type="text" id="new-search-engine-url" placeholder="URL с %s для запроса">
+            <button id="add-search-engine">Добавить</button>
+        </section>
+
+        <section style="margin-top: 20px;">
+            <h2>Закладки</h2>
+            <div id="bookmark-list"></div>
+            <input type="text" id="new-bookmark-title" placeholder="Название">
+            <input type="url" id="new-bookmark-url" placeholder="URL">
+            <button id="add-bookmark">Добавить</button>
+        </section>
+    </div>
+
+    <script src="options.js"></script>
+</body>
+</html>

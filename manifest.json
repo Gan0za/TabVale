@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Custom New Tab",
+  "description": "New tab with editable search engines and bookmarks via context menu.",
+  "version": "1.0.0",
+  "permissions": [
+    "tabs",
+    "storage",
+    "contextMenus"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "default_locale": "en",
+  "chrome_url_overrides": {
+    "newtab": "newtab/index.html"
+  },
+  "icons": {
+    "16": "assets/icons/favicon.svg",
+    "48": "assets/icons/favicon.svg",
+    "128": "assets/icons/favicon.svg"
+  },
+  "action": {
+    "default_title": "Custom New Tab"
+  }
+}
