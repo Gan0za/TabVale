@@ -1,3 +1,7 @@
+// =============================================================================
+// Конфигурация по умолчанию
+// =============================================================================
+
 const DEFAULT_SEARCH_ENGINES = [
     { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=%s', logo: 'https://icons.duckduckgo.com/ip3/duckduckgo.com.ico', selected: true },
     { name: 'Google', url: 'https://www.google.com/search?q=%s', logo: 'https://www.google.com/favicon.ico', selected: false },
@@ -13,12 +17,24 @@ const DEFAULT_BACKGROUNDS = [
     { title: 'По умолчанию', url: '' }
 ];
 
+// Запасная иконка (SVG в base64) на случай ошибки загрузки
 const FALLBACK_ICON = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"%3E%3Ccircle cx="25" cy="25" r="20" fill="%23ccc"/%3E%3Ctext x="25" y="30" text-anchor="middle" fill="%23666" font-size="14"%3E%3F%3C/text%3E%3C/svg%3E';
 
+// =============================================================================
+// Вспомогательные функции
+// =============================================================================
+
+/**
+ * Возвращает URL иконки для закладки
+ * Использует кастомную иконку или favicon сайта по умолчанию
+ */
 function getIconUrl(bookmark) {
     return bookmark.icon || `https://${new URL(bookmark.url).hostname}/favicon.ico`;
 }
 
+/**
+ * Сохраняет состояние в chrome.storage.sync
+ */
 function saveState({ searchEngines, bookmarks, backgrounds, currentBackgroundIndex, currentSearchEngineIndex }) {
     const payload = {};
     if (searchEngines) payload.searchEngines = searchEngines;
@@ -29,6 +45,9 @@ function saveState({ searchEngines, bookmarks, backgrounds, currentBackgroundInd
     chrome.storage.sync.set(payload);
 }
 
+/**
+ * Загружает состояние из chrome.storage.sync
+ */
 function getState(callback) {
     chrome.storage.sync.get(['searchEngines', 'bookmarks', 'backgrounds', 'currentBackgroundIndex', 'currentSearchEngineIndex'], (result) => {
         callback({
@@ -41,6 +60,13 @@ function getState(callback) {
     });
 }
 
+// =============================================================================
+// Функции рендеринга
+// =============================================================================
+
+/**
+ * Создаёт DOM-элемент плитки закладки
+ */
 function buildBookmarkTile(bookmark, index) {
     const el = document.createElement('div');
     el.className = 'bookmark';
@@ -78,6 +104,9 @@ function buildBookmarkTile(bookmark, index) {
     return el;
 }
 
+/**
+ * Заполняет select поисковыми системами
+ */
 function renderSearchEngines(select, engines, selectedIndex) {
     select.innerHTML = '';
     selectedIndex = (selectedIndex >= 0 && selectedIndex < engines.length) ? selectedIndex : 0;
@@ -90,6 +119,9 @@ function renderSearchEngines(select, engines, selectedIndex) {
     });
 }
 
+/**
+ * Рендерит список закладок на главной странице
+ */
 function renderBookmarks(container, bookmarks) {
     container.innerHTML = '';
     bookmarks.forEach((bookmark, index) => {
@@ -97,6 +129,9 @@ function renderBookmarks(container, bookmarks) {
     });
 }
 
+/**
+ * Универсальная функция рендеринга списков в модальном окне
+ */
 async function renderManagerList(container, items, renderFn) {
     if (!container) return;
     container.innerHTML = '';
@@ -112,6 +147,7 @@ async function renderManagerList(container, items, renderFn) {
     }
 }
 
+// Функции создания элементов списков для модального окна
 function renderBookmarkManagerItem(bookmark, index) {
     const item = document.createElement('div');
     item.className = 'modal-list-item';
@@ -177,6 +213,9 @@ function renderSearchEngineManagerItem(engine, index, selectedIndex) {
     return item;
 }
 
+/**
+ * Устанавливает фон страницы
+ */
 function setBackground(backgrounds, currentBackgroundIndex) {
     const background = backgrounds[currentBackgroundIndex];
     if (background?.url) {
@@ -187,6 +226,9 @@ function setBackground(backgrounds, currentBackgroundIndex) {
     document.body.style.backgroundSize = 'cover';
 }
 
+/**
+ * Ищет логотип сайта, перебирая различные источники
+ */
 async function fetchLogoWithFallback(urlString) {
     try {
         const url = new URL(urlString);
@@ -219,11 +261,18 @@ async function fetchLogoWithFallback(urlString) {
     }
 }
 
+// =============================================================================
+// Главный модуль
+// =============================================================================
+
 window.addEventListener('DOMContentLoaded', () => {
+    // Элементы поиска
     const searchInput = document.getElementById('search-input');
     const searchEngineSelect = document.getElementById('search-engine-select');
     const searchButton = document.getElementById('search-button');
     const bookmarksContainer = document.getElementById('bookmarks-container');
+
+    // Общие элементы UI
     const contextMenu = document.getElementById('custom-context-menu');
     const overlay = document.getElementById('overlay');
     const settingsModal = document.getElementById('settings-modal');
@@ -235,6 +284,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const settingsTabs = document.querySelectorAll('.settings-tab');
     const settingsPanes = document.querySelectorAll('.settings-pane');
 
+    // Элементы управления закладками
     const bookmarkManagerList = document.getElementById('bookmark-manager-list');
     const bookmarkTitleInput = document.getElementById('bookmark-title-input');
     const bookmarkUrlInput = document.getElementById('bookmark-url-input');
@@ -242,11 +292,13 @@ window.addEventListener('DOMContentLoaded', () => {
     const findBookmarkLogoButton = document.getElementById('find-bookmark-logo');
     const saveBookmarkButton = document.getElementById('save-bookmark');
 
+    // Элементы управления фонами
     const backgroundManagerList = document.getElementById('background-manager-list');
     const backgroundTitleInput = document.getElementById('background-title-input');
     const backgroundUrlInput = document.getElementById('background-url-input');
     const saveBackgroundButton = document.getElementById('save-background');
 
+    // Элементы управления поисковыми системами
     const searchEnginesList = document.getElementById('search-engines-list');
     const newSearchEngineName = document.getElementById('new-search-engine-name');
     const newSearchEngineUrl = document.getElementById('new-search-engine-url');
@@ -254,6 +306,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const findSearchEngineLogoButton = document.getElementById('find-search-engine-logo');
     const addSearchEngineButton = document.getElementById('add-search-engine');
 
+    // Текущее состояние и индексы редактирования
     let currentState = {
         searchEngines: DEFAULT_SEARCH_ENGINES,
         bookmarks: DEFAULT_BOOKMARKS,
@@ -264,6 +317,10 @@ window.addEventListener('DOMContentLoaded', () => {
     let editingBookmarkIndex = null;
     let editingBackgroundIndex = null;
     let editingSearchEngineIndex = null;
+
+    // =============================================================================
+    // Вспомогательные функции UI
+    // =============================================================================
 
     function resetBookmarkForm() {
         editingBookmarkIndex = null;
@@ -315,6 +372,9 @@ window.addEventListener('DOMContentLoaded', () => {
         contextMenu.classList.add('hidden');
     }
 
+    /**
+     * Обновляет весь интерфейс после изменения данных
+     */
     async function refreshUI() {
         renderSearchEngines(searchEngineSelect, currentState.searchEngines, currentState.currentSearchEngineIndex);
         renderBookmarks(bookmarksContainer, currentState.bookmarks);
@@ -324,11 +384,9 @@ window.addEventListener('DOMContentLoaded', () => {
         setBackground(currentState.backgrounds, currentState.currentBackgroundIndex);
     }
 
-    getState(async (state) => {
-        currentState = state;
-        await refreshUI();
-    });
-
+    /**
+     * Выполняет поисковый запрос
+     */
     function runSearch() {
         const query = searchInput.value.trim();
         if (!query) return;
@@ -336,11 +394,44 @@ window.addEventListener('DOMContentLoaded', () => {
         window.location.href = url;
     }
 
+    // =============================================================================
+    // Загрузка начального состояния
+    // =============================================================================
+
+    getState(async (state) => {
+        currentState = state;
+        await refreshUI();
+    });
+
+    // =============================================================================
+    // Обработчики событий - поиск
+    // =============================================================================
+
     searchButton.addEventListener('click', runSearch);
     searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') runSearch(); });
+
+    // =============================================================================
+    // Обработчики событий - настройки (модальное окно)
+    // =============================================================================
+
     settingsButton.addEventListener('click', () => openSettingsModal('bookmarks'));
     closeSettingsButton.addEventListener('click', closeSettingsModal);
     overlay.addEventListener('click', closeSettingsModal);
+
+    // Переключение вкладок настроек
+    settingsTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabName = tab.dataset.tab;
+            settingsTabs.forEach(t => t.classList.remove('active'));
+            settingsPanes.forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.querySelector(`.settings-pane[data-pane="${tabName}"]`)?.classList.add('active');
+        });
+    });
+
+    // =============================================================================
+    // Обработчики событий - импорт/экспорт
+    // =============================================================================
 
     exportSettingsJsonButton.addEventListener('click', () => {
         const json = JSON.stringify(currentState, null, 2);
@@ -375,15 +466,9 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    settingsTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const tabName = tab.dataset.tab;
-            settingsTabs.forEach(t => t.classList.remove('active'));
-            settingsPanes.forEach(p => p.classList.remove('active'));
-            tab.classList.add('active');
-            document.querySelector(`.settings-pane[data-pane="${tabName}"]`)?.classList.add('active');
-        });
-    });
+    // =============================================================================
+    // Обработчики событий - закладки
+    // =============================================================================
 
     saveBookmarkButton.addEventListener('click', async () => {
         const title = bookmarkTitleInput.value.trim();
@@ -428,6 +513,56 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Обработка кликов по списку закладок в настройках
+    bookmarkManagerList.addEventListener('click', async (e) => {
+        const editBtn = e.target.closest('.bookmark-manage-edit');
+        if (editBtn) {
+            const idx = Number(editBtn.dataset.index);
+            const bookmark = currentState.bookmarks[idx];
+            editingBookmarkIndex = idx;
+            bookmarkTitleInput.value = bookmark.title || '';
+            bookmarkUrlInput.value = bookmark.url || '';
+            bookmarkIconInput.value = bookmark.icon || '';
+            openSettingsModal('bookmarks');
+            return;
+        }
+
+        const deleteBtn = e.target.closest('.bookmark-manage-delete');
+        if (deleteBtn) {
+            currentState.bookmarks.splice(Number(deleteBtn.dataset.index), 1);
+            saveState({ bookmarks: currentState.bookmarks });
+            await refreshUI();
+        }
+    });
+
+    // Обработка кликов по закладкам на главной странице
+    bookmarksContainer.addEventListener('click', async (e) => {
+        const editBtn = e.target.closest('.edit-bookmark');
+        if (editBtn) {
+            e.stopPropagation();
+            const idx = Number(editBtn.dataset.index);
+            const bookmark = currentState.bookmarks[idx];
+            editingBookmarkIndex = idx;
+            bookmarkTitleInput.value = bookmark.title || '';
+            bookmarkUrlInput.value = bookmark.url || '';
+            bookmarkIconInput.value = bookmark.icon || '';
+            openSettingsModal('bookmarks');
+            return;
+        }
+
+        const deleteBtn = e.target.closest('.delete-bookmark');
+        if (deleteBtn) {
+            e.stopPropagation();
+            currentState.bookmarks.splice(Number(deleteBtn.dataset.index), 1);
+            saveState({ bookmarks: currentState.bookmarks });
+            await refreshUI();
+        }
+    });
+
+    // =============================================================================
+    // Обработчики событий - фоны
+    // =============================================================================
+
     saveBackgroundButton.addEventListener('click', async () => {
         const title = backgroundTitleInput.value.trim();
         if (!title) { alert('Введите название.'); return; }
@@ -443,6 +578,42 @@ window.addEventListener('DOMContentLoaded', () => {
         await refreshUI();
         resetBackgroundForm();
     });
+
+    // Обработка кликов по списку фонов в настройках
+    backgroundManagerList.addEventListener('click', async (e) => {
+        const selectBtn = e.target.closest('.background-manage-select');
+        if (selectBtn) {
+            currentState.currentBackgroundIndex = Number(selectBtn.dataset.index);
+            saveState({ currentBackgroundIndex: currentState.currentBackgroundIndex });
+            await refreshUI();
+            return;
+        }
+
+        const editBtn = e.target.closest('.background-manage-edit');
+        if (editBtn) {
+            const idx = Number(editBtn.dataset.index);
+            const bg = currentState.backgrounds[idx];
+            editingBackgroundIndex = idx;
+            backgroundTitleInput.value = bg.title || '';
+            backgroundUrlInput.value = bg.url || '';
+            openSettingsModal('backgrounds');
+            return;
+        }
+
+        const deleteBtn = e.target.closest('.background-manage-delete');
+        if (deleteBtn) {
+            currentState.backgrounds.splice(Number(deleteBtn.dataset.index), 1);
+            if (currentState.currentBackgroundIndex >= currentState.backgrounds.length) {
+                currentState.currentBackgroundIndex = Math.max(0, currentState.backgrounds.length - 1);
+            }
+            saveState({ backgrounds: currentState.backgrounds, currentBackgroundIndex: currentState.currentBackgroundIndex });
+            await refreshUI();
+        }
+    });
+
+    // =============================================================================
+    // Обработчики событий - поисковые системы
+    // =============================================================================
 
     addSearchEngineButton.addEventListener('click', async () => {
         const name = newSearchEngineName.value.trim();
@@ -482,6 +653,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Обработка кликов по списку поисковых систем
     searchEnginesList.addEventListener('click', async (e) => {
         const selectBtn = e.target.closest('.search-engine-select');
         if (selectBtn) {
@@ -515,80 +687,9 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    bookmarkManagerList.addEventListener('click', async (e) => {
-        const editBtn = e.target.closest('.bookmark-manage-edit');
-        if (editBtn) {
-            const idx = Number(editBtn.dataset.index);
-            const bookmark = currentState.bookmarks[idx];
-            editingBookmarkIndex = idx;
-            bookmarkTitleInput.value = bookmark.title || '';
-            bookmarkUrlInput.value = bookmark.url || '';
-            bookmarkIconInput.value = bookmark.icon || '';
-            openSettingsModal('bookmarks');
-            return;
-        }
-
-        const deleteBtn = e.target.closest('.bookmark-manage-delete');
-        if (deleteBtn) {
-            currentState.bookmarks.splice(Number(deleteBtn.dataset.index), 1);
-            saveState({ bookmarks: currentState.bookmarks });
-            await refreshUI();
-        }
-    });
-
-    backgroundManagerList.addEventListener('click', async (e) => {
-        const selectBtn = e.target.closest('.background-manage-select');
-        if (selectBtn) {
-            currentState.currentBackgroundIndex = Number(selectBtn.dataset.index);
-            saveState({ currentBackgroundIndex: currentState.currentBackgroundIndex });
-            await refreshUI();
-            return;
-        }
-
-        const editBtn = e.target.closest('.background-manage-edit');
-        if (editBtn) {
-            const idx = Number(editBtn.dataset.index);
-            const bg = currentState.backgrounds[idx];
-            editingBackgroundIndex = idx;
-            backgroundTitleInput.value = bg.title || '';
-            backgroundUrlInput.value = bg.url || '';
-            openSettingsModal('backgrounds');
-            return;
-        }
-
-        const deleteBtn = e.target.closest('.background-manage-delete');
-        if (deleteBtn) {
-            currentState.backgrounds.splice(Number(deleteBtn.dataset.index), 1);
-            if (currentState.currentBackgroundIndex >= currentState.backgrounds.length) {
-                currentState.currentBackgroundIndex = Math.max(0, currentState.backgrounds.length - 1);
-            }
-            saveState({ backgrounds: currentState.backgrounds, currentBackgroundIndex: currentState.currentBackgroundIndex });
-            await refreshUI();
-        }
-    });
-
-    bookmarksContainer.addEventListener('click', async (e) => {
-        const editBtn = e.target.closest('.edit-bookmark');
-        if (editBtn) {
-            e.stopPropagation();
-            const idx = Number(editBtn.dataset.index);
-            const bookmark = currentState.bookmarks[idx];
-            editingBookmarkIndex = idx;
-            bookmarkTitleInput.value = bookmark.title || '';
-            bookmarkUrlInput.value = bookmark.url || '';
-            bookmarkIconInput.value = bookmark.icon || '';
-            openSettingsModal('bookmarks');
-            return;
-        }
-
-        const deleteBtn = e.target.closest('.delete-bookmark');
-        if (deleteBtn) {
-            e.stopPropagation();
-            currentState.bookmarks.splice(Number(deleteBtn.dataset.index), 1);
-            saveState({ bookmarks: currentState.bookmarks });
-            await refreshUI();
-        }
-    });
+    // =============================================================================
+    // Drag & Drop для закладок
+    // =============================================================================
 
     let draggedIndex = null;
 
@@ -622,6 +723,10 @@ window.addEventListener('DOMContentLoaded', () => {
         await refreshUI();
         draggedIndex = null;
     });
+
+    // =============================================================================
+    // Контекстное меню
+    // =============================================================================
 
     document.addEventListener('contextmenu', (e) => {
         e.preventDefault();
