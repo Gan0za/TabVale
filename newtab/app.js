@@ -105,17 +105,34 @@ function buildBookmarkTile(bookmark, index) {
 }
 
 /**
- * Заполняет select поисковыми системами
+ * Создаёт и рендерит выпадающий список поисковых систем с иконками
  */
-function renderSearchEngines(select, engines, selectedIndex) {
-    select.innerHTML = '';
+function renderSearchEngineDropdown(engines, selectedIndex) {
+    const dropdownBtn = document.getElementById('search-engine-button');
+    const listContainer = document.getElementById('search-engine-list');
+    const iconEl = document.getElementById('selected-engine-icon');
+    const nameEl = document.getElementById('selected-engine-name');
+
     selectedIndex = (selectedIndex >= 0 && selectedIndex < engines.length) ? selectedIndex : 0;
+    const selected = engines[selectedIndex];
+
+    // Кнопка показывает текущую выбранную систему
+    iconEl.src = selected.logo || '';
+    iconEl.onerror = () => { iconEl.style.display = 'none'; };
+    iconEl.style.display = selected.logo ? 'inline' : 'none';
+    nameEl.textContent = selected.name;
+
+    // Список опций
+    listContainer.innerHTML = '';
     engines.forEach((engine, index) => {
-        const option = document.createElement('option');
-        option.value = engine.url;
-        option.textContent = engine.name;
-        if (index === selectedIndex) option.selected = true;
-        select.appendChild(option);
+        const item = document.createElement('div');
+        item.className = `dropdown-item${index === selectedIndex ? ' selected' : ''}`;
+        item.dataset.url = engine.url;
+        item.innerHTML = `
+            <img src="${engine.logo || ''}" alt="${engine.name}" onerror="this.style.display='none'">
+            <span>${engine.name}</span>
+        `;
+        listContainer.appendChild(item);
     });
 }
 
@@ -268,7 +285,8 @@ async function fetchLogoWithFallback(urlString) {
 window.addEventListener('DOMContentLoaded', () => {
     // Элементы поиска
     const searchInput = document.getElementById('search-input');
-    const searchEngineSelect = document.getElementById('search-engine-select');
+    const searchEngineDropdownBtn = document.getElementById('search-engine-button');
+    const searchEngineList = document.getElementById('search-engine-list');
     const searchButton = document.getElementById('search-button');
     const bookmarksContainer = document.getElementById('bookmarks-container');
 
@@ -376,7 +394,7 @@ window.addEventListener('DOMContentLoaded', () => {
      * Обновляет весь интерфейс после изменения данных
      */
     async function refreshUI() {
-        renderSearchEngines(searchEngineSelect, currentState.searchEngines, currentState.currentSearchEngineIndex);
+        renderSearchEngineDropdown(currentState.searchEngines, currentState.currentSearchEngineIndex);
         renderBookmarks(bookmarksContainer, currentState.bookmarks);
         await renderManagerList(bookmarkManagerList, currentState.bookmarks, renderBookmarkManagerItem);
         await renderManagerList(backgroundManagerList, currentState.backgrounds, (bg, idx) => renderBackgroundManagerItem(bg, idx, currentState.currentBackgroundIndex));
@@ -385,12 +403,22 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * Возвращает URL текущей поисковой системы
+     */
+    function getCurrentSearchUrl() {
+        const btn = document.getElementById('search-engine-button');
+        const name = document.getElementById('selected-engine-name').textContent;
+        const engine = currentState.searchEngines.find(e => e.name === name);
+        return engine?.url || currentState.searchEngines[0]?.url || '';
+    }
+
+    /**
      * Выполняет поисковый запрос
      */
     function runSearch() {
         const query = searchInput.value.trim();
         if (!query) return;
-        const url = searchEngineSelect.value.replace('%s', encodeURIComponent(query));
+        const url = getCurrentSearchUrl().replace('%s', encodeURIComponent(query));
         window.location.href = url;
     }
 
@@ -409,6 +437,32 @@ window.addEventListener('DOMContentLoaded', () => {
 
     searchButton.addEventListener('click', runSearch);
     searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') runSearch(); });
+
+    // Открытие/закрытие выпадающего списка
+    searchEngineDropdownBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        searchEngineList.classList.toggle('open');
+    });
+
+    // Выбор поисковой системы из списка
+    searchEngineList.addEventListener('click', (e) => {
+        const item = e.target.closest('.dropdown-item');
+        if (!item) return;
+
+        const url = item.dataset.url;
+        const engine = currentState.searchEngines.find(e => e.url === url);
+        if (engine) {
+            currentState.currentSearchEngineIndex = currentState.searchEngines.indexOf(engine);
+            saveState({ currentSearchEngineIndex: currentState.currentSearchEngineIndex });
+            renderSearchEngineDropdown(currentState.searchEngines, currentState.currentSearchEngineIndex);
+        }
+        searchEngineList.classList.remove('open');
+    });
+
+    // Закрытие списка при клике вне
+    document.addEventListener('click', () => {
+        searchEngineList.classList.remove('open');
+    });
 
     // =============================================================================
     // Обработчики событий - настройки (модальное окно)

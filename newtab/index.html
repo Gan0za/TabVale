@@ -13,7 +13,14 @@
         <div id="search-container">
             <div class="search-row">
                 <input type="text" id="search-input" placeholder="Поиск..." autocomplete="off">
-                <select id="search-engine-select"></select>
+                <div id="search-engine-dropdown" class="dropdown">
+                    <button id="search-engine-button" class="dropdown-button">
+                        <img id="selected-engine-icon" src="" alt="">
+                        <span id="selected-engine-name">DuckDuckGo</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="search-engine-list" class="dropdown-menu"></div>
+                </div>
                 <button id="search-button">Найти</button>
             </div>
         </div>
