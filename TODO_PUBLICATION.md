@@ -13,12 +13,10 @@
 
 ## Блок 1 — Безопасность
 
-- ⬜ **1.1 Валидация импорта bookmarks/backgrounds по элементам** (критично)
-  - Файлы: `newtab/app.js`, `tests/forms.test.mjs`
-  - Импорт (app.js ~868) проверяет только `Array.isArray`; элементы с
-    `javascript:`-URL выполняют код по клику. Валидировать: url — после
-    `new URL()` с протоколом http/https, title — строка; некорректное — отбрасывать.
-  - Тест: «импорт с javascript:URL отбрасывается».
+- ✅ **1.1 Валидация импорта bookmarks/backgrounds по элементам** (критично)
+  - Готово (f228a8e): isSafeWebUrl (только http/https), sanitizeList для
+    bookmarks/backgrounds/searchEngines, счётчик пропущенных в сводке импорта,
+    тест import.test.mjs (javascript:/data:/file: отбрасываются).
 
 - ⬜ **1.2 Обработка `chrome.runtime.lastError`**
   - Файлы: `newtab/app.js` (строки 54, 62 и др.), `background.js`
