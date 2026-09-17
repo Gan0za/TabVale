@@ -37,6 +37,112 @@ const DEFAULT_BACKGROUNDS = [
 const FALLBACK_ICON = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"%3E%3Ccircle cx="25" cy="25" r="20" fill="%23ccc"/%3E%3Ctext x="25" y="30" text-anchor="middle" fill="%23666" font-size="14"%3E%3F%3C/text%3E%3C/svg%3E';
 
 // =============================================================================
+// 1.5 Локализация интерфейса
+//
+// chrome.i18n.getMessage умеет читать только язык браузера и не умеет
+// переключаться на лету, поэтому делаем свой загрузчик: при смене языка
+// читаем _locales/<код>/messages.json и подставляем строки заново.
+// =============================================================================
+
+// Справочник языков: код = имя папки в _locales. Флаг показывает,
+// на каком языке говорит пользователь, а не чьё это государство.
+const LANGUAGES = [
+    { code: 'auto', flag: '🌐', name: 'Auto' },
+    { code: 'ru', flag: '🇷🇺', name: 'Русский' },
+    { code: 'en', flag: '🇬🇧', name: 'English' },
+];
+
+// Кэш загруженных переводов текущего языка (заполняет applyLocale)
+let currentMessages = {};
+
+/**
+ * Возвращает строку перевода по ключу с подстановкой переменных.
+ * t('importSkipped', { count: 3 }) подставит $count$ = 3.
+ * Если ключа нет — возвращаем ключ, чтобы пропуски были видны сразу.
+ */
+function t(key, vars) {
+    let text = currentMessages[key]?.message || key;
+    if (vars) {
+        for (const [name, value] of Object.entries(vars)) {
+            text = text.replaceAll(`$${name}$`, value);
+        }
+    }
+    return text;
+}
+
+/**
+ * Определяет код языка из настройки пользователя.
+ * 'auto' — берём язык браузера (первые 2 символа: 'ru-RU' -> 'ru').
+ * Если языка нет в _locales — откатываемся на русский.
+ */
+function resolveLocale(langSetting) {
+    const browserLang = (navigator.language || 'ru').slice(0, 2);
+    const lang = langSetting && langSetting !== 'auto' ? langSetting : browserLang;
+    return LANGUAGES.some((l) => l.code === lang) ? lang : 'ru';
+}
+
+/**
+ * Применяет язык ко всему интерфейсу:
+ *  1) загружает словарь _locales/<lang>/messages.json,
+ *  2) заменяет тексты в статической разметке (data-i18n),
+ *  3) перерисовывает динамические части (контекстные меню, списки).
+ * Вызывается при старте и при смене языка пользователем.
+ */
+async function applyLocale(langSetting) {
+    const lang = resolveLocale(langSetting);
+    // Словарь лежит рядом со страницей расширения — fetch отдаст его
+    // из пакета расширения без сети
+    const url = chrome.runtime.getURL(`_locales/${lang}/messages.json`);
+    const response = await fetch(url);
+    currentMessages = await response.json();
+    document.documentElement.lang = lang;
+
+    // Статическая разметка: <h1 data-i18n="pageTitle">
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+        el.textContent = t(el.dataset.i18n);
+    });
+    // Плейсхолдеры полей: data-i18n-placeholder="searchPlaceholder"
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+        el.placeholder = t(el.dataset.i18nPlaceholder);
+    });
+    // Aria-подписи кнопок без текста
+    document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+        el.setAttribute('aria-label', t(el.dataset.i18nAria));
+    });
+    document.title = t('pageTitle');
+
+    // Динамические списки перерисовываем, если данные уже загружены
+    if (typeof currentState === 'object' && currentState?.searchEngines) {
+        refreshUI();
+    }
+    return lang;
+}
+
+/**
+ * Строит выпадающий список языков (🌐 Авто / 🇷🇺 Русский / 🇬🇧 English).
+ * Пункты собираются из справочника LANGUAGES — добавили папку в
+ * _locales и строку здесь — язык появился в списке.
+ */
+function buildLanguageMenu(container, currentLangCode, onPick) {
+    if (!container) return;
+    container.textContent = '';
+    for (const lang of LANGUAGES) {
+        const item = document.createElement('button');
+        item.className = `dropdown-item${lang.code === currentLangCode ? ' selected' : ''}`;
+        item.dataset.lang = lang.code;
+        // Флаг + название: текст собирается текстом, не innerHTML
+        item.textContent = `${lang.flag} ${lang.name}`;
+        item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onPick(lang.code);
+            container.classList.add('hidden');
+        });
+        container.appendChild(item);
+    }
+}
+
+
+// =============================================================================
 // 2. Работа с хранилищем
 // =============================================================================
 
@@ -240,8 +346,8 @@ function buildBookmarkTile(bookmark, index) {
     const actions = document.createElement('div');
     actions.className = 'bookmark-actions';
     for (const [className, label, symbol] of [
-        ['edit-bookmark', 'Редактировать', '✎'],
-        ['delete-bookmark', 'Удалить', '×'],
+        ['edit-bookmark', t('edit'), '✎'],
+        ['delete-bookmark', t('delete'), '×'],
     ]) {
         const button = document.createElement('button');
         button.className = className;
@@ -393,23 +499,23 @@ function getContextMenuItems(type, data = {}) {
         case 'bookmark':
             // Меню плитки закладки: действия над конкретной закладкой
             return [
-                { action: 'editBookmark', label: 'Редактировать' },
-                { action: 'deleteBookmark', label: 'Удалить' },
-                { action: 'openInNewTab', label: 'Открыть в новой вкладке' },
-                { action: 'copyLink', label: 'Копировать ссылку' },
+                { action: 'editBookmark', label: t('edit') },
+                { action: 'deleteBookmark', label: t('delete') },
+                { action: 'openInNewTab', label: t('openInNewTab') },
+                { action: 'copyLink', label: t('copyLink') },
                 { separator: true },
-                { action: 'openSettings', label: 'Настройки' },
+                { action: 'openSettings', label: t('settings') },
             ];
         case 'background':
             // Меню пустого фона: смена фона и переходы в настройки.
             // "Редактировать" открывает редактор текущего (выбранного) фона,
             // "Настройки" — под разделителем, как в меню плитки закладки
             return [
-                { action: 'nextBackground', label: 'Следующий фон' },
-                { action: 'editBackground', label: 'Редактировать' },
-                { action: 'backgroundSettings', label: 'Настройки фонов' },
+                { action: 'nextBackground', label: t('nextBackground') },
+                { action: 'editBackground', label: t('edit') },
+                { action: 'backgroundSettings', label: t('backgroundSettings') },
                 { separator: true },
-                { action: 'openSettings', label: 'Настройки' },
+                { action: 'openSettings', label: t('settings') },
             ];
         case 'search':
             // Меню поля поиска — динамическое: состав зависит от того,
@@ -420,17 +526,17 @@ function getContextMenuItems(type, data = {}) {
         {
             const items = [];
             if (data.hasClipboardText) {
-                items.push({ action: 'pasteAndSearch', label: 'Вставить и искать' });
-                items.push({ action: 'pasteToSearch', label: 'Вставить' });
+                items.push({ action: 'pasteAndSearch', label: t('pasteAndSearch') });
+                items.push({ action: 'pasteToSearch', label: t('paste') });
             }
             if (data.hasText) {
-                items.push({ action: 'copySearch', label: 'Копировать' });
-                items.push({ action: 'cutSearch', label: 'Вырезать' });
-                items.push({ action: 'clearSearch', label: 'Очистить' });
+                items.push({ action: 'copySearch', label: t('copy') });
+                items.push({ action: 'cutSearch', label: t('cut') });
+                items.push({ action: 'clearSearch', label: t('clear') });
             }
-            items.push({ action: 'searchEngineSettings', label: 'Настройки поисковиков' });
+            items.push({ action: 'searchEngineSettings', label: t('searchEngineSettings') });
             items.push({ separator: true });
-            items.push({ action: 'openSettings', label: 'Настройки' });
+            items.push({ action: 'openSettings', label: t('settings') });
             return items;
         }
         case 'settingsRow':
@@ -438,9 +544,9 @@ function getContextMenuItems(type, data = {}) {
             // У закладок нет кнопки "Выбрать", поэтому пункт добавляется по флагу.
         {
             const items = [];
-            if (data.selectable) items.push({ action: 'rowSelect', label: 'Выбрать' });
-            items.push({ action: 'rowEdit', label: 'Редактировать' });
-            items.push({ action: 'rowDelete', label: 'Удалить' });
+            if (data.selectable) items.push({ action: 'rowSelect', label: t('select') });
+            items.push({ action: 'rowEdit', label: t('edit') });
+            items.push({ action: 'rowDelete', label: t('delete') });
             return items;
         }
         default:
@@ -458,7 +564,7 @@ function renderManagerList(container, items, buildItemFn) {
     if (!items.length) {
         const empty = document.createElement('div');
         empty.className = 'modal-list-empty';
-        empty.textContent = 'Список пуст.';
+        empty.textContent = t('emptyList');
         container.appendChild(empty);
         return;
     }
@@ -469,8 +575,8 @@ function renderManagerList(container, items, buildItemFn) {
 function renderBookmarkManagerItem(bookmark, index) {
     return buildManagerListItem({
         buttons: [
-            ['bookmark-manage-edit', 'Ред.'],
-            ['bookmark-manage-delete', 'Удалить'],
+            ['bookmark-manage-edit', t('editShort')],
+            ['bookmark-manage-delete', t('delete')],
         ],
         selected: false,
         imageUrl: getIconUrl(bookmark),
@@ -485,15 +591,15 @@ function renderBookmarkManagerItem(bookmark, index) {
 function renderBackgroundManagerItem(background, index, currentIndex) {
     return buildManagerListItem({
         buttons: [
-            ['background-manage-select', 'Выбрать'],
-            ['background-manage-edit', 'Ред.'],
-            ['background-manage-delete', 'Удалить'],
+            ['background-manage-select', t('select')],
+            ['background-manage-edit', t('editShort')],
+            ['background-manage-delete', t('delete')],
         ],
         selected: index === currentIndex,
         imageUrl: background.url || null,
-        emptyImageText: 'Нет',
+        emptyImageText: t('noImage'),
         title: background.title,
-        subtitle: background.url || 'По умолчанию',
+        subtitle: background.url || t('defaultBackground'),
         index,
         rowType: 'background'
     });
@@ -502,9 +608,9 @@ function renderBackgroundManagerItem(background, index, currentIndex) {
 function renderSearchEngineManagerItem(engine, index, selectedIndex) {
     return buildManagerListItem({
         buttons: [
-            ['search-engine-select', 'Выбрать'],
-            ['search-engine-edit', 'Ред.'],
-            ['search-engine-delete', 'Удалить'],
+            ['search-engine-select', t('select')],
+            ['search-engine-edit', t('editShort')],
+            ['search-engine-delete', t('delete')],
         ],
         selected: index === selectedIndex,
         imageUrl: engine.logo || null,
@@ -681,18 +787,92 @@ window.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
         themeMenu.classList.toggle('hidden');
     });
-    themeMenu?.addEventListener('click', (e) => {
-        const mode = e.target.dataset.mode;
-        if (!mode) return;
-        storageSet({ theme: mode });
-        applyTheme(mode);
-        themeMenu.classList.add('hidden');
-    });
 
     // Клик мимо меню темы закрывает его (клик по самой кнопке не доходит
     // до document из-за stopPropagation выше)
     document.addEventListener('click', (e) => {
         if (!themeMenu.contains(e.target)) themeMenu.classList.add('hidden');
+    });
+
+    // Дубль переключателя темы в модалке (раздел «Общие»):
+    // оба меню работают с одними data-mode, поэтому обработчик один
+    const themeMenuGeneral = document.getElementById('theme-menu-general');
+    [themeMenu, themeMenuGeneral].forEach((menu) => {
+        menu?.addEventListener('click', (e) => {
+            const mode = e.target.dataset.mode;
+            if (!mode) return;
+            storageSet({ theme: mode });
+            applyTheme(mode);
+            menu.classList.add('hidden');
+        });
+    });
+
+    // =============================================================================
+    // Выбор языка интерфейса
+    // =============================================================================
+
+    const languageToggle = document.getElementById('language-toggle');
+    const languageMenu = document.getElementById('language-menu');
+    const languageButton = document.getElementById('language-button');
+    const languageList = document.getElementById('language-list');
+
+    /**
+     * Показывает выбранный язык на кнопках обоих переключателей
+     * (🌐 FAB и кнопка в «Общих» настройках).
+     */
+    function updateLanguageButton(langSetting) {
+        const lang = resolveLocale(langSetting);
+        const info = LANGUAGES.find((l) => l.code === lang) || LANGUAGES[0];
+        // Для 'auto' подписываем, что это язык браузера
+        const label = langSetting === 'auto'
+            ? `${info.flag} ${info.name} (${t('langAuto')})`
+            : `${info.flag} ${info.name}`;
+        if (document.getElementById('selected-language-name')) {
+            document.getElementById('selected-language-name').textContent = label;
+        }
+        if (languageButton) languageButton.title = label;
+    }
+
+    /**
+     * Смена языка: сохранить настройку и применить словарь на лету,
+     * без перезагрузки страницы
+     */
+    function changeLanguage(code) {
+        storageSet({ lang: code });
+        applyLocale(code).then(() => updateLanguageButton(code));
+    }
+
+    // Оба меню (🌐 и селектор в «Общих») наполняются одинаково
+    storageGet('lang', (result) => {
+        const langSetting = result.lang || 'auto';
+        buildLanguageMenu(languageMenu, resolveLocale(langSetting), changeLanguage);
+        buildLanguageMenu(languageList, resolveLocale(langSetting), changeLanguage);
+        updateLanguageButton(langSetting);
+    });
+
+    languageToggle?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+        // При каждом открытии обновить подсветку текущего языка
+        if (!languageMenu.classList.contains('hidden')) {
+            storageGet('lang', (result) => {
+                buildLanguageMenu(languageMenu, resolveLocale(result.lang || 'auto'), changeLanguage);
+            });
+        }
+    });
+    languageButton?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageList.classList.toggle('hidden');
+        if (!languageList.classList.contains('hidden')) {
+            storageGet('lang', (result) => {
+                buildLanguageMenu(languageList, resolveLocale(result.lang || 'auto'), changeLanguage);
+            });
+        }
+    });
+    // Клик мимо меню языка закрывает его
+    document.addEventListener('click', (e) => {
+        if (!languageMenu.contains(e.target)) languageMenu.classList.add('hidden');
+        if (!languageList.contains(e.target)) languageList.classList.add('hidden');
     });
 
     // =============================================================================
@@ -867,9 +1047,16 @@ window.addEventListener('DOMContentLoaded', () => {
     // Загрузка начального состояния
     // =============================================================================
 
+    // Сначала язык: applyLocale перерисует статические тексты и (после
+    // загрузки состояния) динамические списки. Затем обычная загрузка данных.
     getState((state) => {
         currentState = state;
-        refreshUI();
+        storageGet('lang', (result) => {
+            applyLocale(result.lang || 'auto').then(() => {
+                refreshUI();
+                updateLanguageButton(result.lang || 'auto');
+            });
+        });
     });
 
     // Страница открыта с ?settings=1 — её открыло контекстное меню иконки
@@ -988,11 +1175,13 @@ window.addEventListener('DOMContentLoaded', () => {
             // Сообщаем не только об успехе, но и о пропущенных элементах:
             // молчаливое отбрасывание выглядело бы как потеря данных
             const totalSkipped = bookmarks.skipped + backgrounds.skipped + searchEngines.skipped;
+            // Сообщаем не только об успехе, но и о пропущенных элементах:
+            // молчаливое отбрасывание выглядело бы как потеря данных
             alert(totalSkipped
-                ? `Настройки импортированы. Пропущено некорректных элементов: ${totalSkipped}`
-                : 'Настройки импортированы');
+                ? t('importSkipped', { count: totalSkipped })
+                : t('importSuccess'));
         } catch (err) {
-            alert('Ошибка импорта: ' + err.message);
+            alert(t('importError', { error: err.message }));
         } finally {
             // Сбрасываем input, чтобы выбор того же файла снова сработал
             importSettingsFileInput.value = '';
@@ -1013,12 +1202,12 @@ window.addEventListener('DOMContentLoaded', () => {
         const rawUrl = bookmarkUrlInput.value.trim();
         const icon = bookmarkIconInput.value.trim();
 
-        if (!title || !rawUrl) { alert('Введите название и URL.'); return; }
+        if (!title || !rawUrl) { alert(t('errTitleAndUrl')); return; }
 
         // Если пользователь ввёл адрес без "https://", добавим его сами
         const normalizedUrl = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
         let urlObj;
-        try { urlObj = new URL(normalizedUrl); } catch { alert('Введите корректный URL.'); return; }
+        try { urlObj = new URL(normalizedUrl); } catch { alert(t('errInvalidUrl')); return; }
 
         const bookmarkData = { title, url: normalizedUrl, icon: icon || `https://${urlObj.hostname}/favicon.ico` };
 
@@ -1036,20 +1225,20 @@ window.addEventListener('DOMContentLoaded', () => {
     // Кнопка "Найти логотип": запускает перебор источников favicon
     findBookmarkLogoButton.addEventListener('click', async () => {
         const url = bookmarkUrlInput.value.trim();
-        if (!url) { alert('Введите URL закладки.'); return; }
+        if (!url) { alert(t('errBookmarkUrl')); return; }
         findBookmarkLogoButton.disabled = true;
-        findBookmarkLogoButton.textContent = 'Поиск...';
+        findBookmarkLogoButton.textContent = t('searchButton') + '...';
         try {
             const logoUrl = await fetchLogoWithFallback(url);
             if (logoUrl) {
                 bookmarkIconInput.value = logoUrl;
-                alert('Логотип найден!');
+                alert(t('logoFound'));
             } else {
-                alert('Логотип не найден.');
+                alert(t('logoNotFound'));
             }
         } finally {
             findBookmarkLogoButton.disabled = false;
-            findBookmarkLogoButton.textContent = 'Найти логотип';
+            findBookmarkLogoButton.textContent = t('findLogo');
         }
     });
 
@@ -1100,7 +1289,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     saveBackgroundButton.addEventListener('click', () => {
         const title = backgroundTitleInput.value.trim();
-        if (!title) { alert('Введите название.'); return; }
+        if (!title) { alert(t('errTitle')); return; }
         const backgroundData = { title, url: backgroundUrlInput.value.trim() };
 
         if (editingBackgroundIndex !== null) {
@@ -1149,7 +1338,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const logo = newSearchEngineLogo.value.trim();
 
         // %s в URL обязателен — иначе некуда подставлять запрос
-        if (!name || !url || !url.includes('%s')) { alert('Введите название и URL с %s.'); return; }
+        if (!name || !url || !url.includes('%s')) { alert(t('errNameAndUrl')); return; }
 
         const engineData = { name, url, logo };
         if (editingSearchEngineIndex !== null) {
@@ -1165,20 +1354,20 @@ window.addEventListener('DOMContentLoaded', () => {
 
     findSearchEngineLogoButton.addEventListener('click', async () => {
         const url = newSearchEngineUrl.value.trim();
-        if (!url || !url.includes('%s')) { alert('Введите URL с %s.'); return; }
+        if (!url || !url.includes('%s')) { alert(t('errEngineUrl')); return; }
         findSearchEngineLogoButton.disabled = true;
-        findSearchEngineLogoButton.textContent = 'Поиск...';
+        findSearchEngineLogoButton.textContent = t('searchButton') + '...';
         try {
             const logoUrl = await fetchLogoWithFallback(url);
             if (logoUrl) {
                 newSearchEngineLogo.value = logoUrl;
-                alert('Логотип найден!');
+                alert(t('logoFound'));
             } else {
-                alert('Логотип не найден.');
+                alert(t('logoNotFound'));
             }
         } finally {
             findSearchEngineLogoButton.disabled = false;
-            findSearchEngineLogoButton.textContent = 'Найти логотип';
+            findSearchEngineLogoButton.textContent = t('findLogo');
         }
     });
 
@@ -1479,7 +1668,7 @@ window.addEventListener('DOMContentLoaded', () => {
             const text = searchInput.value;
             if (!text.trim()) return;
             navigator.clipboard.writeText(text).catch(() => {
-                alert('Не удалось скопировать текст.');
+                alert(t('copyFailed'));
             });
         },
         cutSearch: () => {
@@ -1491,7 +1680,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     searchInput.focus();
                 })
                 .catch(() => {
-                    alert('Не удалось вырезать текст.');
+                    alert(t('cutFailed'));
                 });
         },
         clearSearch: () => {
