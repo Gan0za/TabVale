@@ -171,7 +171,14 @@ function buildLanguageMenu(container, currentLangCode, onPick) {
         item.addEventListener('click', (e) => {
             e.stopPropagation();
             onPick(lang.code);
+            // Меню двух видов: у FAB-меню видимость управляется классом
+            // hidden, у dropdown в модалке — классом open. Закрываем по типу:
+            // dropdown'у hidden добавлять нельзя — .hidden { display: none
+            // !important } перебьёт .open и меню больше не откроется.
             container.classList.remove('open');
+            if (container.classList.contains('theme-menu')) {
+                container.classList.add('hidden');
+            }
         });
         container.appendChild(item);
     }
@@ -831,21 +838,17 @@ window.addEventListener('DOMContentLoaded', () => {
         // Показать/спрять мини-меню выбора темы.
         // stopPropagation: иначе клик дойдёт до document и тут же закроет меню
         e.stopPropagation();
+        closeAllPopovers(themeMenu);
         themeMenu.classList.toggle('hidden');
     });
 
-    // Клик мимо меню темы закрывает его (клик по самой кнопке не доходит
-    // до document из-за stopPropagation выше)
-    document.addEventListener('click', (e) => {
-        if (!themeMenu.contains(e.target)) themeMenu.classList.add('hidden');
-    });
-
-    // Селектор темы в модалке («Общие»): как dropdown поисковика,
+    // Селектор темы в модалке («Общие»): работает как dropdown поисковика,
     // открывается классом open (CSS display: none -> block)
     const themeGeneralButton = document.getElementById('theme-general-button');
     const themeGeneralList = document.getElementById('theme-general-list');
     themeGeneralButton?.addEventListener('click', (e) => {
         e.stopPropagation();
+        closeAllPopovers(themeGeneralList);
         themeGeneralList.classList.toggle('open');
     });
     themeGeneralList?.addEventListener('click', (e) => {
@@ -859,10 +862,6 @@ window.addEventListener('DOMContentLoaded', () => {
         applyTheme(mode);
         themeGeneralList.classList.remove('open');
     });
-    // Клик мимо селектора темы закрывает его
-    document.addEventListener('click', (e) => {
-        if (!themeGeneralList.contains(e.target)) themeGeneralList.classList.remove('open');
-    });
 
     // =============================================================================
     // Выбор языка интерфейса
@@ -872,6 +871,29 @@ window.addEventListener('DOMContentLoaded', () => {
     const languageMenu = document.getElementById('language-menu');
     const languageButton = document.getElementById('language-button');
     const languageList = document.getElementById('language-list');
+
+    /**
+     * Закрывает все всплывающие меню, кроме указанного (except).
+     *
+     * Зачем: кнопки-переключатели вызывают stopPropagation — клик по ним
+     * не доходит до document и не закрывает чужие меню. Без явного закрытия
+     * селекторы остаются открытыми и перекрывают друг друга.
+     *
+     * Меню двух видов, у каждого свой механизм видимости:
+     *   - FAB-меню (тема и язык на главном экране): скрыты классом hidden;
+     *   - dropdown-меню (селекторы в «Общих», поисковик): видны по классу open.
+     * Если dropdown'у добавить hidden, он навсегда потеряет видимость
+     * (display: none !important перебивает .open), поэтому механизмы
+     * не смешиваются.
+     */
+    function closeAllPopovers(except) {
+        for (const menu of [themeMenu, languageMenu]) {
+            if (menu && menu !== except) menu.classList.add('hidden');
+        }
+        for (const menu of [themeGeneralList, languageList, searchEngineList]) {
+            if (menu && menu !== except) menu.classList.remove('open');
+        }
+    }
 
     /**
      * Показывает выбранный язык на кнопках обоих переключателей
@@ -918,6 +940,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     languageToggle?.addEventListener('click', (e) => {
         e.stopPropagation();
+        closeAllPopovers(languageMenu);
         languageMenu.classList.toggle('hidden');
         // При каждом открытии обновить подсветку текущего языка
         if (!languageMenu.classList.contains('hidden')) {
@@ -928,7 +951,10 @@ window.addEventListener('DOMContentLoaded', () => {
     });
     languageButton?.addEventListener('click', (e) => {
         e.stopPropagation();
-        // dropdown-menu открывается классом open (display: none -> block)
+        closeAllPopovers(languageList);
+        // dropdown-menu открывается классом open (display: none -> block);
+        // hidden снят closeAllPopovers только у чужих меню — у своего его
+        // и не было
         languageList.classList.toggle('open');
         if (languageList.classList.contains('open')) {
             storageGet('lang', (result) => {
@@ -1142,6 +1168,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Открытие/закрытие выпадающего списка
     searchEngineDropdownBtn.addEventListener('click', (e) => {
         e.stopPropagation(); // чтобы клик не закрыл список тут же обработчиком document
+        closeAllPopovers(searchEngineList);
         searchEngineList.classList.toggle('open');
     });
 
