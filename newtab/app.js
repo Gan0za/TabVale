@@ -539,6 +539,10 @@ window.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('theme-toggle');
     const themeMenu = document.getElementById('theme-menu');
 
+    // Иконка кнопки меняется вместе с режимом: авто — половинка,
+    // светлая — солнце, тёмная — луна (см. index.html, data-mode)
+    const THEME_ICONS = { auto: '🌗', light: '☀️', dark: '🌙' };
+
     /**
      * Применяет тему к странице.
      * mode — 'auto' | 'light' | 'dark' (что выбрал пользователь).
@@ -555,6 +559,8 @@ window.addEventListener('DOMContentLoaded', () => {
         } else {
             delete document.documentElement.dataset.theme;
         }
+        // Иконка кнопки подсказывает текущий режим
+        if (themeToggle) themeToggle.textContent = THEME_ICONS[mode] || THEME_ICONS.auto;
         // Подсвечиваем активный пункт меню переключателя
         themeMenu?.querySelectorAll('button').forEach((b) => {
             b.classList.toggle('active', b.dataset.mode === mode);
@@ -836,13 +842,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // --- Экспорт: скачивание JSON-файла со всеми настройками ---
     exportSettingsJsonButton.addEventListener('click', () => {
-        const json = JSON.stringify(currentState, null, 2);
-        const blob = new Blob([json], { type: 'application/json' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'self_tabs_settings.json';
-        a.click();
-        URL.revokeObjectURL(a.href);
+        // Тема — тоже настройка: экспортируем текущий режим вместе с данными
+        chrome.storage.sync.get('theme', (result) => {
+            const json = JSON.stringify({ ...currentState, theme: result.theme || 'auto' }, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'self_tabs_settings.json';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        });
     });
 
     // --- Импорт: чтение JSON-файла и аккуратная проверка полей ---
@@ -860,7 +869,16 @@ window.addEventListener('DOMContentLoaded', () => {
             if (Array.isArray(payload.backgrounds)) newState.backgrounds = payload.backgrounds;
             if (typeof payload.currentBackgroundIndex === 'number') newState.currentBackgroundIndex = payload.currentBackgroundIndex;
             if (typeof payload.currentSearchEngineIndex === 'number') newState.currentSearchEngineIndex = payload.currentSearchEngineIndex;
+            // Режим темы: импортируем только корректные значения,
+            // а старые файлы без поля theme не трогаем
+            const themeModes = ['auto', 'light', 'dark'];
+            let importedTheme = null;
+            if (themeModes.includes(payload.theme)) importedTheme = payload.theme;
             saveState(newState);
+            if (importedTheme) {
+                chrome.storage.sync.set({ theme: importedTheme });
+                applyTheme(importedTheme);
+            }
             currentState = newState;
             refreshUI();
             alert('Настройки импортированы');

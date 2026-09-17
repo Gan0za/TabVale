@@ -36,6 +36,18 @@ assert.ok(js.includes("storage.sync.get('theme'"), 'app.js читает режи
 assert.ok(js.includes("storage.sync.set({ theme: mode })"), 'app.js сохраняет выбранный режим');
 assert.ok(js.includes("addEventListener('change'"), 'app.js реагирует на смену темы ОС');
 
+// --- Иконка кнопки меняется вместе с режимом ---
+assert.ok(js.includes('THEME_ICONS'), 'app.js: таблица иконок темы');
+for (const [mode, icon] of [['auto', '🌗'], ['light', '☀️'], ['dark', '🌙']]) {
+    assert.ok(js.includes(`${mode}: '${icon}'`), `иконка для ${mode}: ${icon}`);
+}
+assert.ok(js.includes('themeToggle.textContent'), 'app.js обновляет иконку кнопки');
+
+// --- Тема участвует в импорте/экспорте ---
+assert.ok(js.includes('...currentState, theme:'), 'экспорт включает текущий режим темы');
+assert.ok(js.includes("themeModes.includes(payload.theme)"),
+    'импорт принимает только корректные режимы темы');
+
 // --- CSS: тёмная тема вешается на data-theme, а не только на media query ---
 assert.ok(css.includes(":root[data-theme='dark'"),
     'тёмные переменные включаются через data-theme (ручное переключение)');
@@ -50,5 +62,10 @@ assert.ok(css.includes('::-webkit-scrollbar'), 'стили скроллбара 
 assert.ok(!css.includes('width: 220px'), 'нет жёсткой ширины меню');
 assert.ok(css.includes('min-width: 180px') && css.includes('max-width: 280px'),
     'меню ограничено минимальной и максимальной шириной');
+
+// --- Модалка настроек увеличена и не обрезается на низких экранах ---
+assert.ok(css.includes('width: min(92vw, 640px)'), 'модалка шире прежних 520px');
+assert.ok(css.includes('max-height: 90vh') && css.includes('overflow-y: auto'),
+    'модалка прокручивается на низких экранах');
 
 console.log('theme.test.mjs: все проверки пройдены');
