@@ -33,7 +33,7 @@ const dropBlock = js.match(/drop'\s*,\s*\(e\) => \{[\s\S]*?\}\);/);
 assert.ok(dropBlock && dropBlock[0].includes('saveState'), 'drop сохраняет порядок');
 
 // --- Слот вставки: счёт центров, пройденных курсором ---
-// Эмуляция getDropIndex: tiles — центры плиток по X (как после render)
+// Эмуляция getDropIndex для ОДНОГО ряда: tiles — центры плиток по X
 function dropSlot(centers, mouseX) {
     let slot = 0;
     for (const center of centers) {
@@ -42,14 +42,43 @@ function dropSlot(centers, mouseX) {
     return slot;
 }
 
-// Список A B C D; плитки по 130px с шагом 140 (130 + 12 зазор)
-const centers = [65, 205, 345, 485];
-// Курсор в самом левом зазоре (между 0 и первой плиткой) — слот 0
-assert.equal(dropSlot(centers, 10), 0, 'курсор до всех центров — слот 0');
-// В зазоре между A и B: пройден только центр A — слот 1 (мёртвых зон нет)
-assert.equal(dropSlot(centers, 140), 1, 'зазор между плитками работает');
-// Правее всех центров — конец списка
-assert.equal(dropSlot(centers, 600), 4, 'курсор после всех центров — конец списка');
+// Многострочная сетка: getDropIndex группирует плитки в ряды по вертикали
+// (близкий top — один ряд), берёт ряд, ближайший к курсору, и считает
+// слот как "плитки рядов выше целиком + пройденные центры ряда курсора"
+function dropSlotGrid(rows, mouseX, mouseY) {
+    // rows: [{top, height, centers}] — геометрия рядов
+    let nearest = null;
+    let nearestDist = Infinity;
+    for (const row of rows) {
+        const dist = Math.abs(row.top + row.height / 2 - mouseY);
+        if (dist < nearestDist) {
+            nearestDist = dist;
+            nearest = row;
+        }
+    }
+    let slot = 0;
+    for (const row of rows) {
+        if (row === nearest) return slot + dropSlot(row.centers, mouseX);
+        slot += row.centers.length;
+    }
+    return slot;
+}
+
+// Два ряда по две плитки (как на экране 130px плитки, ряды по 140px)
+const grid = [
+    { top: 0, height: 120, centers: [65, 205] },   // A B
+    { top: 140, height: 120, centers: [65, 205] }, // C D
+];
+
+// Курсор на нижнем ряду НЕ проходит центры верхнего: слот = 2 (ряд выше) + 0..2
+assert.equal(dropSlotGrid(grid, 40, 200), 2, 'нижний ряд, левая половина C: слот 2 (прыжка через 2-3 нет)');
+assert.equal(dropSlotGrid(grid, 70, 200), 3, 'нижний ряд, правая половина C: слот 3');
+assert.equal(dropSlotGrid(grid, 40, 60), 0, 'верхний ряд, левая половина A: слот 0');
+assert.equal(dropSlotGrid(grid, 70, 60), 1, 'верхний ряд, правая половина A: слот 1');
+
+// Зазоры и пустое место ряда работают без мёртвых зон
+assert.equal(dropSlotGrid(grid, 140, 200), 3, 'зазор между C и D — слот 3 (после C)');
+assert.equal(dropSlotGrid(grid, 600, 200), 4, 'пустое место справа от нижнего ряда — конец списка');
 
 // --- Перестановка: слот -> индекс вставки -> порядок ---
 // dragover-обработчик: слоты "до"/"после" draggedIndex — no-op,
@@ -62,6 +91,9 @@ function applyDragOver(list, draggedIndex, mouseX, centers) {
     list.splice(insertIndex, 0, moved);
     return true;
 }
+
+// Однострочная сетка для трассировки переноса (те же 130px плитки)
+const centers = [65, 205, 345, 485];
 
 // A B C D, тащим D (draggedIndex = 3):
 let list = ['A', 'B', 'C', 'D'];

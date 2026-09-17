@@ -1160,17 +1160,52 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Слот вставки по координатам курсора: считаем, сколько центров
-     * плиток курсор уже прошёл слева направо. Курсор левее всех центров —
-     * слот 0, правее всех — конец списка. Зазоры между плитками и пустое
-     * место в конце ряда обрабатываются той же формулой — мёртвых зон нет.
+     * Слот вставки по координатам курсора. Сетка закладок многострочная,
+     * поэтому слот считается в два шага:
+     *   1. Плитки группируются в ряды по вертикальной позиции (близкий
+     *      top — один ряд). Выбирается ряд, ближайший к курсору.
+     *   2. Слот = число плиток в рядах выше + число центров, пройденных
+     *      курсором внутри этого ряда (слева направо).
+     * Так курсор на нижнем ряду не "проходит" центры верхнего — иначе
+     * слот прыгал бы через 2-3 позиции и элемент улетал вверх.
      */
-    function getDropIndex(mouseX) {
-        let slot = 0;
-        bookmarksContainer.querySelectorAll('.bookmark').forEach((tile) => {
-            const rect = tile.getBoundingClientRect();
-            if (mouseX > rect.left + rect.width / 2) slot++;
+    function getDropIndex(mouseX, mouseY) {
+        const tiles = [...bookmarksContainer.querySelectorAll('.bookmark')];
+        if (!tiles.length) return 0;
+
+        // Группировка в ряды: плитки с top в пределах 10px — один ряд
+        const rows = [];
+        tiles.forEach((tile) => {
+            const top = tile.getBoundingClientRect().top;
+            const row = rows.find((r) => Math.abs(r.top - top) <= 10);
+            if (row) row.tiles.push(tile);
+            else rows.push({ top, tiles: [tile] });
         });
+
+        // Ряд, ближайший к курсору по вертикали
+        let nearest = rows[0];
+        let nearestDist = Infinity;
+        rows.forEach((row) => {
+            const rect = row.tiles[0].getBoundingClientRect();
+            const dist = Math.abs(rect.top + rect.height / 2 - mouseY);
+            if (dist < nearestDist) {
+                nearestDist = dist;
+                nearest = row;
+            }
+        });
+
+        // Слот: плитки до ряда курсора целиком + пройденные центры ряда
+        let slot = 0;
+        for (const row of rows) {
+            if (row === nearest) {
+                row.tiles.forEach((tile) => {
+                    const rect = tile.getBoundingClientRect();
+                    if (mouseX > rect.left + rect.width / 2) slot++;
+                });
+                return slot;
+            }
+            slot += row.tiles.length;
+        }
         return slot;
     }
 
@@ -1201,7 +1236,7 @@ window.addEventListener('DOMContentLoaded', () => {
         if (draggedIndex === null) return;
         e.preventDefault(); // без этого браузер не даст сделать drop
 
-        const slot = getDropIndex(e.clientX);
+        const slot = getDropIndex(e.clientX, e.clientY);
         // Слот "до" или "после" перетаскиваемой плитки — она уже на месте
         if (slot === draggedIndex || slot === draggedIndex + 1) return;
 
