@@ -24,6 +24,7 @@
   "generalSection": { "message": "Общие" },
   "languageLabel": { "message": "Язык" },
   "langAuto": { "message": "Авто (язык браузера)" },
+  "themeLabel": { "message": "Тема" },
 
   "addButton": { "message": "＋ Добавить" },
   "saveButton": { "message": "Сохранить" },

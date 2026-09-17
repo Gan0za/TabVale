@@ -24,6 +24,7 @@
   "generalSection": { "message": "General" },
   "languageLabel": { "message": "Language" },
   "langAuto": { "message": "Auto (browser language)" },
+  "themeLabel": { "message": "Theme" },
 
   "addButton": { "message": "＋ Add" },
   "saveButton": { "message": "Save" },

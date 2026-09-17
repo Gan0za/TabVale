@@ -849,29 +849,17 @@ h1, h2 {
     flex-wrap: wrap;
 }
 
-/* Мини-переключатель темы в «Общих»: три кнопки в ряд (как в FAB-меню,
-   но горизонтально и без position: fixed, который сломал бы поток) */
-.theme-switcher {
-    display: flex;
-    gap: 4px;
+/* Флаг в селекторе языка и на кнопке: небольшая картинка с рамкой */
+.flag-icon,
+.dropdown-button img {
+    width: 20px;
+    height: 14px;
+    object-fit: cover;
+    border-radius: 2px;
 }
 
-.theme-switcher button {
-    padding: 6px 14px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text);
-    font-size: 13px;
-    border-radius: var(--radius-small);
-    cursor: pointer;
+/* Иконка режима темы внутри кнопки селектора (🌗 до текста) */
+#theme-general-button .theme-icon {
+    margin-right: 6px;
 }
 
-.theme-switcher button:hover {
-    background: var(--glass);
-}
-
-.theme-switcher button.active {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-}
