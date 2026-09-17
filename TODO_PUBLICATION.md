@@ -18,6 +18,14 @@
     bookmarks/backgrounds/searchEngines, счётчик пропущенных в сводке импорта,
     тест import.test.mjs (javascript:/data:/file: отбрасываются).
 
+- ✅ **1.2 Обработка `chrome.runtime.lastError`** (3ed8659)
+  - Обёртки storageGet/storageSet в app.js; все 7 вызовов storage
+    переведены на них; ошибка записи — warning в консоль без падения UI.
+
+- ✅ **1.3 Обоснование `clipboardRead` для анкеты CWS** (CWS_REVIEW_NOTES.md)
+  - Готовые тексты для формы ревью (EN): короткая и полная версии,
+    single purpose, обоснование отсутствия remote code.
+
 - ⬜ **1.2 Обработка `chrome.runtime.lastError`**
   - Файлы: `newtab/app.js` (строки 54, 62 и др.), `background.js`
   - Все колбэки `chrome.storage.sync` без проверки lastError →
@@ -55,7 +63,7 @@
 | Шаг | Статус |
 |---|---|
 | Анализ готовности | ✅ |
-| Блок 1: безопасность | 🔧 (1.1 ✅, 1.2–1.3 ⬜) |
+| Блок 1: безопасность | ✅ |
 | Блок 2: манифест | ✅ (homepage_url отложен до создания репозитория) |
 | Блок 3: релиз-инфраструктура | ✅ (3.4 скриншоты ⬜) |
 | Блок 4: GitHub/листинг | ⬜ |
