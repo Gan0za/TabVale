@@ -58,20 +58,28 @@ function isSafeWebUrl(value) {
 /**
  * Проверяет один элемент импорта. Возвращает true, если элемент можно
  * безопасно перенести в хранилище, false — если отбросить.
+ *
+ * Типы различаются структурой: у поисковиков имя хранится в поле name
+ * (а не title), у фонов пустой url допустим — это фон "По умолчанию".
  */
-function isValidImportedItem(item, { requirePlaceholder } = {}) {
+function isValidImportedItem(item, { requirePlaceholder = false, allowEmptyUrl = false } = {}) {
     if (!item || typeof item !== 'object') return false;
 
-    // URL: обязателен и только http/https
-    if (!isSafeWebUrl(item.url)) return false;
+    // URL: http/https; для фонов разрешён пустой (фон "По умолчанию")
+    if (item.url === '' || item.url === undefined) {
+        if (!allowEmptyUrl) return false;
+    } else if (!isSafeWebUrl(item.url)) {
+        return false;
+    }
 
     // У поисковых систем URL должен содержать %s — место для запроса
     if (requirePlaceholder && !String(item.url).includes('%s')) return false;
 
-    // Название: непустая строка
-    if (typeof item.title !== 'string' || !item.title.trim()) return false;
+    // Название: непустая строка (name у поисковиков, title у остальных)
+    const title = requirePlaceholder ? item.name : item.title;
+    if (typeof title !== 'string' || !title.trim()) return false;
 
-    // Иконка, если указана, тоже должна быть безопасным адресом
+    // Иконка/логотип, если указан, тоже должен быть безопасным адресом
     const iconValue = item.icon || item.logo || '';
     if (iconValue && !isSafeWebUrl(iconValue)) return false;
 
@@ -83,11 +91,11 @@ function isValidImportedItem(item, { requirePlaceholder } = {}) {
  * элементы и число отброшенных. Битый элемент не отменяет импорт
  * целиком — просто пропускается.
  */
-function sanitizeList(raw, { requirePlaceholder = false } = {}) {
+function sanitizeList(raw, { requirePlaceholder = false, allowEmptyUrl = false } = {}) {
     if (!Array.isArray(raw)) return { items: [], skipped: 0 };
     let skipped = 0;
     const items = raw.filter((item) => {
-        if (isValidImportedItem(item, { requirePlaceholder })) return true;
+        if (isValidImportedItem(item, { requirePlaceholder, allowEmptyUrl })) return true;
         skipped++;
         return false;
     });
@@ -921,7 +929,7 @@ window.addEventListener('DOMContentLoaded', () => {
             // небезопасными адресами (javascript: и т.п.) и битыми полями
             // отбрасываются, остальное импортируется
             const bookmarks = sanitizeList(payload.bookmarks);
-            const backgrounds = sanitizeList(payload.backgrounds);
+            const backgrounds = sanitizeList(payload.backgrounds, { allowEmptyUrl: true });
             const searchEngines = sanitizeList(payload.searchEngines, { requirePlaceholder: true });
 
             if (payload.bookmarks !== undefined) newState.bookmarks = bookmarks.items;

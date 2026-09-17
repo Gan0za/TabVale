@@ -92,9 +92,10 @@ assert.equal(badTitles.items.length, 1, 'только элемент с корр
 assert.equal(badTitles.skipped, 4, 'счётчик отброшенных: 4');
 
 // --- 4. Поисковик без %s отбрасывается ---
+// Имя движка хранится в поле name (см. реальный файл настроек)
 const engines = sanitizeList([
-    { title: 'Google', url: 'https://www.google.com/search?q=%s' },
-    { title: 'NoPlaceholder', url: 'https://example.com/search' },
+    { name: 'Google', url: 'https://www.google.com/search?q=%s' },
+    { name: 'NoPlaceholder', url: 'https://example.com/search' },
 ], { requirePlaceholder: true });
 assert.equal(engines.items.length, 1, 'остался только движок с %s');
 assert.equal(engines.skipped, 1, 'движок без %s отброшен');
@@ -116,5 +117,31 @@ assert.equal(sanitizeList('строка').items.length, 0, 'строка — п�
 const withJunk = sanitizeList([null, 'текст', 42, { title: 'OK', url: 'https://ok.com' }]);
 assert.equal(withJunk.items.length, 1, 'мусорные элементы отброшены');
 assert.equal(withJunk.skipped, 3, 'счётчик: 3 элемента пропущено');
+
+// --- 7. Поисковые системы: имя в поле name, а не title ---
+// Регрессия: валидатор требовал title у всех типов, из-за чего при
+// импорте реального файла пропали все поисковые системы
+const enginesFix = sanitizeList([
+    { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=%s', logo: 'https://icons.duckduckgo.com/ip3/duckduckgo.com.ico' },
+    { name: 'Корп сайт', url: 'http://my.svo.aero/search/?q=%s', logo: 'https://icons.duckduckgo.com/ip3/my.svo.aero.ico' },
+    { title: 'Битый', url: 'https://example.com/search' }, // без %s и с name вместо title — отброс
+], { requirePlaceholder: true });
+assert.equal(enginesFix.items.length, 2, 'оба движка с name прошли санитизацию');
+assert.equal(enginesFix.skipped, 1, 'движок без %s отброшен');
+
+// --- 8. Фон с пустым url допустим (фон "По умолчанию") ---
+const bgFix = sanitizeList([
+    { title: 'По умолчанию', url: '' },
+    { title: 'Картинка', url: 'https://example.com/bg.jpg' },
+    { title: 'Плохой', url: 'javascript:alert(1)' },
+], { allowEmptyUrl: true });
+assert.equal(bgFix.items.length, 2, 'пустой url фона допустим, javascript: отброшен');
+
+// --- 9.javascript: в списке закладок по-прежнему отбрасывается ---
+const bookmarkGuard = sanitizeList([
+    { title: 'тест', url: 'javascript:alert("test")' },
+    { title: 'OK', url: 'https://ok.com' },
+]);
+assert.equal(bookmarkGuard.items.length, 1, 'javascript:-закладка отброшена');
 
 console.log('import.test.mjs: все проверки пройдены');
