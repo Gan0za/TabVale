@@ -44,13 +44,18 @@ const FALLBACK_ICON = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/s
 // читаем _locales/<код>/messages.json и подставляем строки заново.
 // =============================================================================
 
-// Справочник языков: код = имя папки в _locales. Флаг показывает,
-// на каком языке говорит пользователь, а не чьё это государство.
+// Справочник языков: код = имя папки в _locales, flag = SVG-картинка в
+// newtab/flags/. Флаги — картинки, а не эмодзи: Windows/Chrome не рисуют
+// эмодзи-флаги (вместо флага видны буквы RU/GB).
 const LANGUAGES = [
-    { code: 'auto', flag: '🌐', name: 'Auto' },
-    { code: 'ru', flag: '🇷🇺', name: 'Русский' },
-    { code: 'en', flag: '🇬🇧', name: 'English' },
+    { code: 'auto', flag: null, name: 'Auto' },
+    { code: 'ru', flag: 'newtab/flags/ru.svg', name: 'Русский' },
+    { code: 'en', flag: 'newtab/flags/gb.svg', name: 'English' },
 ];
+
+// Текущий режим темы — нужен, чтобы после смены языка обновить подпись
+// кнопки селектора темы (она содержит переведённое слово)
+let currentThemeMode = 'auto';
 
 // Кэш загруженных переводов текущего языка (заполняет applyLocale)
 let currentMessages = {};
@@ -68,6 +73,16 @@ function t(key, vars) {
         }
     }
     return text;
+}
+
+/**
+ * Подпись кнопки селектора темы: иконка + переведённое название режима.
+ * Используется и в applyTheme, и в applyLocale (после смены словаря).
+ */
+function themeLabel(mode) {
+    const icons = { auto: '🌗', light: '☀️', dark: '🌙' };
+    const keys = { auto: 'themeAuto', light: 'themeLight', dark: 'themeDark' };
+    return `${icons[mode] || icons.auto} ${t(keys[mode])}`;
 }
 
 /**
@@ -111,6 +126,12 @@ async function applyLocale(langSetting) {
     });
     document.title = t('pageTitle');
 
+    // Подпись кнопки темы содержит переведённое слово — обновляем
+    const selectedThemeName = document.getElementById('selected-theme-name');
+    if (selectedThemeName) {
+        selectedThemeName.textContent = themeLabel(currentThemeMode);
+    }
+
     // Динамические списки перерисовываем, если данные уже загружены
     if (typeof currentState === 'object' && currentState?.searchEngines) {
         refreshUI();
@@ -119,7 +140,7 @@ async function applyLocale(langSetting) {
 }
 
 /**
- * Строит выпадающий список языков (🌐 Авто / 🇷🇺 Русский / 🇬🇧 English).
+ * Строит выпадающий список языков: пункт с флагом-картинкой и названием.
  * Пункты собираются из справочника LANGUAGES — добавили папку в
  * _locales и строку здесь — язык появился в списке.
  */
@@ -130,12 +151,27 @@ function buildLanguageMenu(container, currentLangCode, onPick) {
         const item = document.createElement('button');
         item.className = `dropdown-item${lang.code === currentLangCode ? ' selected' : ''}`;
         item.dataset.lang = lang.code;
-        // Флаг + название: текст собирается текстом, не innerHTML
-        item.textContent = `${lang.flag} ${lang.name}`;
+
+        // Флаг — SVG-картинка (эмодзи-флаги Windows не рисует).
+        // У 'auto' флага нет — оставляем пустой отступ, названия выравнены
+        const flag = document.createElement('img');
+        flag.className = 'flag-icon';
+        if (lang.flag) {
+            setImageSource(flag, chrome.runtime.getURL(lang.flag), '');
+        } else {
+            setImageSource(flag, '', '');
+            flag.style.visibility = 'hidden';
+        }
+        item.appendChild(flag);
+
+        const label = document.createElement('span');
+        label.textContent = lang.name;
+        item.appendChild(label);
+
         item.addEventListener('click', (e) => {
             e.stopPropagation();
             onPick(lang.code);
-            container.classList.add('hidden');
+            container.classList.remove('open');
         });
         container.appendChild(item);
     }
@@ -770,6 +806,13 @@ window.addEventListener('DOMContentLoaded', () => {
         themeMenu?.querySelectorAll('button').forEach((b) => {
             b.classList.toggle('active', b.dataset.mode === mode);
         });
+        // Подпись и подсветка в селекторе темы («Общие» настройки)
+        currentThemeMode = mode;
+        const selectedThemeName = document.getElementById('selected-theme-name');
+        if (selectedThemeName) selectedThemeName.textContent = themeLabel(mode);
+        document.querySelectorAll('#theme-general-list .dropdown-item').forEach((b) => {
+            b.classList.toggle('selected', b.dataset.mode === mode);
+        });
     }
 
     // Реагируем на переключение темы в системе, пока активен режим "auto"
@@ -780,7 +823,10 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     // Загружаем сохранённый режим и включаем переключатель
-    storageGet('theme', (result) => applyTheme(result.theme || 'auto'));
+    storageGet('theme', (result) => {
+        currentThemeMode = result.theme || 'auto';
+        applyTheme(currentThemeMode);
+    });
     themeToggle?.addEventListener('click', (e) => {
         // Показать/спрять мини-меню выбора темы.
         // stopPropagation: иначе клик дойдёт до document и тут же закроет меню
@@ -794,17 +840,28 @@ window.addEventListener('DOMContentLoaded', () => {
         if (!themeMenu.contains(e.target)) themeMenu.classList.add('hidden');
     });
 
-    // Дубль переключателя темы в модалке (раздел «Общие»):
-    // оба меню работают с одними data-mode, поэтому обработчик один
-    const themeMenuGeneral = document.getElementById('theme-menu-general');
-    [themeMenu, themeMenuGeneral].forEach((menu) => {
-        menu?.addEventListener('click', (e) => {
-            const mode = e.target.dataset.mode;
-            if (!mode) return;
-            storageSet({ theme: mode });
-            applyTheme(mode);
-            menu.classList.add('hidden');
-        });
+    // Селектор темы в модалке («Общие»): как dropdown поисковика,
+    // открывается классом open (CSS display: none -> block)
+    const themeGeneralButton = document.getElementById('theme-general-button');
+    const themeGeneralList = document.getElementById('theme-general-list');
+    themeGeneralButton?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        themeGeneralList.classList.toggle('open');
+    });
+    themeGeneralList?.addEventListener('click', (e) => {
+        // Клик по пункту или по его иконке: ищем кнопку пункта
+        const item = e.target.closest('.dropdown-item');
+        if (!item) return;
+        const mode = item.dataset.mode;
+        if (!mode) return;
+        currentThemeMode = mode;
+        storageSet({ theme: mode });
+        applyTheme(mode);
+        themeGeneralList.classList.remove('open');
+    });
+    // Клик мимо селектора темы закрывает его
+    document.addEventListener('click', (e) => {
+        if (!themeGeneralList.contains(e.target)) themeGeneralList.classList.remove('open');
     });
 
     // =============================================================================
@@ -823,14 +880,23 @@ window.addEventListener('DOMContentLoaded', () => {
     function updateLanguageButton(langSetting) {
         const lang = resolveLocale(langSetting);
         const info = LANGUAGES.find((l) => l.code === lang) || LANGUAGES[0];
-        // Для 'auto' подписываем, что это язык браузера
-        const label = langSetting === 'auto'
-            ? `${info.flag} ${info.name} (${t('langAuto')})`
-            : `${info.flag} ${info.name}`;
-        if (document.getElementById('selected-language-name')) {
-            document.getElementById('selected-language-name').textContent = label;
+        const nameEl = document.getElementById('selected-language-name');
+        const iconEl = document.getElementById('selected-language-icon');
+        if (nameEl) {
+            // Для 'auto' подписываем, что это язык браузера
+            nameEl.textContent = langSetting === 'auto'
+                ? `${info.name} (${t('langAuto')})`
+                : info.name;
         }
-        if (languageButton) languageButton.title = label;
+        if (iconEl) {
+            if (info.flag) {
+                iconEl.classList.remove('hidden');
+                setImageSource(iconEl, chrome.runtime.getURL(info.flag), '');
+            } else {
+                iconEl.classList.add('hidden');
+            }
+        }
+        if (languageButton) languageButton.title = info.name;
     }
 
     /**
@@ -862,8 +928,9 @@ window.addEventListener('DOMContentLoaded', () => {
     });
     languageButton?.addEventListener('click', (e) => {
         e.stopPropagation();
-        languageList.classList.toggle('hidden');
-        if (!languageList.classList.contains('hidden')) {
+        // dropdown-menu открывается классом open (display: none -> block)
+        languageList.classList.toggle('open');
+        if (languageList.classList.contains('open')) {
             storageGet('lang', (result) => {
                 buildLanguageMenu(languageList, resolveLocale(result.lang || 'auto'), changeLanguage);
             });
@@ -872,7 +939,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Клик мимо меню языка закрывает его
     document.addEventListener('click', (e) => {
         if (!languageMenu.contains(e.target)) languageMenu.classList.add('hidden');
-        if (!languageList.contains(e.target)) languageList.classList.add('hidden');
+        if (!languageList.contains(e.target)) languageList.classList.remove('open');
     });
 
     // =============================================================================
