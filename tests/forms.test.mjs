@@ -40,11 +40,13 @@ for (const type of formTypes) {
     assert.ok(formBlock, `${type}: блок формы найден`);
 }
 
-// Формы скрыты по умолчанию (класс hidden), кнопки добавления — нет
+// Формы свернуты по умолчанию: класс add-form без "open" (grid 0fr).
+// Разметка не содержит hidden — сворачивание управляется классом open
 for (const type of formTypes) {
     const formTag = html.match(new RegExp(`<div id="${type}-form" class="([^"]*)"`));
     assert.ok(formTag, `${type}: у формы есть class`);
-    assert.ok(formTag[1].includes('hidden'), `${type}: форма изначально скрыта`);
+    assert.ok(formTag[1].includes('add-form'), `${type}: у формы класс add-form`);
+    assert.ok(!formTag[1].includes('open'), `${type}: форма изначально свернута`);
 }
 
 // app.js ссылается на те же ID (в объекте addForms и обработчиках отмены)

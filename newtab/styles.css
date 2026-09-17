@@ -518,9 +518,11 @@ h1, h2 {
 
 .settings-content {
     /* Занимает всё свободное место модалки: высота окна не меняется
-       ни при переключении вкладок, ни при открытии форм */
+       ни при переключении вкладок, ни при открытии форм.
+       min-width: 0 не даёт содержому распирать панель вширь */
     flex: 1;
     min-height: 0; /* разрешает внутренним спискам прокручиваться */
+    min-width: 0;
     display: flex;
     margin-bottom: 16px;
 }
@@ -533,6 +535,7 @@ h1, h2 {
     display: flex;
     flex: 1;
     min-height: 0;
+    min-width: 0;
     flex-direction: column;
 }
 
@@ -677,35 +680,50 @@ h1, h2 {
 }
 
 /* =============================================================================
-   Форма добавления — раскрывается по кнопке "+ Добавить"
+   Форма добавления — раскрывается по кнопке "+ Добавить".
+
+   Схема сворачивания: внешний блок — grid-строка, которая меняется
+   от 0fr (свернута) до 1fr (раскрыта). Такое переключение плавно
+   меняет высоту и ничего не сдвигает по горизонтали. Вся визуальная
+   часть (рамка, фон, отступы) живет на внутреннем блоке, чтобы в
+   свернутом состоянии от формы не оставалось следов.
    ============================================================================= */
 
 .add-form {
-    margin-top: 12px;
-    padding: 12px;
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    overflow: hidden; /* прячет содержимое, пока форма свернута */
+    transition: grid-template-rows .2s ease, opacity .18s ease;
+    flex-shrink: 0;   /* не сжимается — на сжатие отвечает список */
+}
+
+.add-form.open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+}
+
+.add-form-inner {
+    min-height: 0;    /* позволяет строке 1fr сжаться до нуля */
+    overflow: hidden;
     border: 1px solid var(--border);
     border-radius: var(--radius-small);
     background: var(--glass);
-    /* Плавное появление снизу вверх при каждом открытии */
-    animation: form-in .18s ease;
-}
-
-@keyframes form-in {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    padding: 12px;
 }
 
 .form-actions {
     display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;  /* на узком экране кнопки переносятся, а не вылезают */
     gap: 8px;
     margin-top: 10px;
+}
+
+/* Кнопка "＋ Добавить" не сжимается при открытии формы */
+.settings-pane > .btn {
+    flex-shrink: 0;
+    align-self: flex-start;
 }
 
 /* =============================================================================
