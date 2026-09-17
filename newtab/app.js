@@ -41,6 +41,60 @@ const FALLBACK_ICON = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/s
 // =============================================================================
 
 /**
+ * Проверяет, что строка — безопасный веб-адрес (http или https).
+ * Запрещены javascript:, data:, file: и всё, что не парсится как URL:
+ * данные могут прийти из импортированного чужого файла, и адрес,
+ * который браузер выполнит как код, не должен попадать в хранилище.
+ */
+function isSafeWebUrl(value) {
+    try {
+        const parsed = new URL(String(value));
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch {
+        return false;
+    }
+}
+
+/**
+ * Проверяет один элемент импорта. Возвращает true, если элемент можно
+ * безопасно перенести в хранилище, false — если отбросить.
+ */
+function isValidImportedItem(item, { requirePlaceholder } = {}) {
+    if (!item || typeof item !== 'object') return false;
+
+    // URL: обязателен и только http/https
+    if (!isSafeWebUrl(item.url)) return false;
+
+    // У поисковых систем URL должен содержать %s — место для запроса
+    if (requirePlaceholder && !String(item.url).includes('%s')) return false;
+
+    // Название: непустая строка
+    if (typeof item.title !== 'string' || !item.title.trim()) return false;
+
+    // Иконка, если указана, тоже должна быть безопасным адресом
+    const iconValue = item.icon || item.logo || '';
+    if (iconValue && !isSafeWebUrl(iconValue)) return false;
+
+    return true;
+}
+
+/**
+ * Санитизация импортированного списка: возвращает только корректные
+ * элементы и число отброшенных. Битый элемент не отменяет импорт
+ * целиком — просто пропускается.
+ */
+function sanitizeList(raw, { requirePlaceholder = false } = {}) {
+    if (!Array.isArray(raw)) return { items: [], skipped: 0 };
+    let skipped = 0;
+    const items = raw.filter((item) => {
+        if (isValidImportedItem(item, { requirePlaceholder })) return true;
+        skipped++;
+        return false;
+    });
+    return { items, skipped };
+}
+
+/**
  * Сохраняет переданные поля в chrome.storage.sync.
  * Пример: saveState({ bookmarks: [...] }) — обновить только закладки.
  */
@@ -863,11 +917,16 @@ window.addEventListener('DOMContentLoaded', () => {
         try {
             const payload = JSON.parse(await file.text());
             const newState = { ...currentState };
-            // Каждое поле копируем, только если оно подходящего типа:
-            // испорченный файл не должен сломать настройки целиком
-            if (Array.isArray(payload.searchEngines)) newState.searchEngines = payload.searchEngines;
-            if (Array.isArray(payload.bookmarks)) newState.bookmarks = payload.bookmarks;
-            if (Array.isArray(payload.backgrounds)) newState.backgrounds = payload.backgrounds;
+            // Каждый список прогоняем через санитизацию: элементы с
+            // небезопасными адресами (javascript: и т.п.) и битыми полями
+            // отбрасываются, остальное импортируется
+            const bookmarks = sanitizeList(payload.bookmarks);
+            const backgrounds = sanitizeList(payload.backgrounds);
+            const searchEngines = sanitizeList(payload.searchEngines, { requirePlaceholder: true });
+
+            if (payload.bookmarks !== undefined) newState.bookmarks = bookmarks.items;
+            if (payload.backgrounds !== undefined) newState.backgrounds = backgrounds.items;
+            if (payload.searchEngines !== undefined) newState.searchEngines = searchEngines.items;
             if (typeof payload.currentBackgroundIndex === 'number') newState.currentBackgroundIndex = payload.currentBackgroundIndex;
             if (typeof payload.currentSearchEngineIndex === 'number') newState.currentSearchEngineIndex = payload.currentSearchEngineIndex;
             // Режим темы: импортируем только корректные значения,
@@ -882,7 +941,12 @@ window.addEventListener('DOMContentLoaded', () => {
             }
             currentState = newState;
             refreshUI();
-            alert('Настройки импортированы');
+            // Сообщаем не только об успехе, но и о пропущенных элементах:
+            // молчаливое отбрасывание выглядело бы как потеря данных
+            const totalSkipped = bookmarks.skipped + backgrounds.skipped + searchEngines.skipped;
+            alert(totalSkipped
+                ? `Настройки импортированы. Пропущено некорректных элементов: ${totalSkipped}`
+                : 'Настройки импортированы');
         } catch (err) {
             alert('Ошибка импорта: ' + err.message);
         } finally {
