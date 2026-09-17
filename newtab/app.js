@@ -1122,8 +1122,9 @@ window.addEventListener('DOMContentLoaded', () => {
         renderBookmarks(bookmarksContainer, currentState.bookmarks);
 
         bookmarksContainer.querySelectorAll('.bookmark').forEach((el) => {
-            // Перетаскиваемая плитка приглушена на новой позиции тоже
-            el.classList.toggle('dragging', Number(el.dataset.index) === draggedIndex);
+            const isDragged = Number(el.dataset.index) === draggedIndex;
+            // Перетаскиваемая плитка приглушена и на новой позиции тоже
+            el.classList.toggle('dragging', isDragged);
 
             const prev = before.get(el.dataset.url);
             if (!prev) return; // новая плитка — анимировать не откуда
@@ -1132,11 +1133,18 @@ window.addEventListener('DOMContentLoaded', () => {
             const dy = prev.top - now.top;
             if (!dx && !dy) return;
 
+            // Перетаскиваемая плитка едет с сохранением поворота:
+            // если задать ей только сдвиг, при отпускании стилей поворот
+            // из класса .dragging "моргнёт" — выглядит как дёргание
+            const rotate = isDragged ? ' rotate(5deg)' : '';
+
             el.style.transition = 'none';
-            el.style.transform = `translate(${dx}px, ${dy}px)`;
+            el.style.transform = `translate(${dx}px, ${dy}px)` + rotate;
             el.getBoundingClientRect(); // форсируем reflow, иначе браузер слепит кадры
             el.style.transition = '';
-            el.style.transform = '';
+            // В итоге перетаскиваемая остаётся повёрнутой (как в .dragging),
+            // соседи — без сдвига
+            el.style.transform = isDragged ? 'rotate(5deg)' : '';
         });
     }
 
@@ -1149,7 +1157,13 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     bookmarksContainer.addEventListener('dragend', (e) => {
-        e.target.closest('.bookmark')?.classList.remove('dragging');
+        // После перерисовок исходная плитка могла быть заменена новой,
+        // поэтому класс и поворот снимаем со всех плиток контейнера —
+        // иначе плитка может зависнуть повёрнутой после установки
+        bookmarksContainer.querySelectorAll('.bookmark').forEach((el) => {
+            el.classList.remove('dragging');
+            el.style.transform = ''; // сбрасываем и FLIP-сдвиги
+        });
         // Перенос мог быть отменён (Esc, drop вне списка) — сбрасываем,
         // иначе следующий dragover переставит элементы со старым индексом
         draggedIndex = null;
@@ -1181,6 +1195,12 @@ window.addEventListener('DOMContentLoaded', () => {
         if (draggedIndex !== null) {
             saveState({ bookmarks: currentState.bookmarks });
         }
+        // Завершаем перенос: убираем приглушение/поворот со всех плиток,
+        // чтобы ни одна не осталась повёрнутой после установки
+        bookmarksContainer.querySelectorAll('.bookmark').forEach((el) => {
+            el.classList.remove('dragging');
+            el.style.transform = '';
+        });
         draggedIndex = null;
     });
 
