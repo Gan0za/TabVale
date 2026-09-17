@@ -32,8 +32,8 @@ assert.ok(js.includes('applyTheme'), 'app.js: функция applyTheme');
 assert.ok(js.includes("dataset.theme"), 'app.js ставит data-theme на <html>');
 assert.ok(js.includes("matchMedia('(prefers-color-scheme: dark)')"),
     'app.js учитывает системную тему для режима auto');
-assert.ok(js.includes("storage.sync.get('theme'"), 'app.js читает режим из storage');
-assert.ok(js.includes("storage.sync.set({ theme: mode })"), 'app.js сохраняет выбранный режим');
+assert.ok(js.includes("storageGet('theme'"), 'app.js читает режим из storage (через обёртку)');
+assert.ok(js.includes("storageSet({ theme: mode })"), 'app.js сохраняет выбранный режим');
 assert.ok(js.includes("addEventListener('change'"), 'app.js реагирует на смену темы ОС');
 
 // --- Иконка кнопки меняется вместе с режимом ---
