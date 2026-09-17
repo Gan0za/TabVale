@@ -40,6 +40,29 @@ for (const key of i18nAttrs) {
     assert.ok(enKeys.includes(key), `data-i18n="${key}" есть в en-словаре`);
 }
 
+// --- 2.5. Каждая $var$ в message объявлена в placeholders ---
+// Валидатор Chrome отвергает messages.json, где использована $переменная$,
+// но не объявлена секция placeholders — расширение не загрузится.
+for (const [lang, dict] of [['ru', ru], ['en', en]]) {
+    for (const [key, val] of Object.entries(dict)) {
+        const used = val.message.match(/\$[a-zA-Z]+\$/g) || [];
+        for (const token of used) {
+            const name = token.slice(1, -1);
+            assert.ok(
+                val.placeholders?.[name],
+                `${lang}/${key}: ${token} объявлена в placeholders`
+            );
+        }
+        // и наоборот: объявленная, но не использованная переменная — ошибка
+        for (const name of Object.keys(val.placeholders || {})) {
+            assert.ok(
+                val.message.includes(`$${name}$`),
+                `${lang}/${key}: плейсхолдер ${name} использован в message`
+            );
+        }
+    }
+}
+
 // --- Минимальные заглушки DOM/браузера ---
 function makeElement(tag) {
     return {
