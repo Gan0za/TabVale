@@ -63,9 +63,13 @@ assert.ok(!css.includes('width: 220px'), 'нет жёсткой ширины м�
 assert.ok(css.includes('min-width: 180px') && css.includes('max-width: 280px'),
     'меню ограничено минимальной и максимальной шириной');
 
-// --- Модалка настроек увеличена и не обрезается на низких экранах ---
+// --- Модалка настроек: фиксированная высота, прокрутка внутри ---
 assert.ok(css.includes('width: min(92vw, 640px)'), 'модалка шире прежних 520px');
-assert.ok(css.includes('max-height: 90vh') && css.includes('overflow-y: auto'),
-    'модалка прокручивается на низких экранах');
+// Высота фиксирована — размер не "прыгает" при открытии форм и списков
+assert.ok(css.includes('height: min(85vh, 720px)'), 'высота модалки фиксирована');
+// Прокрутка lives внутри списков (modal-list), а не у всей модалки
+assert.ok(css.includes('overflow: hidden'), 'модалка не прокручивается целиком');
+assert.ok(/\.modal-list \{[\s\S]*?overflow-y: auto/.test(css),
+    'списки внутри модалки прокручиваются');
 
 console.log('theme.test.mjs: все проверки пройдены');

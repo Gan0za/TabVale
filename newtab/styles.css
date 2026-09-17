@@ -457,9 +457,12 @@ h1, h2 {
     transform: translate(-50%, -50%);
     /* Шире прежнего (520px): списки и формы не должны тесниться */
     width: min(92vw, 640px);
-    /* На низких экранах модалка прокручивается, а не обрезается */
-    max-height: 90vh;
-    overflow-y: auto;
+    /* Фиксированная высота: открытие форм и списки не "прыгают".
+       Внутренности (списки) прокручиваются, а не растягивают окно */
+    height: min(85vh, 720px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     background: var(--glass-strong);
     backdrop-filter: var(--blur);
     -webkit-backdrop-filter: var(--blur);
@@ -514,6 +517,11 @@ h1, h2 {
 }
 
 .settings-content {
+    /* Занимает всё свободное место модалки: высота окна не меняется
+       ни при переключении вкладок, ни при открытии форм */
+    flex: 1;
+    min-height: 0; /* разрешает внутренним спискам прокручиваться */
+    display: flex;
     margin-bottom: 16px;
 }
 
@@ -522,7 +530,10 @@ h1, h2 {
 }
 
 .settings-pane.active {
-    display: block;
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
 }
 
 /* На узких экранах модалке тесно: уменьшаем отступы и переносим
@@ -560,9 +571,10 @@ h1, h2 {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    /* Вместительный список: на большом экране видно больше элементов
-       без прокрутки, узкие экраны не страдают (max-height — прокрутка) */
-    max-height: 320px;
+    /* Список занимает всё место над формой добавления и прокручивается:
+       сколько бы элементов ни было, размер модалки не меняется */
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
     margin: 12px 0;
     padding-right: 4px;
@@ -674,6 +686,19 @@ h1, h2 {
     border: 1px solid var(--border);
     border-radius: var(--radius-small);
     background: var(--glass);
+    /* Плавное появление снизу вверх при каждом открытии */
+    animation: form-in .18s ease;
+}
+
+@keyframes form-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .form-actions {
