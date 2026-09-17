@@ -1098,54 +1098,80 @@ window.addEventListener('DOMContentLoaded', () => {
     // =============================================================================
     // Drag & Drop — перетаскивание плиток закладок для сортировки.
     //
-    // Как на рабочем столе смартфона: пока тащишь плитку над соседями,
-    // они плавно расступаются. Механика: на каждое пересечение новой
-    // плитки элемент переставляется в массиве и список перерисовывается,
-    // а FLIP-анимация (см. renderBookmarksAnimated) делает сдвиг плавным.
+    // Как на рабочем столе смартфона: пока тащишь плитку, соседи плавно
+    // расступаются. Точка вставки вычисляется геометрически (по позиции
+    // курсора относительно центров плиток), узлы плиток не пересоздаются —
+    // FLIP-анимация плавно доезжает до новых мест без моргания.
     // =============================================================================
 
     let draggedIndex = null;
 
     /**
-     * Перерисовывает плитки с FLIP-анимацией.
-     * First — запоминаем позиции плиток до перерисовки; Last — после;
-     * Invert — ставим плитку в старую позицию; Play — отпускаем, и
-     * CSS-transition доезжает до новой. Анимируются только сдвинувшиеся
-     * плитки; перетаскиваемая остаётся "приглушенной".
+     * Обновляет позиции плиток в DOM без их пересоздания.
+     *
+     * Ключевое отличие от полной перерисовки: узлы плиток живут столько,
+     * сколько длится перенос. Это убирает две проблемы прежней версии:
+     * 1) dragend не срабатывал на пересозданном узле — плитка зависала
+     *    повёрнутой; 2) переназначение обработчиков и inline-стилей
+     * "моргало" на каждой перестановке.
      */
-    function renderBookmarksAnimated() {
+    function reorderBookmarksAnimated(fromIndex, toIndex) {
+        const [moved] = currentState.bookmarks.splice(fromIndex, 1);
+        currentState.bookmarks.splice(toIndex, 0, moved);
+        draggedIndex = toIndex;
+
+        // FLIP: First — позиции плиток до перестановки (узлы те же)
         const before = new Map();
         bookmarksContainer.querySelectorAll('.bookmark').forEach((el) => {
             before.set(el.dataset.url, el.getBoundingClientRect());
         });
 
-        renderBookmarks(bookmarksContainer, currentState.bookmarks);
+        // Last: переставляем существующие узлы в новом порядке
+        const ordered = currentState.bookmarks.map((b) =>
+            bookmarksContainer.querySelector(`.bookmark[data-url="${CSS.escape(b.url)}"]`)
+        );
+        ordered.forEach((el) => bookmarksContainer.appendChild(el));
 
+        // Синхронизируем индексы с новым порядком: от dataset.index
+        // зависят редактирование/удаление по клику и подсчёт слотов ниже
+        bookmarksContainer.querySelectorAll('.bookmark').forEach((el, i) => {
+            el.dataset.index = i;
+        });
+
+        // Invert + Play: едем из старой позиции в новую.
+        // Перетаскиваемая плитка анимируется тоже, но с сохранением
+        // поворота из .dragging — иначе при каждом перестроении
+        // "моргал" бы наклон
         bookmarksContainer.querySelectorAll('.bookmark').forEach((el) => {
             const isDragged = Number(el.dataset.index) === draggedIndex;
-            // Перетаскиваемая плитка приглушена и на новой позиции тоже
-            el.classList.toggle('dragging', isDragged);
-
             const prev = before.get(el.dataset.url);
-            if (!prev) return; // новая плитка — анимировать не откуда
+            if (!prev) return;
             const now = el.getBoundingClientRect();
             const dx = prev.left - now.left;
             const dy = prev.top - now.top;
             if (!dx && !dy) return;
 
-            // Перетаскиваемая плитка едет с сохранением поворота:
-            // если задать ей только сдвиг, при отпускании стилей поворот
-            // из класса .dragging "моргнёт" — выглядит как дёргание
-            const rotate = isDragged ? ' rotate(5deg)' : '';
-
             el.style.transition = 'none';
-            el.style.transform = `translate(${dx}px, ${dy}px)` + rotate;
+            el.style.transform = `translate(${dx}px, ${dy}px)` + (isDragged ? ' rotate(5deg)' : '');
             el.getBoundingClientRect(); // форсируем reflow, иначе браузер слепит кадры
             el.style.transition = '';
-            // В итоге перетаскиваемая остаётся повёрнутой (как в .dragging),
-            // соседи — без сдвига
             el.style.transform = isDragged ? 'rotate(5deg)' : '';
         });
+    }
+
+    /**
+     * Слот вставки по координатам курсора: считаем, сколько центров
+     * плиток курсор уже прошёл слева направо. Курсор левее всех центров —
+     * слот 0, правее всех — конец списка. Зазоры между плитками и пустое
+     * место в конце ряда обрабатываются той же формулой — мёртвых зон нет.
+     */
+    function getDropIndex(mouseX) {
+        let slot = 0;
+        bookmarksContainer.querySelectorAll('.bookmark').forEach((tile) => {
+            const rect = tile.getBoundingClientRect();
+            if (mouseX > rect.left + rect.width / 2) slot++;
+        });
+        return slot;
     }
 
     bookmarksContainer.addEventListener('dragstart', (e) => {
@@ -1157,35 +1183,32 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     bookmarksContainer.addEventListener('dragend', (e) => {
-        // После перерисовок исходная плитка могла быть заменена новой,
-        // поэтому класс и поворот снимаем со всех плиток контейнера —
-        // иначе плитка может зависнуть повёрнутой после установки
+        // Узлы не пересоздаются, но класс и возможные FLIP-сдвиги всё
+        // равно нужно снять со всех плиток — перенос завершён
         bookmarksContainer.querySelectorAll('.bookmark').forEach((el) => {
             el.classList.remove('dragging');
-            el.style.transform = ''; // сбрасываем и FLIP-сдвиги
+            el.style.transform = '';
         });
         // Перенос мог быть отменён (Esc, drop вне списка) — сбрасываем,
         // иначе следующий dragover переставит элементы со старым индексом
         draggedIndex = null;
     });
 
-    // Пока тащим: каждый вход над новой плиткой переставляет элемент.
-    // preventDefault обязателен — без него браузер не даст сделать drop
+    // Пока тащим: точка вставки вычисляется геометрически — сколько
+    // центров плиток прошёл курсор. dragover повешен на контейнер,
+    // поэтому зазоры между плитками тоже работают
     bookmarksContainer.addEventListener('dragover', (e) => {
         if (draggedIndex === null) return;
-        const target = e.target.closest('.bookmark');
-        if (!target) return;
-        e.preventDefault();
+        e.preventDefault(); // без этого браузер не даст сделать drop
 
-        const targetIndex = Number(target.dataset.index);
-        if (Number.isNaN(targetIndex) || targetIndex === draggedIndex) return;
+        const slot = getDropIndex(e.clientX);
+        // Слот "до" или "после" перетаскиваемой плитки — она уже на месте
+        if (slot === draggedIndex || slot === draggedIndex + 1) return;
 
-        // Вынимаем перетаскиваемый элемент и вставляем на новое место.
-        // После splice он всегда оказывается ровно на позиции targetIndex
-        const [item] = currentState.bookmarks.splice(draggedIndex, 1);
-        currentState.bookmarks.splice(targetIndex, 0, item);
-        draggedIndex = targetIndex;
-        renderBookmarksAnimated();
+        // Слот в текущем списке включает сам перетаскиваемый элемент,
+        // поэтому после его удаления индекс вставки смещается на -1
+        const insertIndex = slot > draggedIndex ? slot - 1 : slot;
+        reorderBookmarksAnimated(draggedIndex, insertIndex);
     });
 
     bookmarksContainer.addEventListener('drop', (e) => {
