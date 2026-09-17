@@ -30,20 +30,17 @@
 
 ## Блок 2 — Манифест
 
-- ⬜ **2.1 `minimum_chrome_version: "107"`**
-  - Используются grid-template-rows transition (107+) и CSS.escape.
-- ⬜ **2.2 `author` и `homepage_url`** — связь с GitHub-репозиторием.
-- ⬜ **2.3 Локализация name/description**
+- ✅ **2.1 `minimum_chrome_version: "107"`** (87e3662)
+- ✅ **2.2 `author`** (87e3662); `homepage_url` — отложено до создания GitHub-репозитория
+- ✅ **2.3 Локализация name/description** (864452d)
   - `_locales/ru/messages.json`, `_locales/en/messages.json`, `default_locale: "ru"`.
-- ⬜ **2.4 Убрать мёртвое поле `selected` из DEFAULT_SEARCH_ENGINES** (app.js:22).
+- ✅ **2.4 Убрать мёртвое поле `selected` из DEFAULT_SEARCH_ENGINES** (ad44a42)
 
 ## Блок 3 — Релиз-инфраструктура
 
-- ⬜ **3.1 LICENSE (MIT)** — без неё GitHub показывает «все права защищены».
-- ⬜ **3.2 PRIVACY.md** — политика приватности для CWS: данные (закладки,
-  фоны, тема) хранятся только в chrome.storage.sync, наружу не передаются.
-- ⬜ **3.3 Скрипт упаковки** — zip с рантайм-файлами (manifest, background.js,
-  newtab/, assets/icons/*) без .gitignore; имя `dist/self_tabs_v{version}.zip`.
+- ✅ **3.1 LICENSE (MIT)** (eb5bea1)
+- ✅ **3.2 PRIVACY.md** (eb5bea1) — данные только в chrome.storage.sync, наружу не передаются; заодно обоснование clipboardRead.
+- ✅ **3.3 Скрипт упаковки** (0583784) — `bash package.sh` → `dist/self_tabs_v{version}.zip` с рантайм-файлами (manifest, background.js, newtab/, assets/icons/icon*.png, _locales/) без .gitignore, favicon.svg.
 - ⬜ **3.4 Скриншоты для листинга** — минимум 1 скриншот 1280×800.
 
 ## Блок 3 — GitHub и листинг
@@ -58,8 +55,8 @@
 | Шаг | Статус |
 |---|---|
 | Анализ готовности | ✅ |
-| Блок 1: безопасность | ⬜ |
-| Блок 2: манифест | ⬜ |
-| Блок 3: релиз-инфраструктура | ⬜ |
+| Блок 1: безопасность | 🔧 (1.1 ✅, 1.2–1.3 ⬜) |
+| Блок 2: манифест | ✅ (homepage_url отложен до создания репозитория) |
+| Блок 3: релиз-инфраструктура | ✅ (3.4 скриншоты ⬜) |
 | Блок 4: GitHub/листинг | ⬜ |
 | Мерж в master + релиз | ⬜ |
