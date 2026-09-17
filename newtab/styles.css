@@ -455,7 +455,8 @@ h1, h2 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: min(92vw, 520px);
+    /* Шире прежнего (520px): списки и формы не должны тесниться */
+    width: min(92vw, 640px);
     /* На низких экранах модалка прокручивается, а не обрезается */
     max-height: 90vh;
     overflow-y: auto;
@@ -559,7 +560,9 @@ h1, h2 {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 220px;
+    /* Вместительный список: на большом экране видно больше элементов
+       без прокрутки, узкие экраны не страдают (max-height — прокрутка) */
+    max-height: 320px;
     overflow-y: auto;
     margin: 12px 0;
     padding-right: 4px;
