@@ -3,6 +3,8 @@
   "name": "Custom New Tab",
   "description": "Новая вкладка с поиском, закладками и сменой фона",
   "version": "1.0.0",
+  "author": "Ivan Verevkin",
+  "minimum_chrome_version": "107",
   "permissions": [
     "storage",
     "contextMenus",
