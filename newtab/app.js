@@ -570,16 +570,24 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Загружаем сохранённый режим и включаем переключатель
     chrome.storage.sync.get('theme', (result) => applyTheme(result.theme || 'auto'));
-    themeToggle?.addEventListener('click', () => {
-        // Показать/спрять мини-меню выбора темы
-        themeMenu.classList.toggle('open');
+    themeToggle?.addEventListener('click', (e) => {
+        // Показать/спрять мини-меню выбора темы.
+        // stopPropagation: иначе клик дойдёт до document и тут же закроет меню
+        e.stopPropagation();
+        themeMenu.classList.toggle('hidden');
     });
     themeMenu?.addEventListener('click', (e) => {
         const mode = e.target.dataset.mode;
         if (!mode) return;
         chrome.storage.sync.set({ theme: mode });
         applyTheme(mode);
-        themeMenu.classList.remove('open');
+        themeMenu.classList.add('hidden');
+    });
+
+    // Клик мимо меню темы закрывает его (клик по самой кнопке не доходит
+    // до document из-за stopPropagation выше)
+    document.addEventListener('click', (e) => {
+        if (!themeMenu.contains(e.target)) themeMenu.classList.add('hidden');
     });
 
     // =============================================================================

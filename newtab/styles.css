@@ -85,6 +85,13 @@ h1, h2 {
     margin: 0 0 10px 0;
 }
 
+/* Подсказка полей ввода: цвет задан явно, иначе на тёмной теме
+   браузер рисует тёмный placeholder на тёмном фоне */
+::placeholder {
+    color: var(--text-soft);
+    opacity: 1;
+}
+
 /* =============================================================================
    Полосы прокрутки — тонкие, в цвет темы
    ============================================================================= */
@@ -448,7 +455,10 @@ h1, h2 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: min(90vw, 520px);
+    width: min(92vw, 520px);
+    /* На низких экранах модалка прокручивается, а не обрезается */
+    max-height: 90vh;
+    overflow-y: auto;
     background: var(--glass-strong);
     backdrop-filter: var(--blur);
     -webkit-backdrop-filter: var(--blur);
@@ -512,6 +522,33 @@ h1, h2 {
 
 .settings-pane.active {
     display: block;
+}
+
+/* На узких экранах модалке тесно: уменьшаем отступы и переносим
+   длинные ряды кнопок на новую строку, чтобы ничего не обрезалось */
+@media (max-width: 600px) {
+    .modal {
+        padding: 14px;
+    }
+
+    .settings-tabs {
+        margin-bottom: 10px;
+    }
+
+    .settings-tab {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    .modal-actions,
+    .form-actions {
+        flex-wrap: wrap;
+    }
+
+    .modal-actions .btn,
+    .form-actions .btn {
+        padding: 8px 12px;
+    }
 }
 
 /* =============================================================================
