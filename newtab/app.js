@@ -103,6 +103,42 @@ function sanitizeList(raw, { requirePlaceholder = false, allowEmptyUrl = false }
 }
 
 /**
+ * Читает данные из chrome.storage.sync.
+ *
+ * Зачем обёртка: каждый колбэк chrome.* обязан проверять
+ * chrome.runtime.lastError — если этого не делать, при реальной ошибке
+ * (например, квота хранилища) браузер пишет в консоль
+ * "Unchecked runtime.lastError", и это претензия ревью Chrome Web Store.
+ * Одна обёртка проверяет ошибку в одном месте вместо каждого вызова.
+ *
+ * keys — строка или массив ключей; callback(result) получит результат
+ * даже при ошибке (тогда result будет пустым объектом).
+ */
+function storageGet(keys, callback) {
+    chrome.storage.sync.get(keys, (result) => {
+        // Читаем lastError ДО всего остального — иначе браузер сочтёт,
+        // что мы его проигнорировали
+        void chrome.runtime?.lastError;
+        callback(result || {});
+    });
+}
+
+/**
+ * Записывает данные в chrome.storage.sync с проверкой ошибки.
+ * Ошибка не прерывает работу интерфейса: пользователь продолжит работать,
+ * а проблема будет видна в консоли (WARN-лог).
+ */
+function storageSet(items, callback) {
+    chrome.storage.sync.set(items, () => {
+        const error = chrome.runtime?.lastError;
+        if (error) {
+            console.warn('Не удалось сохранить настройки:', error.message);
+        }
+        callback?.();
+    });
+}
+
+/**
  * Сохраняет переданные поля в chrome.storage.sync.
  * Пример: saveState({ bookmarks: [...] }) — обновить только закладки.
  */
@@ -113,7 +149,7 @@ function saveState({ searchEngines, bookmarks, backgrounds, currentBackgroundInd
     if (backgrounds) payload.backgrounds = backgrounds;
     if (currentBackgroundIndex !== undefined) payload.currentBackgroundIndex = currentBackgroundIndex;
     if (currentSearchEngineIndex !== undefined) payload.currentSearchEngineIndex = currentSearchEngineIndex;
-    chrome.storage.sync.set(payload);
+    storageSet(payload);
 }
 
 /**
@@ -121,7 +157,7 @@ function saveState({ searchEngines, bookmarks, backgrounds, currentBackgroundInd
  * Если какого-то поля нет (первый запуск) — подставляет значения по умолчанию.
  */
 function getState(callback) {
-    chrome.storage.sync.get(['searchEngines', 'bookmarks', 'backgrounds', 'currentBackgroundIndex', 'currentSearchEngineIndex'], (result) => {
+    storageGet(['searchEngines', 'bookmarks', 'backgrounds', 'currentBackgroundIndex', 'currentSearchEngineIndex'], (result) => {
         callback({
             searchEngines: result.searchEngines || DEFAULT_SEARCH_ENGINES,
             bookmarks: result.bookmarks || DEFAULT_BOOKMARKS,
@@ -632,13 +668,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Реагируем на переключение темы в системе, пока активен режим "auto"
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        chrome.storage.sync.get('theme', (result) => {
+        storageGet('theme', (result) => {
             if ((result.theme || 'auto') === 'auto') applyTheme('auto');
         });
     });
 
     // Загружаем сохранённый режим и включаем переключатель
-    chrome.storage.sync.get('theme', (result) => applyTheme(result.theme || 'auto'));
+    storageGet('theme', (result) => applyTheme(result.theme || 'auto'));
     themeToggle?.addEventListener('click', (e) => {
         // Показать/спрять мини-меню выбора темы.
         // stopPropagation: иначе клик дойдёт до document и тут же закроет меню
@@ -648,7 +684,7 @@ window.addEventListener('DOMContentLoaded', () => {
     themeMenu?.addEventListener('click', (e) => {
         const mode = e.target.dataset.mode;
         if (!mode) return;
-        chrome.storage.sync.set({ theme: mode });
+        storageSet({ theme: mode });
         applyTheme(mode);
         themeMenu.classList.add('hidden');
     });
@@ -906,7 +942,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // --- Экспорт: скачивание JSON-файла со всеми настройками ---
     exportSettingsJsonButton.addEventListener('click', () => {
         // Тема — тоже настройка: экспортируем текущий режим вместе с данными
-        chrome.storage.sync.get('theme', (result) => {
+        storageGet('theme', (result) => {
             const json = JSON.stringify({ ...currentState, theme: result.theme || 'auto' }, null, 2);
             const blob = new Blob([json], { type: 'application/json' });
             const a = document.createElement('a');
@@ -944,7 +980,7 @@ window.addEventListener('DOMContentLoaded', () => {
             if (themeModes.includes(payload.theme)) importedTheme = payload.theme;
             saveState(newState);
             if (importedTheme) {
-                chrome.storage.sync.set({ theme: importedTheme });
+                storageSet({ theme: importedTheme });
                 applyTheme(importedTheme);
             }
             currentState = newState;
