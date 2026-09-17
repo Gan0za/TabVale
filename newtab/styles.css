@@ -598,6 +598,14 @@ h1, h2 {
     border-color: var(--accent);
 }
 
+.item-info {
+    /* Занимает место между картинкой и кнопками, но может сжиматься.
+       min-width: 0 обязательно: без него длинный URL распирает блок
+       и выдавливает текст за пределы строки */
+    flex: 1;
+    min-width: 0;
+}
+
 .modal-list-text {
     display: flex;
     flex-direction: column;
@@ -619,6 +627,7 @@ h1, h2 {
 
 .modal-list-actions {
     display: flex;
+    flex-shrink: 0; /* кнопки не сжимаются — сжимается текст */
     gap: 6px;
 }
 
