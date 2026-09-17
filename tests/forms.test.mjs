@@ -57,8 +57,8 @@ assert.ok(app_js_uses('cancel-search-engine'), 'app.js использует canc
 
 // Все кнопки в разметке имеют класс btn (единый стиль).
 // Исключения — кнопки со своей особой формой: круглая FAB,
-// кнопка выпадающего списка и вкладки настроек.
-const exceptions = ['settings-fab', 'dropdown-button', 'settings-tab'];
+// кнопка выпадающего списка, вкладки настроек и пункты меню темы.
+const exceptions = ['settings-fab', 'dropdown-button', 'settings-tab', 'data-mode'];
 const allButtons = html.match(/<button[^>]*>/g) || [];
 for (const tag of allButtons) {
     const isException = exceptions.some((e) => tag.includes(e));
