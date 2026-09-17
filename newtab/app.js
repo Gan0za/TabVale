@@ -118,6 +118,7 @@ function buildBookmarkTile(bookmark, index) {
     el.className = 'bookmark';
     el.draggable = true;               // плитку можно перетаскивать (сортировка)
     el.dataset.index = index;          // запоминаем номер в списке для drag-n-drop
+    el.dataset.url = bookmark.url;     // стабильный ключ для FLIP-анимации перестановки
 
     const img = document.createElement('img');
     img.alt = 'icon';
@@ -1095,10 +1096,49 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     // =============================================================================
-    // Drag & Drop — перетаскивание плиток закладок для сортировки
+    // Drag & Drop — перетаскивание плиток закладок для сортировки.
+    //
+    // Как на рабочем столе смартфона: пока тащишь плитку над соседями,
+    // они плавно расступаются. Механика: на каждое пересечение новой
+    // плитки элемент переставляется в массиве и список перерисовывается,
+    // а FLIP-анимация (см. renderBookmarksAnimated) делает сдвиг плавным.
     // =============================================================================
 
     let draggedIndex = null;
+
+    /**
+     * Перерисовывает плитки с FLIP-анимацией.
+     * First — запоминаем позиции плиток до перерисовки; Last — после;
+     * Invert — ставим плитку в старую позицию; Play — отпускаем, и
+     * CSS-transition доезжает до новой. Анимируются только сдвинувшиеся
+     * плитки; перетаскиваемая остаётся "приглушенной".
+     */
+    function renderBookmarksAnimated() {
+        const before = new Map();
+        bookmarksContainer.querySelectorAll('.bookmark').forEach((el) => {
+            before.set(el.dataset.url, el.getBoundingClientRect());
+        });
+
+        renderBookmarks(bookmarksContainer, currentState.bookmarks);
+
+        bookmarksContainer.querySelectorAll('.bookmark').forEach((el) => {
+            // Перетаскиваемая плитка приглушена на новой позиции тоже
+            el.classList.toggle('dragging', Number(el.dataset.index) === draggedIndex);
+
+            const prev = before.get(el.dataset.url);
+            if (!prev) return; // новая плитка — анимировать не откуда
+            const now = el.getBoundingClientRect();
+            const dx = prev.left - now.left;
+            const dy = prev.top - now.top;
+            if (!dx && !dy) return;
+
+            el.style.transition = 'none';
+            el.style.transform = `translate(${dx}px, ${dy}px)`;
+            el.getBoundingClientRect(); // форсируем reflow, иначе браузер слепит кадры
+            el.style.transition = '';
+            el.style.transform = '';
+        });
+    }
 
     bookmarksContainer.addEventListener('dragstart', (e) => {
         const el = e.target.closest('.bookmark');
@@ -1110,26 +1150,37 @@ window.addEventListener('DOMContentLoaded', () => {
 
     bookmarksContainer.addEventListener('dragend', (e) => {
         e.target.closest('.bookmark')?.classList.remove('dragging');
+        // Перенос мог быть отменён (Esc, drop вне списка) — сбрасываем,
+        // иначе следующий dragover переставит элементы со старым индексом
+        draggedIndex = null;
     });
 
-    // Без preventDefault на dragover браузер не даст бросить плитку
+    // Пока тащим: каждый вход над новой плиткой переставляет элемент.
+    // preventDefault обязателен — без него браузер не даст сделать drop
     bookmarksContainer.addEventListener('dragover', (e) => {
-        if (e.target.closest('.bookmark')) e.preventDefault();
+        if (draggedIndex === null) return;
+        const target = e.target.closest('.bookmark');
+        if (!target) return;
+        e.preventDefault();
+
+        const targetIndex = Number(target.dataset.index);
+        if (Number.isNaN(targetIndex) || targetIndex === draggedIndex) return;
+
+        // Вынимаем перетаскиваемый элемент и вставляем на новое место.
+        // После splice он всегда оказывается ровно на позиции targetIndex
+        const [item] = currentState.bookmarks.splice(draggedIndex, 1);
+        currentState.bookmarks.splice(targetIndex, 0, item);
+        draggedIndex = targetIndex;
+        renderBookmarksAnimated();
     });
 
     bookmarksContainer.addEventListener('drop', (e) => {
         e.preventDefault();
-        const target = e.target.closest('.bookmark');
-        if (!target || draggedIndex === null) { draggedIndex = null; return; }
-
-        const targetIndex = Number(target.dataset.index);
-        if (Number.isNaN(targetIndex) || draggedIndex === targetIndex) { draggedIndex = null; return; }
-
-        // Вынимаем перетаскуемый элемент и вставляем на новое место
-        const [item] = currentState.bookmarks.splice(draggedIndex, 1);
-        currentState.bookmarks.splice(targetIndex, 0, item);
-        saveState({ bookmarks: currentState.bookmarks });
-        refreshUI();
+        // Порядок уже переставлен в dragover — здесь только сохраняем.
+        // Один раз за перенос, а не на каждый hover над соседями
+        if (draggedIndex !== null) {
+            saveState({ bookmarks: currentState.bookmarks });
+        }
         draggedIndex = null;
     });
 
