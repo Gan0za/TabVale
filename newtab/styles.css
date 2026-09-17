@@ -11,7 +11,7 @@
    ============================================================================= */
 
 :root {
-    /* Цвета: текст, стекло, рамки */
+    /* Цвета: текст, стекло, рамки (светлая тема) */
     --text: #2c3e50;
     --text-soft: #607d8b;
     --glass: rgba(255, 255, 255, 0.55);        /* панели и формы */
@@ -34,25 +34,31 @@
 
     /* Размытие фона — основа эффекта стекла */
     --blur: blur(14px);
+
+    /* Подсказка браузеру: какие цвета использовать для нативных
+       элементов — полос прокрутки, полей ввода, placeholder'ов.
+       Без этого на тёмной теме они остаются светлыми */
+    color-scheme: light;
 }
 
-/* Тёмная тема: применяется автоматически, если у пользователя стоит
-   тёмное оформление. Меняются только переменные — разметка та же. */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --text: #e8eef2;
-        --text-soft: #9fb3bd;
-        --glass: rgba(30, 40, 50, 0.5);
-        --glass-strong: rgba(24, 32, 40, 0.78);
-        --glass-input: rgba(255, 255, 255, 0.08);
-        --border: rgba(255, 255, 255, 0.14);
-        --accent: #4db6e2;
-        --accent-text: #0b1c26;
-        --danger: #ef5350;
-        --danger-soft: rgba(239, 83, 80, 0.16);
-        --bg: linear-gradient(160deg, #16202c 0%, #1e2a38 50%, #241f1a 100%);
-        --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    }
+/* Тёмная тема. Включается одним из двух способов (см. applyTheme в app.js):
+   1. Пользователь выбрал её вручную в настройках
+   2. Выбрано "авто" и у операционной системы включено тёмное оформление.
+   Меняются только переменные — разметка та же. */
+:root[data-theme='dark'] {
+    color-scheme: dark;
+    --text: #e8eef2;
+    --text-soft: #9fb3bd;
+    --glass: rgba(30, 40, 50, 0.5);
+    --glass-strong: rgba(24, 32, 40, 0.78);
+    --glass-input: rgba(255, 255, 255, 0.08);
+    --border: rgba(255, 255, 255, 0.14);
+    --accent: #4db6e2;
+    --accent-text: #0b1c26;
+    --danger: #ef5350;
+    --danger-soft: rgba(239, 83, 80, 0.16);
+    --bg: linear-gradient(160deg, #16202c 0%, #1e2a38 50%, #241f1a 100%);
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 /* =============================================================================
@@ -77,6 +83,35 @@ body {
 
 h1, h2 {
     margin: 0 0 10px 0;
+}
+
+/* =============================================================================
+   Полосы прокрутки — тонкие, в цвет темы
+   ============================================================================= */
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--text-soft) transparent;
+}
+
+/* Chrome/Edge (движок Blink) понимает только псевдоэлементы */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-soft);
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 /* =============================================================================
@@ -361,7 +396,11 @@ h1, h2 {
 
 .context-menu {
     position: absolute;
-    width: 220px;
+    /* Ширина по содержимому, но без бездонного растяжения:
+       длинные пункты ограничены, чтобы меню не занимало полэкрана */
+    min-width: 180px;
+    max-width: 280px;
+    white-space: nowrap; /* пункты не переносятся — меню компактное */
     background: var(--glass-strong);
     backdrop-filter: var(--blur);
     -webkit-backdrop-filter: var(--blur);
@@ -626,7 +665,6 @@ h1, h2 {
 .settings-fab {
     position: fixed;
     bottom: 20px;
-    right: 20px;
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -644,4 +682,46 @@ h1, h2 {
 
 .settings-fab:hover {
     transform: scale(1.05);
+}
+
+/* Пара круглых кнопок в правом нижнем углу: тема + настройки.
+   right-отступ каждой задан отдельно, чтобы кнопки стояли в ряд */
+.settings-fab#settings-button { right: 20px; }
+.settings-fab#theme-toggle { right: 78px; }
+
+/* Мини-меню выбора темы: раскрывается над кнопкой 🌗 */
+.theme-menu {
+    position: fixed;
+    bottom: 78px;
+    right: 78px;
+    display: flex;
+    flex-direction: column;
+    background: var(--glass-strong);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    box-shadow: var(--shadow);
+    z-index: 1001;
+    overflow: hidden;
+}
+
+.theme-menu button {
+    padding: 8px 18px;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.theme-menu button:hover {
+    background: var(--glass);
+}
+
+.theme-menu button.active {
+    color: var(--accent);
+    font-weight: bold;
 }
