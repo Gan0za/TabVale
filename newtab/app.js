@@ -528,6 +528,61 @@ window.addEventListener('DOMContentLoaded', () => {
     let editingSearchEngineIndex = null;
 
     // =============================================================================
+    // Тема оформления
+    //
+    // Три режима: 'auto' (следовать за настройкой ОС), 'light', 'dark'.
+    // Выбор хранится в chrome.storage.sync. Итоговая тема применяется
+    // к <html> через атрибут data-theme — по нему CSS включает нужные
+    // переменные (см. styles.css).
+    // =============================================================================
+
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeMenu = document.getElementById('theme-menu');
+
+    /**
+     * Применяет тему к странице.
+     * mode — 'auto' | 'light' | 'dark' (что выбрал пользователь).
+     * При 'auto' смотрим на системную настройку через window.matchMedia.
+     */
+    function applyTheme(mode) {
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        // При "auto" тема определяется системой, иначе — выбором пользователя
+        const isDark = mode === 'dark' || (mode === 'auto' && systemDark);
+
+        // Светлая тема — отсутствие атрибута (переменные :root по умолчанию)
+        if (isDark) {
+            document.documentElement.dataset.theme = 'dark';
+        } else {
+            delete document.documentElement.dataset.theme;
+        }
+        // Подсвечиваем активный пункт меню переключателя
+        themeMenu?.querySelectorAll('button').forEach((b) => {
+            b.classList.toggle('active', b.dataset.mode === mode);
+        });
+    }
+
+    // Реагируем на переключение темы в системе, пока активен режим "auto"
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        chrome.storage.sync.get('theme', (result) => {
+            if ((result.theme || 'auto') === 'auto') applyTheme('auto');
+        });
+    });
+
+    // Загружаем сохранённый режим и включаем переключатель
+    chrome.storage.sync.get('theme', (result) => applyTheme(result.theme || 'auto'));
+    themeToggle?.addEventListener('click', () => {
+        // Показать/спрять мини-меню выбора темы
+        themeMenu.classList.toggle('open');
+    });
+    themeMenu?.addEventListener('click', (e) => {
+        const mode = e.target.dataset.mode;
+        if (!mode) return;
+        chrome.storage.sync.set({ theme: mode });
+        applyTheme(mode);
+        themeMenu.classList.remove('open');
+    });
+
+    // =============================================================================
     // Вспомогательные функции UI
     // =============================================================================
 
@@ -1062,6 +1117,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Показывает меню с заданными пунктами в координатах клика.
+     * Меню подстраивается под края экрана: рядом с правой или нижней
+     * границей оно раскрывается внутрь, а не обрезается.
      */
     function openContextMenu(x, y, items) {
         // Собираем меню заново на каждый клик — пункты зависят от элемента
@@ -1079,9 +1136,21 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         contextMenu.appendChild(list);
 
-        contextMenu.style.left = x + 'px';
-        contextMenu.style.top = y + 'px';
+        // Сначала показываем меню невидимым, чтобы замерить его реальный
+        // размер (он зависит от количества и длины пунктов)
         contextMenu.classList.remove('hidden');
+        contextMenu.style.visibility = 'hidden';
+        const menuWidth = contextMenu.offsetWidth;
+        const menuHeight = contextMenu.offsetHeight;
+        const margin = 8; // отступ от края экрана
+
+        // Если меню не влезает вправо/вниз — сдвигаем влево/внутрь
+        const left = Math.max(margin, Math.min(x, window.innerWidth - menuWidth - margin));
+        const top = Math.max(margin, Math.min(y, window.innerHeight - menuHeight - margin));
+
+        contextMenu.style.left = left + 'px';
+        contextMenu.style.top = top + 'px';
+        contextMenu.style.visibility = '';
     }
 
     // Префиксы css-классов кнопок строк настроек (см. buildManagerListItem):

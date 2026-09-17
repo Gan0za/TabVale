@@ -31,7 +31,16 @@
         </section>
     </div>
 
-    <button id="settings-button" class="settings-fab">⚙️</button>
+    <!-- Переключатель темы (авто / светлая / тёмная) и кнопка настроек -->
+    <div class="fab-stack">
+        <button id="theme-toggle" class="settings-fab" aria-label="Сменить тему">🌗</button>
+        <div id="theme-menu" class="theme-menu hidden">
+            <button data-mode="auto">Авто</button>
+            <button data-mode="light">Светлая</button>
+            <button data-mode="dark">Тёмная</button>
+        </div>
+        <button id="settings-button" class="settings-fab">⚙</button>
+    </div>
 
     <!-- Контекстное меню: наполняется из app.js в зависимости от элемента,
          по которому кликнули правой кнопкой -->
