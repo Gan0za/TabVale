@@ -1,4 +1,61 @@
 /* =============================================================================
+   Дизайн-система Custom New Tab
+   =============================================================================
+
+   Стиль — сдержанное "стекло" (в духе Apple Liquid Glass):
+   полупрозрачные панели с размытием фона, мягкие тени, скруглённые углы.
+
+   Все ключевые величины собраны в CSS-переменных ниже. Чтобы поменять
+   вид всего интерфейса, достаточно править этот блок, а не искать
+   значения по всему файлу.
+   ============================================================================= */
+
+:root {
+    /* Цвета: текст, стекло, рамки */
+    --text: #2c3e50;
+    --text-soft: #607d8b;
+    --glass: rgba(255, 255, 255, 0.55);        /* панели и формы */
+    --glass-strong: rgba(255, 255, 255, 0.75); /* модалка и меню — плотнее */
+    --glass-input: rgba(255, 255, 255, 0.65);  /* поля ввода */
+    --border: rgba(44, 62, 80, 0.12);          /* тонкие рамки */
+    --accent: #007acc;                         /* акцент: активные элементы */
+    --accent-text: #ffffff;
+    --danger: #d32f2f;                         /* удаление */
+    --danger-soft: rgba(211, 47, 47, 0.1);
+
+    /* Фон страницы по умолчанию — мягкий градиент. На картинке стекло
+       выглядит живее, поэтому градиент пользователь сможет заменить */
+    --bg: linear-gradient(160deg, #a8c8e8 0%, #d4e2f0 45%, #e8d8c8 100%);
+
+    /* Геометрия: скругления и тени — одинаковые везде */
+    --radius: 12px;
+    --radius-small: 8px;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+    /* Размытие фона — основа эффекта стекла */
+    --blur: blur(14px);
+}
+
+/* Тёмная тема: применяется автоматически, если у пользователя стоит
+   тёмное оформление. Меняются только переменные — разметка та же. */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text: #e8eef2;
+        --text-soft: #9fb3bd;
+        --glass: rgba(30, 40, 50, 0.5);
+        --glass-strong: rgba(24, 32, 40, 0.78);
+        --glass-input: rgba(255, 255, 255, 0.08);
+        --border: rgba(255, 255, 255, 0.14);
+        --accent: #4db6e2;
+        --accent-text: #0b1c26;
+        --danger: #ef5350;
+        --danger-soft: rgba(239, 83, 80, 0.16);
+        --bg: linear-gradient(160deg, #16202c 0%, #1e2a38 50%, #241f1a 100%);
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* =============================================================================
    Базовые стили
    ============================================================================= */
 
@@ -8,29 +65,14 @@
 
 body {
     margin: 0;
-    padding: 0;
     min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #eceff3;
+    color: var(--text);
+    background: var(--bg);
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    /* Картинка фона задаётся из JS; растягиваем её на всю страницу */
-    background-size: cover;
-    color: #2c3e50;
-}
-
-/* =============================================================================
-   Контейнер и заголовки
-   ============================================================================= */
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background: rgba(255,255,255,0.85);
-    box-shadow: 0 5px 20px rgba(0,0,0,.1);
-    border-radius: 14px;
-    margin-top: 20px;
+    /* Картинка фона из настроек (JS ставит inline-стиль) перекрывает градиент */
 }
 
 h1, h2 {
@@ -38,37 +80,81 @@ h1, h2 {
 }
 
 /* =============================================================================
-   Поиск
+   Кнопки — единый стиль: небольшие, скруглённые, полупрозрачные
    ============================================================================= */
 
-#search-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+.btn {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    color: var(--text);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
 }
+
+.btn:hover {
+    background: var(--glass-strong);
+    transform: translateY(-1px);
+}
+
+/* Главная кнопка формы ("Сохранить") — залита акцентом */
+.btn-primary {
+    background: var(--accent);
+    border-color: transparent;
+    color: var(--accent-text);
+}
+
+.btn-primary:hover {
+    background: var(--accent);
+    opacity: 0.9;
+}
+
+/* =============================================================================
+   Контейнер и заголовок
+   ============================================================================= */
+
+.container {
+    max-width: 1200px;
+    margin: 40px auto 20px;
+    padding: 24px;
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+/* =============================================================================
+   Поиск
+   ============================================================================= */
 
 .search-row {
     display: flex;
     gap: 8px;
 }
 
-/* Единый вид полей ввода и "обычных" кнопок с рамкой.
-   Кнопки без рамки (круглые кнопки на плитках, вкладки настроек,
-   кнопка настроек) оформлены отдельно и в этот список не входят. */
+/* Поля ввода: стекло чуть плотнее панели */
 #search-input,
-input[type='text'],
-input[type='url'],
-#search-button,
-.modal-actions button,
-.modal-list-actions button {
-    padding: 10px;
-    border: 1px solid #90a4ae;
-    border-radius: 8px;
+.add-form input {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--glass-input);
+    color: var(--text);
     font-size: 15px;
 }
 
 #search-input {
     flex: 1;
+}
+
+.search-row .btn {
+    padding: 10px 16px;
 }
 
 /* Выпадающий список поисковых систем */
@@ -80,17 +166,20 @@ input[type='url'],
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 14px;
-    border: 1px solid #90a4ae;
-    border-radius: 8px;
-    background: #fff;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    color: var(--text);
     cursor: pointer;
     min-width: 150px;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .dropdown-button:hover {
-    background: #f5f5f5;
+    background: var(--glass-strong);
 }
 
 .dropdown-button img {
@@ -102,7 +191,7 @@ input[type='url'],
 .dropdown-arrow {
     margin-left: auto;
     font-size: 10px;
-    color: #666;
+    color: var(--text-soft);
 }
 
 .dropdown-menu {
@@ -111,10 +200,12 @@ input[type='url'],
     top: 100%;
     left: 0;
     right: 0;
-    background: #fff;
-    border: 1px solid #90a4ae;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background: var(--glass-strong);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    box-shadow: var(--shadow);
     z-index: 100;
     margin-top: 4px;
     overflow: hidden;
@@ -134,11 +225,11 @@ input[type='url'],
 }
 
 .dropdown-item:hover {
-    background: #e8f0fe;
+    background: var(--glass);
 }
 
 .dropdown-item.selected {
-    background: #e3f2fd;
+    background: rgba(0, 122, 204, 0.15);
 }
 
 .dropdown-item img {
@@ -160,7 +251,6 @@ input[type='url'],
     flex-wrap: wrap;
     gap: 12px;
     margin-top: 10px;
-    margin-bottom: 10px;
     align-items: flex-start;
 }
 
@@ -168,9 +258,11 @@ input[type='url'],
 .bookmark {
     width: 130px;
     min-height: 120px;
-    background: rgba(255,255,255,0.92);
-    border-radius: 10px;
-    border: 1px solid #cfd8dc;
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
     padding: 9px;
     display: flex;
     flex-direction: column;
@@ -184,7 +276,7 @@ input[type='url'],
 
 .bookmark:hover {
     transform: translateY(-2px);
-    background: #ffffff;
+    background: var(--glass-strong);
 }
 
 .bookmark:active {
@@ -196,7 +288,7 @@ input[type='url'],
     transform: rotate(5deg);
 }
 
-/* Ссылка внутри закладки */
+/* Ссылка внутри плитки */
 .bookmark-link {
     display: flex;
     flex-direction: column;
@@ -209,7 +301,7 @@ input[type='url'],
     color: inherit;
 }
 
-/* Кнопки редактирования/удаления */
+/* Кнопки редактирования/удаления — видны при наведении на плитку */
 .bookmark-actions {
     position: absolute;
     top: 6px;
@@ -231,10 +323,7 @@ input[type='url'],
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0;
-    padding: 0;
     width: 22px;
-    min-width: 22px;
     height: 22px;
     border: none;
     border-radius: 50%;
@@ -244,43 +333,26 @@ input[type='url'],
 }
 
 .edit-bookmark {
-    background: #4a90e2;
+    background: var(--accent);
     font-size: 12px;
 }
 
-.edit-bookmark:hover {
-    background: #2f6fba;
-}
-
 .delete-bookmark {
-    background: #ff4444;
+    background: var(--danger);
     font-size: 16px;
 }
 
-.delete-bookmark:hover {
-    background: #cc0000;
-}
-
-/* Иконка закладки */
+/* Иконка и название закладки */
 .bookmark img {
     width: 48px;
     height: 48px;
-    border-radius: 8px;
+    border-radius: var(--radius-small);
     margin-bottom: 8px;
 }
 
-/* Название закладки */
 .bookmark-title {
     font-size: 14px;
-    color: #2d3d4f;
-}
-
-/* =============================================================================
-   Hover-эффекты кнопок
-   ============================================================================= */
-
-button:hover {
-    filter: brightness(0.96);
+    color: var(--text);
 }
 
 /* =============================================================================
@@ -290,35 +362,37 @@ button:hover {
 .context-menu {
     position: absolute;
     width: 220px;
-    background: #ffffff;
-    border: 1px solid #b0bec5;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
-    border-radius: 6px;
+    background: var(--glass-strong);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    border-radius: var(--radius-small);
     z-index: 9999;
 }
 
 .context-menu ul {
     list-style: none;
     margin: 0;
-    padding: 8px 0;
+    padding: 6px 0;
 }
 
 .context-menu li {
-    padding: 10px 14px;
+    padding: 8px 14px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.15s;
 }
 
 .context-menu li:hover {
-    background: #eaf2fb;
+    background: var(--glass);
 }
 
 /* Линия-разделитель между группами пунктов меню */
 .context-menu li.separator {
     height: 1px;
-    margin: 6px 4px;
+    margin: 6px 8px;
     padding: 0;
-    background: #e0e0e0;
+    background: var(--border);
     pointer-events: none; /* разделитель не реагирует на мышь */
 }
 
@@ -336,10 +410,13 @@ button:hover {
     left: 50%;
     transform: translate(-50%, -50%);
     width: min(90vw, 520px);
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 14px 34px rgba(0,0,0,0.35);
-    padding: 16px;
+    background: var(--glass-strong);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
     z-index: 10001;
 }
 
@@ -350,32 +427,44 @@ button:hover {
 .modal input[type='text'],
 .modal input[type='url'] {
     width: 100%;
-    margin-top: 10px;
+    margin-top: 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--glass-input);
+    color: var(--text);
+    padding: 10px 14px;
+    font-size: 14px;
 }
 
 /* Вкладки настроек */
 .settings-tabs {
     display: flex;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #ddd;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
 }
 
 .settings-tab {
-    padding: 10px 20px;
+    padding: 10px 16px;
     background: none;
     border: none;
-    cursor: pointer;
     border-bottom: 2px solid transparent;
-    transition: border-color 0.3s;
+    color: var(--text-soft);
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.settings-tab:hover {
+    color: var(--text);
 }
 
 .settings-tab.active {
-    border-bottom-color: #007acc;
-    color: #007acc;
+    border-bottom-color: var(--accent);
+    color: var(--accent);
 }
 
 .settings-content {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .settings-pane {
@@ -394,7 +483,7 @@ button:hover {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 190px;
+    max-height: 220px;
     overflow-y: auto;
     margin: 12px 0;
     padding-right: 4px;
@@ -405,14 +494,14 @@ button:hover {
     align-items: center;
     gap: 10px;
     padding: 8px 10px;
-    border: 1px solid #d8e3ea;
-    border-radius: 8px;
-    background: #f8fbfd;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--glass);
 }
 
 .modal-list-item.selected {
-    background: #e3f2fd;
-    border-color: #2196f3;
+    background: var(--glass-strong);
+    border-color: var(--accent);
 }
 
 .modal-list-text {
@@ -430,7 +519,7 @@ button:hover {
 
 .modal-list-text span,
 .modal-list-empty {
-    color: #607d8b;
+    color: var(--text-soft);
     font-size: 12px;
 }
 
@@ -439,57 +528,33 @@ button:hover {
     gap: 6px;
 }
 
+/* Кнопки строк списков — те же стеклянные кнопки, но компактнее */
 .modal-list-actions button {
-    padding: 6px 8px;
+    padding: 5px 10px;
     font-size: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.15s;
 }
 
-/* =============================================================================
-   Кнопки действий списков
-   ============================================================================= */
-
-/* Выбрать */
-.background-manage-select,
-.search-engine-select {
-    border: 1px solid #4caf50;
-    background: #e8f5e8;
-    color: #2e7d32;
+.modal-list-actions button:hover {
+    background: var(--glass);
 }
 
-/* Редактировать */
-.background-manage-edit,
-.search-engine-edit,
-.bookmark-manage-edit {
-    border: 1px solid #4a90e2;
-    background: #f0f8ff;
-    color: #1766aa;
+/* Удаление — с красным акцентом */
+.modal-list-actions .background-manage-delete,
+.modal-list-actions .bookmark-manage-delete,
+.modal-list-actions .search-engine-delete {
+    color: var(--danger);
 }
 
-/* Удалить */
-.background-manage-delete,
-.bookmark-manage-delete,
-.search-engine-delete {
-    border: 1px solid #d32f2f;
-    background: #ffebee;
-    color: #b71c1c;
-}
-
-/* =============================================================================
-   Прочее
-   ============================================================================= */
-
-#overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.3);
-    z-index: 10000;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 10px;
+.modal-list-actions .background-manage-delete:hover,
+.modal-list-actions .bookmark-manage-delete:hover,
+.modal-list-actions .search-engine-delete:hover {
+    background: var(--danger-soft);
 }
 
 /* Изображения в списках */
@@ -500,17 +565,17 @@ button:hover {
     border-radius: 4px;
 }
 
-/* Заглушки когда изображения нет */
+/* Заглушки, когда изображения нет */
 .no-preview,
 .no-logo {
     width: 50px;
     height: 50px;
-    background: #eee;
+    background: var(--glass-input);
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #aaa;
+    color: var(--text-soft);
     font-size: 14px;
     font-weight: bold;
 }
@@ -521,25 +586,62 @@ button:hover {
 }
 
 /* =============================================================================
-   Кнопка настроек (FAB)
+   Форма добавления — раскрывается по кнопке "+ Добавить"
    ============================================================================= */
 
+.add-form {
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--glass);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* =============================================================================
+   Прочее
+   ============================================================================= */
+
+#overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .3);
+    z-index: 10000;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+/* Кнопка настроек (круглая, снизу справа) */
 .settings-fab {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background-color: #007acc;
-    color: white;
-    border: none;
+    background: var(--glass-strong);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    color: var(--text);
+    border: 1px solid var(--border);
     font-size: 20px;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow);
     z-index: 1000;
+    transition: transform 0.15s;
 }
 
 .settings-fab:hover {
-    background-color: #005a9e;
+    transform: scale(1.05);
 }

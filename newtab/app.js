@@ -551,6 +551,43 @@ window.addEventListener('DOMContentLoaded', () => {
         newSearchEngineLogo.value = '';
     }
 
+    // --- Раскрывающиеся формы добавления ---
+    // Форма спрятана, пока пользователь не нажмёт "＋ Добавить".
+    // addForms связывает кнопку показа, саму форму и функцию сброса
+    // для каждого типа: 'bookmark' | 'background' | 'searchEngine'
+    const addForms = {
+        bookmark: {
+            showButton: document.getElementById('show-bookmark-form'),
+            form: document.getElementById('bookmark-form'),
+            reset: resetBookmarkForm,
+        },
+        background: {
+            showButton: document.getElementById('show-background-form'),
+            form: document.getElementById('background-form'),
+            reset: resetBackgroundForm,
+        },
+        searchEngine: {
+            showButton: document.getElementById('show-search-engine-form'),
+            form: document.getElementById('search-engine-form'),
+            reset: resetSearchEngineForm,
+        },
+    };
+
+    // Показывает форму добавления, пряча кнопку "+ Добавить"
+    function showAddForm(form) {
+        addForms[form].showButton.classList.add('hidden');
+        addForms[form].form.classList.remove('hidden');
+        // Сразу ставим курсор в первое поле — можно печатать
+        addForms[form].form.querySelector('input')?.focus();
+    }
+
+    // Прячет форму и сбрасывает её поля
+    function hideAddForm(form) {
+        addForms[form].showButton.classList.remove('hidden');
+        addForms[form].form.classList.add('hidden');
+        addForms[form].reset();
+    }
+
     function openSettingsModal(tab = 'bookmarks') {
         // Показываем нужную вкладку модалки и прячем остальные
         settingsTabs.forEach(t => t.classList.remove('active'));
@@ -567,9 +604,9 @@ window.addEventListener('DOMContentLoaded', () => {
     function closeSettingsModal() {
         settingsModal.classList.add('hidden');
         overlay.classList.add('hidden');
-        resetBookmarkForm();
-        resetBackgroundForm();
-        resetSearchEngineForm();
+        hideAddForm('bookmark');
+        hideAddForm('background');
+        hideAddForm('searchEngine');
     }
 
     function closeContextMenu() {
@@ -617,6 +654,7 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         };
         fillers[form]();
+        showAddForm(form); // форма добавления — она же форма редактирования
         // Имя вкладки модалки совпадает с ключом формы
         openSettingsModal(form === 'searchEngine' ? 'search-engines' : form + 's');
     }
@@ -775,7 +813,11 @@ window.addEventListener('DOMContentLoaded', () => {
     // Закладки
     // =============================================================================
 
-    // Кнопка "Добавить" / "Сохранить" в форме закладок
+    // Кнопки "＋ Добавить" и "Отмена" — показ/скрытие формы
+    addForms.bookmark.showButton.addEventListener('click', () => showAddForm('bookmark'));
+    document.getElementById('cancel-bookmark').addEventListener('click', () => hideAddForm('bookmark'));
+
+    // Кнопка "Сохранить" в форме закладок
     saveBookmarkButton.addEventListener('click', () => {
         const title = bookmarkTitleInput.value.trim();
         const rawUrl = bookmarkUrlInput.value.trim();
@@ -798,7 +840,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         saveState({ bookmarks: currentState.bookmarks });
         refreshUI();
-        resetBookmarkForm();
+        hideAddForm('bookmark'); // прячем форму после сохранения
     });
 
     // Кнопка "Найти логотип": запускает перебор источников favicon
@@ -862,6 +904,10 @@ window.addEventListener('DOMContentLoaded', () => {
     // Фоны
     // =============================================================================
 
+    // Кнопки "＋ Добавить" и "Отмена" — показ/скрытие формы
+    addForms.background.showButton.addEventListener('click', () => showAddForm('background'));
+    document.getElementById('cancel-background').addEventListener('click', () => hideAddForm('background'));
+
     saveBackgroundButton.addEventListener('click', () => {
         const title = backgroundTitleInput.value.trim();
         if (!title) { alert('Введите название.'); return; }
@@ -875,7 +921,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         saveState({ backgrounds: currentState.backgrounds });
         refreshUI();
-        resetBackgroundForm();
+        hideAddForm('background');
     });
 
     backgroundManagerList.addEventListener('click', (e) => {
@@ -903,6 +949,10 @@ window.addEventListener('DOMContentLoaded', () => {
     // Поисковые системы
     // =============================================================================
 
+    // Кнопки "＋ Добавить" и "Отмена" — показ/скрытие формы
+    addForms.searchEngine.showButton.addEventListener('click', () => showAddForm('searchEngine'));
+    document.getElementById('cancel-search-engine').addEventListener('click', () => hideAddForm('searchEngine'));
+
     addSearchEngineButton.addEventListener('click', () => {
         const name = newSearchEngineName.value.trim();
         const url = newSearchEngineUrl.value.trim();
@@ -920,7 +970,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         saveState({ searchEngines: currentState.searchEngines });
         refreshUI();
-        resetSearchEngineForm();
+        hideAddForm('searchEngine');
     });
 
     findSearchEngineLogoButton.addEventListener('click', async () => {
