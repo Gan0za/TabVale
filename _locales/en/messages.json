@@ -62,8 +62,14 @@
   "noImage": { "message": "None" },
 
   "importSuccess": { "message": "Settings imported" },
-  "importSkipped": { "message": "Settings imported. Skipped invalid items: $count$" },
-  "importError": { "message": "Import error: $error$" },
+  "importSkipped": {
+    "message": "Settings imported. Skipped invalid items: $count$",
+    "placeholders": { "count": { "content": "$1" } }
+  },
+  "importError": {
+    "message": "Import error: $error$",
+    "placeholders": { "error": { "content": "$1" } }
+  },
   "errTitleAndUrl": { "message": "Enter a title and URL." },
   "errInvalidUrl": { "message": "Enter a valid URL." },
   "errBookmarkUrl": { "message": "Enter the bookmark URL." },

@@ -62,8 +62,14 @@
   "noImage": { "message": "Нет" },
 
   "importSuccess": { "message": "Настройки импортированы" },
-  "importSkipped": { "message": "Настройки импортированы. Пропущено некорректных элементов: $count$" },
-  "importError": { "message": "Ошибка импорта: $error$" },
+  "importSkipped": {
+    "message": "Настройки импортированы. Пропущено некорректных элементов: $count$",
+    "placeholders": { "count": { "content": "$1" } }
+  },
+  "importError": {
+    "message": "Ошибка импорта: $error$",
+    "placeholders": { "error": { "content": "$1" } }
+  },
   "errTitleAndUrl": { "message": "Введите название и URL." },
   "errInvalidUrl": { "message": "Введите корректный URL." },
   "errBookmarkUrl": { "message": "Введите URL закладки." },
