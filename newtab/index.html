@@ -8,11 +8,11 @@
 </head>
 <body>
     <div class="container" id="main-container">
-        <h1>Новая вкладка</h1>
+        <h1 data-i18n="pageTitle">Новая вкладка</h1>
 
         <div id="search-container">
             <div class="search-row">
-                <input type="text" id="search-input" placeholder="Поиск..." autocomplete="off">
+                <input type="text" id="search-input" data-i18n-placeholder="searchPlaceholder" placeholder="Поиск..." autocomplete="off">
                 <div id="search-engine-dropdown" class="dropdown">
                     <button id="search-engine-button" class="dropdown-button">
                         <img id="selected-engine-icon" src="" alt="">
@@ -21,24 +21,26 @@
                     </button>
                     <div id="search-engine-list" class="dropdown-menu"></div>
                 </div>
-                <button id="search-button" class="btn">Найти</button>
+                <button id="search-button" class="btn" data-i18n="searchButton">Найти</button>
             </div>
         </div>
 
         <section id="bookmarks-section">
-            <h2>Закладки</h2>
+            <h2 data-i18n="bookmarksSection">Закладки</h2>
             <div id="bookmarks-container"></div>
         </section>
     </div>
 
-    <!-- Переключатель темы (авто / светлая / тёмная) и кнопка настроек -->
+    <!-- Переключатель темы (авто / светлая / тёмная), выбор языка и настройки -->
     <div class="fab-stack">
-        <button id="theme-toggle" class="settings-fab" aria-label="Сменить тему">🌗</button>
+        <button id="theme-toggle" class="settings-fab" data-i18n-aria="themeToggleAria">🌗</button>
         <div id="theme-menu" class="theme-menu hidden">
-            <button data-mode="auto">Авто</button>
-            <button data-mode="light">Светлая</button>
-            <button data-mode="dark">Тёмная</button>
+            <button data-mode="auto" data-i18n="themeAuto">Авто</button>
+            <button data-mode="light" data-i18n="themeLight">Светлая</button>
+            <button data-mode="dark" data-i18n="themeDark">Тёмная</button>
         </div>
+        <button id="language-toggle" class="settings-fab">🌐</button>
+        <div id="language-menu" class="theme-menu hidden"></div>
         <button id="settings-button" class="settings-fab">⚙</button>
     </div>
 
@@ -49,64 +51,88 @@
     <div id="overlay" class="hidden"></div>
 
     <div id="settings-modal" class="modal hidden">
-        <h3>Настройки</h3>
+        <h3 data-i18n="settingsTitle">Настройки</h3>
         <div class="settings-tabs">
-            <button class="settings-tab active" data-tab="bookmarks">Закладки</button>
-            <button class="settings-tab" data-tab="backgrounds">Фоны</button>
-            <button class="settings-tab" data-tab="search-engines">Поисковые системы</button>
+            <button class="settings-tab" data-tab="general" data-i18n="generalSection">Общие</button>
+            <button class="settings-tab active" data-tab="bookmarks" data-i18n="tabBookmarks">Закладки</button>
+            <button class="settings-tab" data-tab="backgrounds" data-i18n="tabBackgrounds">Фоны</button>
+            <button class="settings-tab" data-tab="search-engines" data-i18n="tabSearchEngines">Поисковые системы</button>
         </div>
         <div class="settings-content">
+            <!-- Общие настройки: язык, тема, импорт/экспорт -->
+            <div class="settings-pane" data-pane="general">
+                <div class="general-row">
+                    <span data-i18n="languageLabel">Язык</span>
+                    <div class="dropdown">
+                        <button id="language-button" class="dropdown-button">
+                            <span id="selected-language-name">🌐</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div id="language-list" class="dropdown-menu"></div>
+                    </div>
+                </div>
+                <div class="general-row">
+                    <span data-i18n="themeToggleAria">Тема</span>
+                    <div id="theme-menu-general" class="theme-switcher">
+                        <button data-mode="auto" data-i18n="themeAuto">Авто</button>
+                        <button data-mode="light" data-i18n="themeLight">Светлая</button>
+                        <button data-mode="dark" data-i18n="themeDark">Тёмная</button>
+                    </div>
+                </div>
+                <div class="general-row general-actions">
+                    <button id="import-settings-json" class="btn" data-i18n="importButton">Импорт (JSON)</button>
+                    <button id="export-settings-json" class="btn" data-i18n="exportButton">Экспорт (JSON)</button>
+                </div>
+            </div>
             <div class="settings-pane active" data-pane="bookmarks">
                 <div id="bookmark-manager-list" class="modal-list"></div>
-                <button id="show-bookmark-form" class="btn">＋ Добавить</button>
+                <button id="show-bookmark-form" class="btn" data-i18n="addButton">＋ Добавить</button>
                 <div id="bookmark-form" class="add-form">
                     <div class="add-form-inner">
-                        <input type="text" id="bookmark-title-input" placeholder="Название">
-                        <input type="url" id="bookmark-url-input" placeholder="URL">
-                        <input type="url" id="bookmark-icon-input" placeholder="URL логотипа (опционально)">
+                        <input type="text" id="bookmark-title-input" data-i18n-placeholder="bookmarkTitlePlaceholder" placeholder="Название">
+                        <input type="url" id="bookmark-url-input" data-i18n-placeholder="bookmarkUrlPlaceholder" placeholder="URL">
+                        <input type="url" id="bookmark-icon-input" data-i18n-placeholder="iconUrlPlaceholder" placeholder="URL логотипа (опционально)">
                         <div class="form-actions">
-                            <button id="find-bookmark-logo" class="btn">Найти логотип</button>
-                            <button id="save-bookmark" class="btn btn-primary">Сохранить</button>
-                            <button id="cancel-bookmark" class="btn">Отмена</button>
+                            <button id="find-bookmark-logo" class="btn" data-i18n="findLogo">Найти логотип</button>
+                            <button id="save-bookmark" class="btn btn-primary" data-i18n="saveButton">Сохранить</button>
+                            <button id="cancel-bookmark" class="btn" data-i18n="cancelButton">Отмена</button>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="settings-pane" data-pane="backgrounds">
                 <div id="background-manager-list" class="modal-list"></div>
-                <button id="show-background-form" class="btn">＋ Добавить</button>
+                <button id="show-background-form" class="btn" data-i18n="addButton">＋ Добавить</button>
                 <div id="background-form" class="add-form">
                     <div class="add-form-inner">
-                        <input type="text" id="background-title-input" placeholder="Название фона">
-                        <input type="url" id="background-url-input" placeholder="URL изображения (пусто — по умолчанию)">
+                        <input type="text" id="background-title-input" data-i18n-placeholder="bgTitlePlaceholder" placeholder="Название фона">
+                        <input type="url" id="background-url-input" data-i18n-placeholder="bgUrlPlaceholder" placeholder="URL изображения (пусто — по умолчанию)">
                         <div class="form-actions">
-                            <button id="save-background" class="btn btn-primary">Сохранить</button>
-                            <button id="cancel-background" class="btn">Отмена</button>
+                            <button id="save-background" class="btn btn-primary" data-i18n="saveButton">Сохранить</button>
+                            <button id="cancel-background" class="btn" data-i18n="cancelButton">Отмена</button>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="settings-pane" data-pane="search-engines">
                 <div id="search-engines-list" class="modal-list"></div>
-                <button id="show-search-engine-form" class="btn">＋ Добавить</button>
+                <button id="show-search-engine-form" class="btn" data-i18n="addButton">＋ Добавить</button>
                 <div id="search-engine-form" class="add-form">
                     <div class="add-form-inner">
-                        <input type="text" id="new-search-engine-name" placeholder="Название">
-                        <input type="text" id="new-search-engine-url" placeholder="URL с %s (например https://www.google.com/search?q=%s)">
-                        <input type="url" id="new-search-engine-logo" placeholder="URL логотипа (опционально)">
+                        <input type="text" id="new-search-engine-name" data-i18n-placeholder="engineNamePlaceholder" placeholder="Название">
+                        <input type="text" id="new-search-engine-url" data-i18n-placeholder="engineUrlPlaceholder" placeholder="URL с %s (например https://www.google.com/search?q=%s)">
+                        <input type="url" id="new-search-engine-logo" data-i18n-placeholder="iconUrlPlaceholder" placeholder="URL логотипа (опционально)">
                         <div class="form-actions">
-                            <button id="find-search-engine-logo" class="btn">Найти логотип</button>
-                            <button id="add-search-engine" class="btn btn-primary">Сохранить</button>
-                            <button id="cancel-search-engine" class="btn">Отмена</button>
+                            <button id="find-search-engine-logo" class="btn" data-i18n="findLogo">Найти логотип</button>
+                            <button id="add-search-engine" class="btn btn-primary" data-i18n="saveButton">Сохранить</button>
+                            <button id="cancel-search-engine" class="btn" data-i18n="cancelButton">Отмена</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="modal-actions">
-            <button id="import-settings-json" class="btn">Импорт (JSON)</button>
-            <button id="export-settings-json" class="btn">Экспорт (JSON)</button>
-            <button id="close-settings" class="btn">Закрыть</button>
+            <button id="close-settings" class="btn" data-i18n="closeButton">Закрыть</button>
         </div>
         <input id="import-settings-file" type="file" accept="application/json" style="display:none" />
     </div>

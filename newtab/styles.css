@@ -778,10 +778,14 @@ h1, h2 {
     transform: scale(1.05);
 }
 
-/* Пара круглых кнопок в правом нижнем углу: тема + настройки.
+/* Три круглые кнопки в правом нижнем углу: тема + язык + настройки.
    right-отступ каждой задан отдельно, чтобы кнопки стояли в ряд */
 .settings-fab#settings-button { right: 20px; }
-.settings-fab#theme-toggle { right: 78px; }
+.settings-fab#language-toggle { right: 78px; }
+.settings-fab#theme-toggle { right: 136px; }
+
+/* Меню языка раскрывается над кнопкой 🌐 (право — под кнопкой) */
+#language-menu { right: 78px; }
 
 /* Мини-меню выбора темы: раскрывается над кнопкой 🌗 */
 .theme-menu {
@@ -818,4 +822,56 @@ h1, h2 {
 .theme-menu button.active {
     color: var(--accent);
     font-weight: bold;
+}
+
+/* =============================================================================
+   Общие настройки (раздел модалки): язык, тема, импорт/экспорт
+   ========================================================================== */
+
+/* Строка "Название — управление" в разделе «Общие» */
+.general-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+}
+
+.general-row:last-child {
+    border-bottom: none;
+}
+
+/* Кнопки импорта/экспорта в одну линию с переносом на узких экранах */
+.general-actions {
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Мини-переключатель темы в «Общих»: три кнопки в ряд (как в FAB-меню,
+   но горизонтально и без position: fixed, который сломал бы поток) */
+.theme-switcher {
+    display: flex;
+    gap: 4px;
+}
+
+.theme-switcher button {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-size: 13px;
+    border-radius: var(--radius-small);
+    cursor: pointer;
+}
+
+.theme-switcher button:hover {
+    background: var(--glass);
+}
+
+.theme-switcher button.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
 }

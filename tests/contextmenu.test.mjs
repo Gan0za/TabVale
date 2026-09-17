@@ -36,9 +36,22 @@ const chromeStub = {
     storage: { sync: { get(k, cb) { cb({}); }, set() {} }, onChanged: { addListener() {} } },
 };
 
+// Реальный ru-словарь: подписи пунктов меню теперь берутся из _locales.
+// Подкладываем его в песочницу как currentMessages (его заполняет applyLocale,
+// но в тесте браузерного окружения нет)
+const ruMessages = JSON.parse(
+    fs.readFileSync(path.join(projectRoot, '_locales', 'ru', 'messages.json'), 'utf8')
+);
+
+const sandbox = {
+    chrome: chromeStub, document: documentStub,
+    window: { addEventListener() {} }, Image: class {}, URL,
+};
+// Словарь подставляется через хвост к коду app.js: после объявления
+// let currentMessages (TDZ для присваивания ДО объявления пройден)
 const { getContextMenuItems } = vm.runInNewContext(
-    source + '\n;({ getContextMenuItems })',
-    { chrome: chromeStub, document: documentStub, window: { addEventListener() {} }, Image: class {}, URL }
+    source + `\n;currentMessages = ${JSON.stringify(ruMessages)};\n;({ getContextMenuItems })`,
+    sandbox
 );
 
 // --- Меню плитки закладки ---
@@ -67,12 +80,13 @@ assert.deepEqual(
 // "Настройки" — под разделителем, как в меню плитки закладки
 const bgSettingsIdx = background.findIndex(i => i.action === 'openSettings');
 assert.equal(background[bgSettingsIdx - 1].separator, true, 'разделитель перед "Настройки"');
-assert.equal(background[bgSettingsIdx].label, 'Настройки', 'пункт называется "Настройки"');
+assert.equal(background[bgSettingsIdx].label, ruMessages.settings.message,
+    'пункт называется "Настройки" (значение из ru-словаря)');
 // Пункт редактирования текущего фона присутствует
 assert.equal(
     background.find(i => i.action === 'editBackground').label,
-    'Редактировать',
-    'пункт редактирования фона называется "Редактировать"'
+    ruMessages.edit.message,
+    'пункт редактирования фона берёт подпись из словаря'
 );
 
 // --- Меню поля поиска (динамическое) ---
@@ -111,7 +125,8 @@ assert.deepEqual(
 // "Настройки" — под разделителем, как в других меню
 const searchSettingsIdx = searchFull.findIndex(i => i.action === 'openSettings');
 assert.equal(searchFull[searchSettingsIdx - 1].separator, true, 'разделитель перед "Настройки"');
-assert.equal(searchFull[searchSettingsIdx].label, 'Настройки', 'пункт называется "Настройки"');
+assert.equal(searchFull[searchSettingsIdx].label, ruMessages.settings.message,
+    'пункт называется "Настройки" (значение из ru-словаря)');
 
 // --- Меню строки настроек ---
 const rowPlain = Array.from(getContextMenuItems('settingsRow', { selectable: false, rowType: 'bookmark' }).map(i => i.action));
