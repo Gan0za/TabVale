@@ -621,7 +621,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Раскрывающиеся формы добавления ---
-    // Форма спрятана, пока пользователь не нажмёт "＋ Добавить".
+    // Форма всегда в разметке, но свернута (grid-строка 0fr, см. styles.css).
     // addForms связывает кнопку показа, саму форму и функцию сброса
     // для каждого типа: 'bookmark' | 'background' | 'searchEngine'
     const addForms = {
@@ -645,7 +645,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Показывает форму добавления, пряча кнопку "+ Добавить"
     function showAddForm(form) {
         addForms[form].showButton.classList.add('hidden');
-        addForms[form].form.classList.remove('hidden');
+        addForms[form].form.classList.add('open'); // grid 0fr -> 1fr: плавное раскрытие
         // Сразу ставим курсор в первое поле — можно печатать
         addForms[form].form.querySelector('input')?.focus();
     }
@@ -653,7 +653,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Прячет форму и сбрасывает её поля
     function hideAddForm(form) {
         addForms[form].showButton.classList.remove('hidden');
-        addForms[form].form.classList.add('hidden');
+        addForms[form].form.classList.remove('open'); // плавное сворачивание
         addForms[form].reset();
     }
 
