@@ -14,13 +14,12 @@
 
 ```
 ├── manifest.json          # Манифест расширения
-├── background.js          # Service Worker (контекстное меню)
+├── background.js          # Service Worker (контекстное меню иконки расширения)
 ├── newtab/
 │   ├── index.html         # Главная страница
 │   ├── styles.css         # Стили
 │   └── app.js             # Логика приложения
-├── assets/icons/          # Иконки расширения
-├── _locales/en/           # Локализация
+├── assets/icons/          # Иконки расширения (PNG 16/48/128)
 └── README.md
 ```
 

@@ -14,6 +14,8 @@ body {
     background-color: #eceff3;
     background-position: center;
     background-repeat: no-repeat;
+    /* Картинка фона задаётся из JS; растягиваем её на всю страницу */
+    background-size: cover;
     color: #2c3e50;
 }
 
@@ -50,10 +52,15 @@ h1, h2 {
     gap: 8px;
 }
 
+/* Единый вид полей ввода и "обычных" кнопок с рамкой.
+   Кнопки без рамки (круглые кнопки на плитках, вкладки настроек,
+   кнопка настроек) оформлены отдельно и в этот список не входят. */
 #search-input,
-button,
 input[type='text'],
-input[type='url'] {
+input[type='url'],
+#search-button,
+.modal-actions button,
+.modal-list-actions button {
     padding: 10px;
     border: 1px solid #90a4ae;
     border-radius: 8px;
@@ -269,12 +276,8 @@ input[type='url'] {
 }
 
 /* =============================================================================
-   Кнопки и hover-эффекты
+   Hover-эффекты кнопок
    ============================================================================= */
-
-button.secondary {
-    display: none;
-}
 
 button:hover {
     filter: brightness(0.96);
@@ -308,6 +311,15 @@ button:hover {
 
 .context-menu li:hover {
     background: #eaf2fb;
+}
+
+/* Линия-разделитель между группами пунктов меню */
+.context-menu li.separator {
+    height: 1px;
+    margin: 6px 4px;
+    padding: 0;
+    background: #e0e0e0;
+    pointer-events: none; /* разделитель не реагирует на мышь */
 }
 
 /* =============================================================================
@@ -478,14 +490,6 @@ button:hover {
     justify-content: flex-end;
     gap: 10px;
     margin-top: 10px;
-}
-
-.search-engine-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 4px;
-    border-bottom: 1px solid #e0e0e0;
 }
 
 /* Изображения в списках */
