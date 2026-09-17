@@ -261,7 +261,18 @@ h1, h2 {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 14px;
+    padding: 8px 12px;
+    /* Сброс браузерных стилей кнопки: пункты селекторов — это <button>,
+       и без сброса они выглядят иначе, чем div-пункты поисковика
+       (серая подложка, центрирование, крупные внутренние отступы) */
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
     cursor: pointer;
     transition: background 0.15s;
 }
@@ -275,9 +286,12 @@ h1, h2 {
 }
 
 .dropdown-item img {
+    /* Пропорции флага 3:2 (SVG в newtab/flags): квадрат искажал бы его */
     width: 20px;
-    height: 20px;
-    border-radius: 4px;
+    height: 14px;
+    object-fit: cover;
+    border-radius: 2px;
+    flex-shrink: 0;
 }
 
 /* =============================================================================
@@ -849,9 +863,10 @@ h1, h2 {
     flex-wrap: wrap;
 }
 
-/* Флаг в селекторе языка и на кнопке: небольшая картинка с рамкой */
-.flag-icon,
-.dropdown-button img {
+/* Флаг на кнопке селектора языка: пропорции флага 3:2. Отдельное правило
+   с повышенной специфичностью — общее .dropdown-button img (20x20) оставляет
+   favicon'ам поисковиков квадратную форму */
+.dropdown-button .flag-icon {
     width: 20px;
     height: 14px;
     object-fit: cover;
