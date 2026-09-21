@@ -235,14 +235,15 @@ assert.ok(tileB.classList.contains('dragging'), 'long-press включает р�
 let moveEvent = { touches: [touch(50, 100)], preventDefault() { this.defaultPrevented = true; } };
 grid._listeners.touchmove.forEach((fn) => fn(moveEvent));
 assert.ok(moveEvent.defaultPrevented, 'страница не скроллится во время переноса');
-assert.ok(tileB.style.transform.includes('translate'), 'плитка едет за пальцем');
+assert.ok(tileB.style.position === 'fixed', 'плитка вынута из потока — позиционируется fixed');
+assert.ok(tileB.style.left !== '' && tileB.style.top !== '', 'плитка едет за пальцем через left/top без transform');
 
 // --- 4. Отпускание: порядок сохранён, визуал снят ---
 grid._listeners.touchend.forEach((fn) => fn({
     touches: [], preventDefault() {},
 }));
 assert.ok(!tileB.classList.contains('dragging'), 'после отпускания визуал снят');
-assert.ok(tileB.style.transform === '', 'transform сброшен после переноса');
+assert.ok(tileB.style.transform === '' && tileB.style.position === '' && tileB.style.left === '', 'все инлайновые стили сброшены после переноса');
 // Палец B сместился над центром A (x=200 -> левая половина A при плитках
 // 140px: центры 65/205/345) — слот 0, B в начало
 assert.deepEqual(savedOrder, ['B', 'A', 'C'], 'порядок сохранён после сенсорного переноса');
@@ -271,5 +272,27 @@ grid._listeners.touchend.forEach((fn) => fn({ touches: [], preventDefault() {} }
 ctxEvent = { target: tiles[1], preventDefault() { ctxEvent.prevented = true; } };
 grid._listeners.contextmenu.forEach((fn) => fn(ctxEvent));
 assert.ok(!ctxEvent.prevented, 'вне переноса contextmenu работает (правый клик мыши)');
+
+// --- 7. Гибрид: long-press таймер не перебивает активный мышиный перенос ---
+// Регрессия: касание ладонью запускало таймер, который через 350 мс
+// перезаписывал draggedIndex посреди мышицного переноса — мышь умирала
+grid._listeners.touchstart.forEach((fn) => fn({
+    touches: [touch(200, 200)], target: tiles[1], stopPropagation() {},
+}));
+// Имитируем мышиный drag: dragstart по той же плитке
+const mouseDragStart = grid._listeners.dragstart[0];
+mouseDragStart({ target: tiles[1], dataTransfer: { setData() {} } });
+assert.ok(tileB.classList.contains('dragging'), 'мышиный dragstart включает режим переноса');
+await new Promise((r) => setTimeout(r, 400)); // таймер ладони срабатывает здесь
+assert.ok(tileB.classList.contains('dragging'),
+    'мышиный перенос не заглушается сенсорным таймером');
+// завершаем мышиный перенос как обычно
+grid._listeners.dragend.forEach((fn) => fn({ target: tiles[1] }));
+assert.ok(!tileB.classList.contains('dragging'), 'dragend снимает визуал');
+
+// --- 8. getDropIndex исключает перетаскиваемую плитку из рядов ---
+// Без исключения плитка у пальца создаёт фантомный ряд — список прыгает
+assert.ok(/getDropIndex\(mouseX, mouseY, skipEl\)/.test(source), 'getDropIndex принимает skipEl');
+assert.ok(/tile !== skipEl/.test(source), 'перетаскиваемая плитка исключена из расчёта рядов');
 
 console.log('touch-drag.test.mjs: все проверки пройдены');
