@@ -891,6 +891,9 @@ function setBackground(backgrounds, currentBackgroundIndex) {
 
     const apply = (cssValue) => {
         document.body.style.background = cssValue;
+        // Свойство из CSS сбрасывается записью background — возвращаем,
+        // чтобы фон не уезжал при прокрутке страницы
+        document.body.style.backgroundAttachment = 'fixed';
         // Положение задаём только картинкам; заливки и градиенты
         // заполняют экран сами (сброс на значения по умолчанию из CSS)
         if (isPicture) {
