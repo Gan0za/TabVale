@@ -32,6 +32,9 @@
   "cancelButton": { "message": "Cancel" },
   "importButton": { "message": "Import (JSON)" },
   "exportButton": { "message": "Export (JSON)" },
+  "resetButton": { "message": "Reset settings" },
+  "resetConfirm": { "message": "Delete all bookmarks, backgrounds and search engines and restore defaults?" },
+  "resetDone": { "message": "Settings have been reset." },
   "closeButton": { "message": "Close" },
 
   "bookmarkTitlePlaceholder": { "message": "Title" },

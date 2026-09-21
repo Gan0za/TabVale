@@ -72,8 +72,13 @@ for (const decl of ['border: none', 'background: transparent', 'font-family: inh
 }
 
 // --- 5. Флаги 3:2 в пунктах и на кнопке, favicon поисковика не тронут ---
+// Базовое правило для пунктов — квадрат 20x20 (круглые логотипы
+// поисковиков не обрезаются), флаг переопределяется классом flag-icon
 const itemImg = css.match(/\.dropdown-item img \{[\s\S]*?\}/);
-assert.ok(itemImg && itemImg[0].includes('height: 14px') && itemImg[0].includes('object-fit: cover'),
+assert.ok(itemImg && itemImg[0].includes('width: 20px') && itemImg[0].includes('height: 20px'),
+    'иконка в пунктах меню — квадрат 20x20, без обрезки');
+const itemFlag = css.match(/\.dropdown-item img\.flag-icon \{[\s\S]*?\}/);
+assert.ok(itemFlag && itemFlag[0].includes('height: 14px') && itemFlag[0].includes('object-fit: cover'),
     'флаг в пунктах меню — 20x14 (3:2)');
 const buttonFlag = css.match(/\.dropdown-button \.flag-icon \{[\s\S]*?\}/);
 assert.ok(buttonFlag && buttonFlag[0].includes('height: 14px'),

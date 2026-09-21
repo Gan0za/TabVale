@@ -32,6 +32,9 @@
   "cancelButton": { "message": "Отмена" },
   "importButton": { "message": "Импорт (JSON)" },
   "exportButton": { "message": "Экспорт (JSON)" },
+  "resetButton": { "message": "Сбросить настройки" },
+  "resetConfirm": { "message": "Удалить все закладки, фоны и поисковые системы и вернуть настройки по умолчанию?" },
+  "resetDone": { "message": "Настройки сброшены." },
   "closeButton": { "message": "Закрыть" },
 
   "bookmarkTitlePlaceholder": { "message": "Название" },

@@ -925,6 +925,21 @@ function setBackground(backgrounds, currentBackgroundIndex) {
     apply(buildBackgroundCss(background));
 }
 
+/* Максимальная длина названия поисковика: длинное разрывало бы кнопку
+   селектора; всё сверх лимита отрезается с многоточием */
+const SEARCH_NAME_MAX = 24;
+
+/**
+ * Обрезает название поисковика до SEARCH_NAME_MAX символов, ставя
+ * многоточие. Применяется при сохранении: в хранилище попадает уже
+ * короткое имя, а подписи в UI дополнительно поджимаются CSS.
+ */
+function clampSearchName(name) {
+    const trimmed = String(name).trim();
+    if (trimmed.length <= SEARCH_NAME_MAX) return trimmed;
+    return trimmed.slice(0, SEARCH_NAME_MAX - 1) + '…';
+}
+
 /**
  * Название по умолчанию из адреса: https://www.github.com -> Github.
  * Поддерживает адреса поисковиков с %s (шаблоны вида
@@ -1752,6 +1767,36 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Сброс настроек: дефолтные списки, чистка file-фонов, тема auto ---
+    document.getElementById('reset-settings').addEventListener('click', () => {
+        if (!confirm(t('resetConfirm'))) return;
+
+        // Картинки file-фонов живут в storage.local под ключами bgFile:*:
+        // при сбросе записей о фонах они бы остались навсегда
+        const staleFileKeys = currentState.backgrounds
+            .filter((bg) => bg.type === 'file' && bg.fileId)
+            .map((bg) => fileKey(bg.fileId));
+        if (staleFileKeys.length) {
+            chrome.storage.local.remove(staleFileKeys);
+        }
+
+        currentState = {
+            searchEngines: DEFAULT_SEARCH_ENGINES,
+            bookmarks: DEFAULT_BOOKMARKS,
+            backgrounds: DEFAULT_BACKGROUNDS,
+            currentBackgroundIndex: 0,
+            currentSearchEngineIndex: 0,
+        };
+        saveState(currentState);
+        // Тема возвращается к авто: хранится отдельным ключом, saveState
+        // её не затрагивает
+        storageSet({ theme: 'auto' });
+        applyTheme('auto');
+
+        refreshUI();
+        alert(t('resetDone'));
+    });
+
     // =============================================================================
     // Закладки
     // =============================================================================
@@ -2175,7 +2220,7 @@ window.addEventListener('DOMContentLoaded', () => {
         // %s в URL обязателен — иначе некуда подставлять запрос
         if (!name || !url || !url.includes('%s')) { alert(t('errNameAndUrl')); return; }
 
-        const engineData = { name, url, logo };
+        const engineData = { name: clampSearchName(name), url, logo };
         if (editingSearchEngineIndex !== null) {
             currentState.searchEngines[editingSearchEngineIndex] = engineData;
         } else {
