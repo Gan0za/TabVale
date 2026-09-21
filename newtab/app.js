@@ -1179,6 +1179,7 @@ window.addEventListener('DOMContentLoaded', () => {
         switchBackgroundType('url');
         backgroundUrlInput.value = '';
         backgroundFileInput.value = '';
+        document.getElementById('background-file-preview').classList.add('hidden');
         backgroundColorInput.value = '#4db6e2';
         updateColorValueLabel();
         applyGradientPreset(GRADIENT_PRESETS[0]);
@@ -1383,6 +1384,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 switchBackgroundType(type);
                 backgroundUrlInput.value = bg.url || '';
                 backgroundFileInput.value = '';
+                // Диалог файла нельзя заполнить программно: показываем
+                // превью уже прикреплённой картинки из storage.local
+                showFilePreview(bg);
                 backgroundColorInput.value = bg.type === 'color' ? bg.value : '#4db6e2';
                 updateColorValueLabel();
                 if (bg.type === 'gradient') {
@@ -1777,6 +1781,38 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('background-color-value').textContent = backgroundColorInput.value;
     }
 
+    /**
+     * Превью file-фона при редактировании. Диалог выбора файла нельзя
+     * заполнить программно, поэтому вместо него показываем миниатюру
+     * уже прикреплённой картинки (data:URL из storage.local) и её fileId.
+     * Пока превью показано, сохранение не требует повторного выбора.
+     */
+    function showFilePreview(bg) {
+        const box = document.getElementById('background-file-preview');
+        if (!bg || bg.type !== 'file' || !bg.fileId) {
+            box.classList.add('hidden');
+            return;
+        }
+        chrome.storage.local.get(fileKey(bg.fileId), (result) => {
+            const err = chrome.runtime?.lastError;
+            const dataUrl = err ? '' : (result || {})[fileKey(bg.fileId)];
+            if (!dataUrl) {
+                box.classList.add('hidden');
+                return;
+            }
+            setImageSource(document.getElementById('background-file-thumb'), dataUrl, '');
+            document.getElementById('background-file-name').textContent = t('fileBackground');
+            box.classList.remove('hidden');
+        });
+    }
+
+    // Выбор нового файла в диалоге: превью старой картинки больше не актуально
+    backgroundFileInput.addEventListener('change', () => {
+        if (backgroundFileInput.files?.length) {
+            document.getElementById('background-file-preview').classList.add('hidden');
+        }
+    });
+
     // Конструктор градиента: любое изменение сразу видно в превью
     [gradientFromInput, gradientToInput, gradientAngleInput].forEach((input) => {
         input.addEventListener('input', updateGradientPreview);
@@ -1853,7 +1889,20 @@ window.addEventListener('DOMContentLoaded', () => {
 
         if (type === 'file') {
             const file = backgroundFileInput.files?.[0];
-            if (!file) { alert(t('errNoFile')); return; }
+            // Файл не выбран: при редактировании оставляем прежнюю картинку
+            // (диалог нельзя программно заполнить), при создании — отказ
+            if (!file) {
+                const editing = editingBackgroundIndex !== null
+                    ? currentState.backgrounds[editingBackgroundIndex]
+                    : null;
+                if (editingBackgroundIndex !== null && editing
+                    && editing.type === 'file' && editing.fileId) {
+                    commitBackground({ type, title, fileId: editing.fileId });
+                } else {
+                    alert(t('errNoFile'));
+                }
+                return;
+            }
             // Читаем файл асинхронно, затем сохраняем
             const reader = new FileReader();
             reader.onload = () => {
