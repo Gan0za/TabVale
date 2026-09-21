@@ -26,11 +26,11 @@ assert.ok(!js.includes('renderBookmarksAnimated'), 'старая полная п
 assert.ok(js.includes('appendChild(el)'), 'узлы плиток перемещаются, а не пересоздаются');
 assert.ok(js.includes('el.dataset.index = i'), 'dataset.index синхронизируется после перестановки');
 assert.ok(js.includes('CSS.escape(b.url)'), 'поиск плитки по url защищён CSS.escape');
-// Перенос работает через pointer/touch события: mouseup сохраняет порядок
-assert.ok(/mouseup[\s\S]*?endMouseDrag\(true\)/.test(js), 'mouseup сохраняет порядок');
+// Мышь — нативный HTML5 drag (dragend сбрасывает состояние), тач — touchend
+assert.ok(/dragend[\s\S]*?draggedIndex = null;/.test(js), 'dragend сбрасывает draggedIndex');
 assert.ok(/touchend[\s\S]*?endTouchDrag\(wasActive\)/.test(js), 'touchend сохраняет порядок');
-// Нативный HTML5 drag отключён
-assert.ok(/dragstart[\s\S]*?e\.preventDefault\(\)/.test(js), 'нативный dragstart подавлен');
+// Плитка остаётся draggable: мышиный перенос работает нативно
+assert.ok(js.includes('el.draggable = true'), 'плитка draggable для мыши');
 
 // --- Слот вставки: счёт центров, пройденных курсором ---
 // Эмуляция getDropIndex для ОДНОГО ряда: tiles — центры плиток по X
