@@ -71,15 +71,32 @@
     box-sizing: border-box;
 }
 
+/* Закладки рисуются после ответа storage, и полоса прокрутки появляется
+   с опозданием — без резерва панель прыгает влево на её ширину */
+html {
+    scrollbar-gutter: stable;
+}
+
 body {
     margin: 0;
+    /* Страница выровнена по экрану: когда контента мало, панель тянется
+       на весь экран и полосы прокрутки нет. Когда закладок становится
+       больше, чем места, панель растёт вслед за содержимым — и появляется
+       обычная прокрутка страницы */
     min-height: 100vh;
+    /* Flex не даёт отступам панели схлопнуться наружу — из-за схлопывания
+       страница раньше прокручивалась всегда, даже без закладок */
+    display: flex;
+    flex-direction: column;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--text);
     background: var(--bg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    /* Фон прибит к экрану: при прокрутке страницы контент уезжает,
+       а картинка/градиент остаются на месте */
+    background-attachment: fixed;
     /* Картинка фона из настроек (JS ставит inline-стиль) перекрывает градиент */
 }
 
@@ -163,7 +180,9 @@ h1, h2 {
 
 .container {
     max-width: 1200px;
-    margin: 40px auto 20px;
+    /* Высота по содержимому: панель обнимает закладки и растёт с каждой
+       новой строкой. На пустом экране её держит min-height самого body */
+    margin: 20px auto;
     padding: 24px;
     background: var(--glass);
     backdrop-filter: var(--blur);
