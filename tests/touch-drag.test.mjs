@@ -241,7 +241,6 @@ await new Promise((r) => setTimeout(r, 400)); // long-press бы сработа�
 assert.ok(!tileB.classList.contains('dragging'), 'свайп до long-press не запускает перенос');
 
 // --- 2. Long-press запускает перенос ---
-let timer = setTimeout(() => {}, 0);
 grid._listeners.touchstart.forEach((fn) => fn({
     touches: [touch(200, 200)], target: tiles[1], stopPropagation() {},
 }));
@@ -285,12 +284,13 @@ grid._listeners.touchstart.forEach((fn) => fn({
     touches: [touch(200, 200)], target: tiles[1], stopPropagation() {},
 }));
 await new Promise((r) => setTimeout(r, 400));
-let ctxEvent = { target: tiles[1], preventDefault() { ctxEvent.prevented = true; } };
+let ctxEvent = { target: tiles[1], preventDefault() { ctxEvent.prevented = true; }, stopPropagation() { ctxEvent.stopped = true; } };
 byId('bookmarks-container')._listeners.contextmenu.forEach((fn) => fn(ctxEvent));
 assert.ok(ctxEvent.prevented, 'contextmenu подавлен во время сенсорного переноса');
+assert.ok(ctxEvent.stopped, 'событие не доходит до документного обработчика — меню не открыть посреди переноса');
 // завершаем перенос
-grid._listeners.touchend.forEach((fn) => fn({ touches: [], preventDefault() {} }));
-ctxEvent = { target: tiles[1], preventDefault() { ctxEvent.prevented = true; } };
+grid._listeners.touchend.forEach((fn) => fn({ touches: [], preventDefault() {} })) ;
+ctxEvent = { target: tiles[1], preventDefault() { ctxEvent.prevented = true; }, stopPropagation() {} };
 grid._listeners.contextmenu.forEach((fn) => fn(ctxEvent));
 assert.ok(!ctxEvent.prevented, 'вне переноса contextmenu работает (правый клик мыши)');
 
