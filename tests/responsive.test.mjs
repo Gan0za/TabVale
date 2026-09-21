@@ -36,7 +36,7 @@ assert.ok(tablet[0].includes('max-width: none'), 'панель растягив�
 const portrait = css.match(/@media \(max-width: 768px\) \{[\s\S]*?\n\}/);
 assert.ok(portrait, 'блок вертикального планшета найден');
 assert.ok(portrait[0].includes('width: 112px'), 'плитки уже на планшете');
-assert.ok(portrait[0].includes('right: 12px'), 'кнопки в углу прижаты к краю');
+assert.ok(portrait[0].includes('right: 12px'), 'колонка кнопок прижата к краю');
 
 // --- Мобильный: поиск колонкой, модалка fullscreen ---
 const mobile = css.match(/@media \(max-width: 600px\) \{[\s\S]*?\n\}/);

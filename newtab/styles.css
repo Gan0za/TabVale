@@ -182,7 +182,9 @@ h1, h2 {
     max-width: 1200px;
     /* Высота по содержимому: панель обнимает закладки и растёт с каждой
        новой строкой. На пустом экране её держит min-height самого body */
-    margin: 20px auto;
+    /* Снизу запас под вертикальную колонку кнопок (3x48 + зазоры + 20px),
+       чтобы нижняя строка плиток не уходила под них */
+    margin: 20px auto 172px;
     padding: 24px;
     background: var(--glass);
     backdrop-filter: var(--blur);
@@ -999,10 +1001,9 @@ h1, h2 {
     margin-top: 12px;
 }
 
-/* Кнопка настроек (круглая, снизу справа) */
+/* Круглые кнопки (тема/язык/настройки): позицию задаёт .fab-stack,
+   который держит их колонкой в правом нижнем углу */
 .settings-fab {
-    position: fixed;
-    bottom: 20px;
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -1014,7 +1015,6 @@ h1, h2 {
     font-size: 20px;
     cursor: pointer;
     box-shadow: var(--shadow);
-    z-index: 1000;
     transition: transform 0.15s;
 }
 
@@ -1022,20 +1022,25 @@ h1, h2 {
     transform: scale(1.05);
 }
 
-/* Три круглые кнопки в правом нижнем углу: тема + язык + настройки.
-   right-отступ каждой задан отдельно, чтобы кнопки стояли в ряд */
-.settings-fab#settings-button { right: 20px; }
-.settings-fab#language-toggle { right: 78px; }
-.settings-fab#theme-toggle { right: 136px; }
-
-/* Меню языка раскрывается над кнопкой 🌐 (право — под кнопкой) */
-#language-menu { right: 78px; }
-
-/* Мини-меню выбора темы: раскрывается над кнопкой 🌗 */
-.theme-menu {
+/* Три круглые кнопки (тема + язык + настройки) — вертикальная колонка
+   в правом нижнем углу. Сам стек фиксирован, кнопки внутри обычные */
+.fab-stack {
     position: fixed;
-    bottom: 78px;
-    right: 78px;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+/* Меню темы и языка раскрываются влево от колонки кнопок: theme — у
+   первой кнопки (top: 0), language — у второй (48px кнопка + 10px
+   зазор = 58px шаг) */
+.theme-menu {
+    position: absolute;
+    top: 0;
+    right: 58px;
     display: flex;
     flex-direction: column;
     background: var(--glass-strong);
@@ -1046,6 +1051,10 @@ h1, h2 {
     box-shadow: var(--shadow);
     z-index: 1001;
     overflow: hidden;
+}
+
+#language-menu {
+    top: 58px;
 }
 
 .theme-menu button {
@@ -1154,7 +1163,7 @@ h1, h2 {
     .container {
         /* Панель без рамок — на узком экране стекло съедает место,
            а оторванная от краёв панель выглядит лишней прослойкой */
-        margin: 12px 12px 76px; /* снизу место под кнопки в углу */
+        margin: 12px 12px 156px; /* снизу место под колонку кнопок */
         padding: 16px;
     }
 
@@ -1183,21 +1192,27 @@ h1, h2 {
         font-size: 18px;
     }
 
-    /* Кнопки стоят плотнее: 56px шаг вместо 58, отступ 12px от края */
-    .settings-fab#settings-button { right: 12px; }
-    .settings-fab#language-toggle { right: 68px; }
-    .settings-fab#theme-toggle { right: 124px; }
-    #language-menu { right: 68px; }
+    /* Колонка кнопок плотнее к краю: 44px кнопка + 8px зазор = 52px шаг,
+       меню раскрываются влево на 54px */
+    .fab-stack {
+        right: 12px;
+        bottom: 12px;
+        gap: 8px;
+    }
+
+    #language-menu {
+        top: 52px;
+    }
 
     .theme-menu {
-        bottom: 72px;
+        right: 54px;
     }
 }
 
 /* --- Мобильный: поиск в колонку, модалка на весь экран --- */
 @media (max-width: 600px) {
     .container {
-        margin: 8px 8px 72px;
+        margin: 8px 8px 148px;
         padding: 12px;
     }
 
