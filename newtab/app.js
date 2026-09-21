@@ -992,6 +992,12 @@ window.addEventListener('DOMContentLoaded', () => {
         toggleBookmarkStep({ editing: false });
     }
 
+    function resetBackgroundForm() {
+        editingBackgroundIndex = null;
+        backgroundTitleInput.value = '';
+        backgroundUrlInput.value = '';
+    }
+
     function resetSearchEngineForm() {
         editingSearchEngineIndex = null;
         newSearchEngineUrl.value = '';
