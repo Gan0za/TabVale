@@ -135,6 +135,16 @@
                         </div>
                         <input type="url" id="background-url-input" data-i18n-placeholder="bgUrlPlaceholder" placeholder="URL изображения (пусто — по умолчанию)">
                         <input type="file" id="background-file-input" accept="image/*" class="bg-file-input">
+                        <!-- Положение картинки: видно только на вкладках Ссылка и Устройство -->
+                        <div id="background-position-row" class="bg-position-row hidden">
+                            <label for="background-position-input" data-i18n="bgPositionLabel">Положение</label>
+                            <select id="background-position-input">
+                                <option value="cover" data-i18n="bgPositionCover">Растянуть</option>
+                                <option value="contain" data-i18n="bgPositionContain">Вписать</option>
+                                <option value="tile" data-i18n="bgPositionTile">Замостить</option>
+                                <option value="center" data-i18n="bgPositionCenter">1:1 по центру</option>
+                            </select>
+                        </div>
                         <div id="background-file-preview" class="bg-file-preview hidden">
                             <img id="background-file-thumb" alt="">
                             <span id="background-file-name"></span>

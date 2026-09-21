@@ -172,6 +172,10 @@ const chromeStub = {
                 Object.assign(localFiles, items);
                 cb && cb();
             },
+            remove(keys, cb) {
+                for (const key of [].concat(keys)) delete localFiles[key];
+                cb && cb();
+            },
         },
         onChanged: { addListener() {} },
     },
@@ -341,5 +345,91 @@ assert.ok(!previewBox.classList.contains('hidden'),
     'при замене файла превью не пропадает — показывает новый файл');
 assert.equal(byId('background-file-thumb').src,
     'data:image/gif;base64,CCCC', 'превью заменённого файла актуально');
+
+// --- 7. Смена вкладки типа: превью файла не висит на чужих вкладках ---
+byId('bg-tab-color').click();
+assert.ok(previewBox.classList.contains('hidden'),
+    'на вкладке "Цвет" превью файла спрятано');
+byId('bg-tab-gradient').click();
+assert.ok(previewBox.classList.contains('hidden'),
+    'на вкладке "Градиент" превью файла спрятано');
+byId('bg-tab-url').click();
+assert.ok(previewBox.classList.contains('hidden'),
+    'на вкладке "Ссылка" превью файла спрятано');
+// Возврат на "Устройство": превью снова показано, данные не потеряны
+byId('bg-tab-file').click();
+assert.ok(!previewBox.classList.contains('hidden'),
+    'возврат на "Устройство" снова показывает превью');
+assert.equal(previewBox.dataset.pendingDataUrl, 'data:image/gif;base64,CCCC',
+    'кешированный data:URL пережил переключение вкладок');
+
+// --- 8. Новый file-фон выбирается сразу после сохранения ---
+// Регрессия: фон добавлялся в конец списка, но currentBackgroundIndex
+// оставался на прежнем элементе — на экране оставался прежний/дефолтный
+// фон, и казалось, что файл "потерялся" после сохранения
+const syncBefore = syncSets.length;
+byId('show-background-form').click();
+byId('bg-tab-file').click();
+sandbox.FileReader = class {
+    readAsDataURL() {
+        this.result = 'data:image/webp;base64,DDDD';
+        this.onload && this.onload();
+    }
+};
+fileInput.files = [{ name: 'pick.webp' }];
+fileInput._listeners.change.forEach((fn) => fn({ target: fileInput }));
+byId('background-title-input').value = 'Auto-selected';
+byId('save-background').click();
+await new Promise((r) => setTimeout(r, 10));
+const addedPayload = syncSets[syncSets.length - 1];
+assert.equal(addedPayload.currentBackgroundIndex, 1,
+    'новый file-фон выбран сразу после сохранения');
+assert.equal(localFiles['bgFile:bg1'], 'data:image/png;base64,AAAA',
+    'данные прежнего file-фона (bg1) в storage.local не тронуты');
+
+// --- 9. Ошибка квоты при записи файла: понятное сообщение ---
+// Регрессия: chrome.storage.local.set без callback и проверки lastError
+// терял ошибку квоты в консоль (Unchecked runtime.lastError), фон молча
+// не сохранялся
+const origSet = chromeStub.storage.local.set;
+let quotaExceeded = false;
+chromeStub.storage.local.set = function (items, cb) {
+    // Квота «кончилась»: ничего не пишем, но callback вызываем.
+    // lastError живёт на chrome.runtime, как в настоящем Chrome
+    quotaExceeded = true;
+    chromeStub.runtime.lastError = { message: 'QUOTA_BYTES quota exceeded' };
+    if (cb) cb();
+    delete chromeStub.runtime.lastError;
+};
+alerts.length = 0;
+byId('show-background-form').click();
+byId('bg-tab-file').click();
+sandbox.FileReader = class {
+    readAsDataURL() {
+        this.result = 'data:image/png;base64,HUGE';
+        this.onload && this.onload();
+    }
+};
+fileInput.files = [{ name: 'big.jpg' }];
+fileInput._listeners.change.forEach((fn) => fn({ target: fileInput }));
+byId('background-title-input').value = 'Too big';
+byId('save-background').click();
+await new Promise((r) => setTimeout(r, 10));
+assert.equal(alerts.length, 1, 'ошибка квоты показывает сообщение пользователю');
+assert.ok(!syncSets.some((p) => p.backgrounds?.some((b) => b.title === 'Too big')),
+    'фон с незаписанным файлом не попадает в список');
+chromeStub.storage.local.set = origSet;
+
+// --- 10. Удаление file-фона чистит storage.local ---
+// Регрессия: bgFile:* оставались в хранилище навсегда и засоряли квоту
+// Первая строка списка — последний file-фон из сценария 8 ('Auto-selected').
+const deletedFileId = syncSets[syncSets.length - 1].backgrounds[0].fileId;
+byId('background-manager-list')._listeners.click.forEach((fn) => fn({
+    target: findClass(managerList.children[0], 'background-manage-delete'),
+    stopPropagation() {},
+}));
+await new Promise((r) => setTimeout(r, 10));
+assert.ok(!('bgFile:' + deletedFileId in localFiles) && localFiles['bgFile:' + deletedFileId] === undefined,
+    'данные удалённого file-фона удалены из storage.local');
 
 console.log('file-background-edit.test.mjs: все проверки пройдены');
