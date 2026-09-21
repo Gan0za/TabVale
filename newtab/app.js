@@ -215,7 +215,8 @@ function isSafeWebUrl(value) {
  * безопасно перенести в хранилище, false — если отбросить.
  *
  * Типы различаются структурой: у поисковиков имя хранится в поле name
- * (а не title), у фонов пустой url допустим — это фон "По умолчанию".
+ * (а не title); у фонов пустой url допустим (фон "По умолчанию").
+ * Фоны проверяются отдельно (normalizeBackground) — у них свои типы.
  */
 function isValidImportedItem(item, { requirePlaceholder = false, allowEmptyUrl = false } = {}) {
     if (!item || typeof item !== 'object') return false;
@@ -246,15 +247,142 @@ function isValidImportedItem(item, { requirePlaceholder = false, allowEmptyUrl =
  * элементы и число отброшенных. Битый элемент не отменяет импорт
  * целиком — просто пропускается.
  */
-function sanitizeList(raw, { requirePlaceholder = false, allowEmptyUrl = false } = {}) {
+function sanitizeList(raw, { requirePlaceholder = false } = {}) {
     if (!Array.isArray(raw)) return { items: [], skipped: 0 };
     let skipped = 0;
     const items = raw.filter((item) => {
-        if (isValidImportedItem(item, { requirePlaceholder, allowEmptyUrl })) return true;
+        if (isValidImportedItem(item, { requirePlaceholder })) return true;
         skipped++;
         return false;
     });
     return { items, skipped };
+}
+
+/**
+ * Приводит фон к нормализованному виду с полем type. Типы:
+ *   url      — картинка по ссылке (url)
+ *   file     — картинка с устройства (fileId; сами данные в storage.local)
+ *   color    — сплошная заливка (value)
+ *   gradient — градиент (from, to, angle)
+ * Старые записи без type — картинки по ссылке. Возвращает null,
+ * если запись некорректна (в импорте такие отбрасываются).
+ */
+function normalizeBackground(bg) {
+    if (!bg || typeof bg !== 'object') return null;
+    const title = typeof bg.title === 'string' && bg.title.trim() ? bg.title : '';
+    if (!title) return null;
+
+    const type = bg.type || 'url';
+
+    if (type === 'color') {
+        // Только hex —css-имена вроде "red; background:url(...)" не пропускаем
+        return /^#[0-9a-fA-F]{6}$/.test(bg.value) ? { type, title, value: bg.value } : null;
+    }
+
+    if (type === 'gradient') {
+        const from = /^#[0-9a-fA-F]{6}$/.test(bg.from) ? bg.from : '';
+        const to = /^#[0-9a-fA-F]{6}$/.test(bg.to) ? bg.to : '';
+        if (!from || !to) return null;
+        const angle = Number.isFinite(Number(bg.angle))
+            ? Math.min(360, Math.max(0, Number(bg.angle)))
+            : 160;
+        return { type, title, from, to, angle };
+    }
+
+    if (type === 'file') {
+        const fileId = typeof bg.fileId === 'string' && bg.fileId ? bg.fileId : '';
+        // data у записи бывает только в импортируемом файле: при экспорте
+        // мы её подкладываем, а в хранилище держим отдельно в storage.local
+        const data = typeof bg.data === 'string'
+            && bg.data.startsWith('data:image/')
+            && bg.data.length <= 15_000_000
+            ? bg.data
+            : '';
+        if (data) return { type, title, fileId: fileId || makeFileId(), data };
+        return fileId ? { type, title, fileId } : null;
+    }
+
+    // url — текущий и legacy-формат
+    const url = bg.url || '';
+    if (url && !isSafeWebUrl(url)) return null;
+    return { type: 'url', title, url };
+}
+
+/**
+ * Санитизация списка фонов при импорте: normalizeBackground для каждого
+ * элемента + счётчик отброшенных. У file-фонов попутно генерируется
+ * fileId, если его нет.
+ */
+function sanitizeBackgrounds(raw) {
+    if (!Array.isArray(raw)) return { items: [], skipped: 0 };
+    const items = [];
+    let skipped = 0;
+    for (const item of raw) {
+        const bg = normalizeBackground(item);
+        if (bg) items.push(bg);
+        else skipped++;
+    }
+    return { items, skipped };
+}
+
+/**
+ * CSS-значение фона для body. file требует dataUrl из local-хранилища —
+ * без него вернётся '' (останется градиент из styles.css).
+ */
+function buildBackgroundCss(bg, fileDataUrl) {
+    if (!bg) return '';
+    if (bg.type === 'color' && bg.value) return bg.value;
+    if (bg.type === 'gradient' && bg.from && bg.to) {
+        return `linear-gradient(${bg.angle || 160}deg, ${bg.from}, ${bg.to})`;
+    }
+    if (bg.type === 'file') return fileDataUrl ? `url("${fileDataUrl}")` : '';
+    if (bg.url) return `url("${bg.url}")`;
+    return '';
+}
+
+/**
+ * Превью заливки для списка настроек: маленький SVG-квадрат с тем же
+ * цветом или градиентом. Для картинок вернётся null — там превью сама
+ * картинка.
+ */
+function swatchDataUrl(bg) {
+    if (bg?.type === 'color' && bg.value) {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><rect width="50" height="50" fill="${bg.value}"/></svg>`;
+        return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+    }
+    if (bg?.type === 'gradient' && bg.from && bg.to) {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50">`
+            + `<defs><linearGradient id="g" gradientTransform="rotate(${bg.angle || 160}, 25, 25)">`
+            + `<stop offset="0" stop-color="${bg.from}"/>`
+            + `<stop offset="1" stop-color="${bg.to}"/>`
+            + `</linearGradient></defs>`
+            + `<rect width="50" height="50" fill="url(#g)"/></svg>`;
+        return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+    }
+    return null;
+}
+
+// Пресеты градиентов [от, до, угол] — клик заполняет конструктор
+const GRADIENT_PRESETS = [
+    ['#a8c8e8', '#e8d8c8', 160],
+    ['#667eea', '#764ba2', 135],
+    ['#f093fb', '#f5576c', 135],
+    ['#4facfe', '#00f2fe', 135],
+    ['#43e97b', '#38f9d7', 135],
+    ['#fa709a', '#fee140', 160],
+    ['#30cfd0', '#330867', 160],
+    ['#232526', '#414345', 160],
+];
+
+/**
+ * Ключ записи data:URL в storage.local для file-фона.
+ */
+function fileKey(fileId) {
+    return `bgFile:${fileId}`;
+}
+
+function makeFileId() {
+    return 'bg' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
 /**
@@ -654,6 +782,13 @@ function renderBookmarkManagerItem(bookmark, index) {
 }
 
 function renderBackgroundManagerItem(background, index, currentIndex) {
+    // Превью: цвет/градиент рисуются SVG-квадратиком, картинки — собой
+    let subtitle;
+    if (background.type === 'color') subtitle = background.value || '';
+    else if (background.type === 'gradient') subtitle = `${background.from} → ${background.to}`;
+    else if (background.type === 'file') subtitle = t('fileBackground');
+    else subtitle = background.url || t('defaultBackground');
+
     return buildManagerListItem({
         buttons: [
             ['background-manage-select', t('select')],
@@ -661,13 +796,24 @@ function renderBackgroundManagerItem(background, index, currentIndex) {
             ['background-manage-delete', t('delete')],
         ],
         selected: index === currentIndex,
-        imageUrl: background.url || null,
+        imageUrl: swatchDataUrlSafe(background) || background.url || null,
         emptyImageText: t('noImage'),
         title: background.title,
-        subtitle: background.url || t('defaultBackground'),
+        subtitle,
         index,
         rowType: 'background'
     });
+}
+
+/**
+ * swatchDataUrl обёрнут для устойчивости к отсутствию функции в тестах.
+ */
+function swatchDataUrlSafe(bg) {
+    try {
+        return swatchDataUrl(bg);
+    } catch {
+        return null;
+    }
 }
 
 function renderSearchEngineManagerItem(engine, index, selectedIndex) {
@@ -689,15 +835,35 @@ function renderSearchEngineManagerItem(engine, index, selectedIndex) {
 
 /**
  * Применяет выбранный фон к странице.
+ * Для file-фона data:URL сначала читается из storage.local — применяем
+ * асинхронно, когда данные придут.
  */
 function setBackground(backgrounds, currentBackgroundIndex) {
     const background = backgrounds[currentBackgroundIndex];
-    if (background?.url) {
-        document.body.style.backgroundImage = `url('${background.url}')`;
-    } else {
+    if (!background) {
         document.body.style.backgroundImage = '';
+        return;
     }
-    // Само правило background-size живёт в styles.css (body) — тут только картинка
+
+    const apply = (cssValue) => {
+        document.body.style.background = cssValue;
+    };
+
+    if (background.type === 'color' || background.type === 'gradient') {
+        apply(buildBackgroundCss(background));
+        return;
+    }
+
+    if (background.type === 'file') {
+        if (!background.fileId) { apply(''); return; }
+        chrome.storage.local.get(fileKey(background.fileId), (result) => {
+            const err = chrome.runtime?.lastError;
+            apply(buildBackgroundCss(background, err ? '' : (result || {})[fileKey(background.fileId)]));
+        });
+        return;
+    }
+
+    apply(buildBackgroundCss(background));
 }
 
 /**
@@ -767,6 +933,13 @@ window.addEventListener('DOMContentLoaded', () => {
     const backgroundTitleInput = document.getElementById('background-title-input');
     const backgroundUrlInput = document.getElementById('background-url-input');
     const saveBackgroundButton = document.getElementById('save-background');
+    const backgroundFileInput = document.getElementById('background-file-input');
+    const backgroundColorInput = document.getElementById('background-color-input');
+    const gradientFromInput = document.getElementById('gradient-from-input');
+    const gradientToInput = document.getElementById('gradient-to-input');
+    const gradientAngleInput = document.getElementById('gradient-angle-input');
+    const gradientPreview = document.getElementById('gradient-preview');
+    const gradientPresets = document.getElementById('gradient-presets');
 
     // Форма поисковых систем
     const searchEnginesList = document.getElementById('search-engines-list');
@@ -1003,7 +1176,13 @@ window.addEventListener('DOMContentLoaded', () => {
     function resetBackgroundForm() {
         editingBackgroundIndex = null;
         backgroundTitleInput.value = '';
+        switchBackgroundType('url');
         backgroundUrlInput.value = '';
+        backgroundFileInput.value = '';
+        backgroundColorInput.value = '#4db6e2';
+        updateColorValueLabel();
+        applyGradientPreset(GRADIENT_PRESETS[0]);
+        refreshUI();
     }
 
     function resetSearchEngineForm() {
@@ -1200,7 +1379,18 @@ window.addEventListener('DOMContentLoaded', () => {
                 editingBackgroundIndex = index;
                 const bg = currentState.backgrounds[index];
                 backgroundTitleInput.value = bg.title || '';
+                const type = bg.type || 'url';
+                switchBackgroundType(type);
                 backgroundUrlInput.value = bg.url || '';
+                backgroundFileInput.value = '';
+                backgroundColorInput.value = bg.type === 'color' ? bg.value : '#4db6e2';
+                updateColorValueLabel();
+                if (bg.type === 'gradient') {
+                    gradientFromInput.value = bg.from || '#667eea';
+                    gradientToInput.value = bg.to || '#764ba2';
+                    gradientAngleInput.value = bg.angle ?? 160;
+                    updateGradientPreview();
+                }
             },
             searchEngine: () => {
                 editingSearchEngineIndex = index;
@@ -1348,15 +1538,35 @@ window.addEventListener('DOMContentLoaded', () => {
     exportSettingsJsonButton.addEventListener('click', () => {
         // Тема — тоже настройка: экспортируем текущий режим вместе с данными
         storageGet('theme', (result) => {
-            const json = JSON.stringify({ ...currentState, theme: result.theme || 'auto' }, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'self_tabs_settings.json';
-            a.click();
-            URL.revokeObjectURL(a.href);
+            // file-фоны живут данными в storage.local — на экспорт их
+            // нужно подтянуть, иначе на другом устройстве фон потеряется
+            const fileBackdrops = currentState.backgrounds.filter((b) => b.type === 'file');
+            const keys = fileBackdrops.map((b) => fileKey(b.fileId)).filter(Boolean);
+            if (!fileBackdrops.length) {
+                downloadJson({ ...currentState, theme: result.theme || 'auto' });
+                return;
+            }
+            chrome.storage.local.get(keys, (files) => {
+                void chrome.runtime?.lastError;
+                const withData = currentState.backgrounds.map((bg) => (
+                    bg.type === 'file' ? { ...bg, data: (files || {})[fileKey(bg.fileId)] || '' } : bg
+                ));
+                downloadJson({ ...currentState, backgrounds: withData, theme: result.theme || 'auto' });
+            });
         });
     });
+
+    /**
+     * Скачивает JSON со настройками (общий хвост экспорта).
+     */
+    function downloadJson(json) {
+        const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'self_tabs_settings.json';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
 
     // --- Импорт: чтение JSON-файла и аккуратная проверка полей ---
     importSettingsJsonButton.addEventListener('click', () => importSettingsFileInput.click());
@@ -1368,13 +1578,28 @@ window.addEventListener('DOMContentLoaded', () => {
             const newState = { ...currentState };
             // Каждый список прогоняем через санитизацию: элементы с
             // небезопасными адресами (javascript: и т.п.) и битыми полями
-            // отбрасываются, остальное импортируется
+            // отбрасываются, остальное импортируется. У фонов своя
+            // санитизация: у них типы (url/file/color/gradient)
             const bookmarks = sanitizeList(payload.bookmarks);
-            const backgrounds = sanitizeList(payload.backgrounds, { allowEmptyUrl: true });
+            const backgrounds = sanitizeBackgrounds(payload.backgrounds);
             const searchEngines = sanitizeList(payload.searchEngines, { requirePlaceholder: true });
 
             if (payload.bookmarks !== undefined) newState.bookmarks = bookmarks.items;
-            if (payload.backgrounds !== undefined) newState.backgrounds = backgrounds.items;
+            if (payload.backgrounds !== undefined) {
+                newState.backgrounds = backgrounds.items;
+                // file-фоны из импорта несут data (data:URL) — раскладываем
+                // их в storage.local, в sync остаются только fileId
+                const fileData = {};
+                for (const bg of backgrounds.items) {
+                    if (bg.type === 'file' && bg.data) {
+                        fileData[fileKey(bg.fileId)] = bg.data;
+                        delete bg.data;
+                    }
+                }
+                if (Object.keys(fileData).length) {
+                    chrome.storage.local.set(fileData);
+                }
+            }
             if (payload.searchEngines !== undefined) newState.searchEngines = searchEngines.items;
             if (typeof payload.currentBackgroundIndex === 'number') newState.currentBackgroundIndex = payload.currentBackgroundIndex;
             if (typeof payload.currentSearchEngineIndex === 'number') newState.currentSearchEngineIndex = payload.currentSearchEngineIndex;
@@ -1507,8 +1732,94 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     // =============================================================================
-    // Фоны
+    // Фоны. Четыре типа: url (картинка по ссылке), file (загрузка с
+    // устройства, данные в storage.local), color (заливка), gradient.
     // =============================================================================
+
+    // Текущий тип в форме: 'url' | 'file' | 'color' | 'gradient'
+    let currentBackgroundType = 'url';
+
+    /**
+     * Показывает поля выбранного типа и прячет остальные.
+     */
+    function switchBackgroundType(type) {
+        document.querySelectorAll('.bg-type-tab').forEach((tab) => {
+            tab.classList.toggle('active', tab.dataset.bgType === type);
+        });
+        backgroundUrlInput.classList.toggle('hidden', type !== 'url');
+        backgroundFileInput.classList.toggle('hidden', type !== 'file');
+        document.getElementById('background-color-row').classList.toggle('hidden', type !== 'color');
+        document.getElementById('background-gradient-box').classList.toggle('hidden', type !== 'gradient');
+    }
+
+    // Клик по вкладкам типа
+    document.querySelectorAll('.bg-type-tab').forEach((tab) => {
+        tab.addEventListener('click', () => switchBackgroundType(tab.dataset.bgType));
+    });
+
+    /**
+     * Ставит конструктор градиента в заданный пресет [from, to, angle]
+     * и обновляет превью.
+     */
+    function applyGradientPreset([from, to, angle]) {
+        gradientFromInput.value = from;
+        gradientToInput.value = to;
+        gradientAngleInput.value = angle;
+        updateGradientPreview();
+    }
+
+    function updateGradientPreview() {
+        gradientPreview.style.background =
+            `linear-gradient(${gradientAngleInput.value}deg, ${gradientFromInput.value}, ${gradientToInput.value})`;
+    }
+
+    function updateColorValueLabel() {
+        document.getElementById('background-color-value').textContent = backgroundColorInput.value;
+    }
+
+    // Конструктор градиента: любое изменение сразу видно в превью
+    [gradientFromInput, gradientToInput, gradientAngleInput].forEach((input) => {
+        input.addEventListener('input', updateGradientPreview);
+    });
+    backgroundColorInput.addEventListener('input', updateColorValueLabel);
+
+    // Пресеты: клик заполняет конструктор
+    GRADIENT_PRESETS.forEach(([from, to, angle]) => {
+        const preset = document.createElement('button');
+        preset.type = 'button';
+        preset.className = 'gradient-preset';
+        preset.title = `${from} → ${to}`;
+        preset.style.background = `linear-gradient(${angle}deg, ${from}, ${to})`;
+        preset.addEventListener('click', () => {
+            gradientFromInput.value = from;
+            gradientToInput.value = to;
+            gradientAngleInput.value = angle;
+            updateGradientPreview();
+        });
+        gradientPresets.appendChild(preset);
+    });
+
+    /**
+     * Читает выбранный файл с устройства и кладёт data:URL в
+     * storage.local под сгенерированным fileId. sync квоты не тратит:
+     * картинки локальны по своей природе (решение 1a).
+     */
+    function readBackgroundFile() {
+        const file = backgroundFileInput.files?.[0];
+        if (!file) return Promise.resolve('');
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const dataUrl = typeof reader.result === 'string' ? reader.result : '';
+                if (dataUrl) {
+                    chrome.storage.local.set({ [fileKey(makeFileId())]: dataUrl });
+                }
+                resolve(dataUrl);
+            };
+            reader.onerror = () => resolve('');
+            reader.readAsDataURL(file);
+        });
+    }
 
     // Кнопки "＋ Добавить" и "Отмена" — показ/скрытие формы
     addForms.background.showButton.addEventListener('click', () => showAddForm('background'));
@@ -1517,18 +1828,69 @@ window.addEventListener('DOMContentLoaded', () => {
     saveBackgroundButton.addEventListener('click', () => {
         const title = backgroundTitleInput.value.trim();
         if (!title) { alert(t('errTitle')); return; }
-        const backgroundData = { title, url: backgroundUrlInput.value.trim() };
 
-        if (editingBackgroundIndex !== null) {
-            currentState.backgrounds[editingBackgroundIndex] = backgroundData;
-        } else {
-            currentState.backgrounds.push(backgroundData);
+        // Тип берём из активной вкладки переключателя
+        const activeTab = document.querySelector('.bg-type-tab.active');
+        const type = activeTab ? activeTab.dataset.bgType : 'url';
+
+        if (type === 'color') {
+            const backgroundData = { type, title, value: backgroundColorInput.value };
+            commitBackground(backgroundData);
+            return;
         }
 
+        if (type === 'gradient') {
+            const backgroundData = {
+                type,
+                title,
+                from: gradientFromInput.value,
+                to: gradientToInput.value,
+                angle: Number(gradientAngleInput.value),
+            };
+            commitBackground(backgroundData);
+            return;
+        }
+
+        if (type === 'file') {
+            const file = backgroundFileInput.files?.[0];
+            if (!file) { alert(t('errNoFile')); return; }
+            // Читаем файл асинхронно, затем сохраняем
+            const reader = new FileReader();
+            reader.onload = () => {
+                const dataUrl = typeof reader.result === 'string' ? reader.result : '';
+                if (!dataUrl) { alert(t('errNoFile')); return; }
+                const fileId = makeFileId();
+                chrome.storage.local.set({ [fileKey(fileId)]: dataUrl }, () => {
+                    commitBackground({ type, title, fileId });
+                });
+            };
+            reader.onerror = () => alert(t('importError', { error: 'FileReader' }));
+            reader.readAsDataURL(file);
+            return;
+        }
+
+        // url — картинка по ссылке (пустой url допустим: "По умолчанию")
+        commitBackground({ type: 'url', title, url: backgroundUrlInput.value.trim() });
+    });
+
+    /**
+     * Записывает фон в список (учитывая режим редактирования) и закрывает
+     * форму. Проверка normalizeBackground отсеет битые значения.
+     */
+    function commitBackground(backgroundData) {
+        const normalized = normalizeBackground(backgroundData);
+        if (!normalized) { alert(t('errTitle')); return; }
+        if (editingBackgroundIndex !== null) {
+            // При редактировании сохраняем fileId старой записи, если новый
+            // файл не выбирали (normalized fileId сгенерирован заново)
+            currentState.backgrounds[editingBackgroundIndex] = normalized;
+        } else {
+            currentState.backgrounds.push(normalized);
+        }
         saveState({ backgrounds: currentState.backgrounds });
         refreshUI();
         hideAddForm('background');
-    });
+    }
 
     backgroundManagerList.addEventListener('click', (e) => {
         const selectBtn = e.target.closest('.background-manage-select');
