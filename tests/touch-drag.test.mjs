@@ -24,8 +24,15 @@ function makeElement(id = '') {
     const listeners = {};
     const classSet = new Set();
     const el = {
-        id, style: {}, dataset: {}, title: '', textContent: '', value: '', src: '', href: '',
+        id, style: {}, dataset: {}, title: '', value: '', src: '', href: '',
         placeholder: '', disabled: false, children: [], files: null,
+        // textContent='' — способ renderBookmarks очистить контейнер:
+        // заглушка должна при этом сбрасывать children
+        get textContent() { return el._text ?? ''; },
+        set textContent(v) {
+            el._text = v;
+            if (v === '') el.children.length = 0;
+        },
         get className() { return Array.from(classSet).join(' '); },
         set className(v) {
             classSet.clear();
@@ -50,7 +57,18 @@ function makeElement(id = '') {
             const e = { stopPropagation() {}, preventDefault() {}, target: el, ...event };
             (listeners.click || []).forEach((fn) => fn(e));
         },
-        appendChild(c) { c.parentNode = el; this.children.push(c); return c; },
+        // appendChild в DOM перемещает узел (снимает со старого места):
+        // без этого reorderBookmarksAnimated дублирует плитки в заглушке
+        appendChild(c) {
+            const oldParent = c.parentNode;
+            if (oldParent) {
+                const pos = oldParent.children.indexOf(c);
+                if (pos !== -1) oldParent.children.splice(pos, 1);
+            }
+            c.parentNode = el;
+            this.children.push(c);
+            return c;
+        },
         append(...cs) { cs.forEach((c) => { c.parentNode = el; this.children.push(c); }); },
         remove() {},
         setAttribute() {},
@@ -281,18 +299,40 @@ grid._listeners.touchstart.forEach((fn) => fn({
 }));
 // Имитируем мышиный drag: dragstart по той же плитке
 const mouseDragStart = grid._listeners.dragstart[0];
-mouseDragStart({ target: tiles[1], dataTransfer: { setData() {} } });
-assert.ok(tileB.classList.contains('dragging'), 'мышиный dragstart включает режим переноса');
+const currentB = grid.children.find((c) => c.dataset.url === "https://b.com");
+mouseDragStart({ target: currentB, dataTransfer: { setData() {} } });
+assert.ok(currentB.classList.contains('dragging'), 'мышиный dragstart включает режим переноса');
 await new Promise((r) => setTimeout(r, 400)); // таймер ладони срабатывает здесь
-assert.ok(tileB.classList.contains('dragging'),
+assert.ok(currentB.classList.contains('dragging'),
     'мышиный перенос не заглушается сенсорным таймером');
 // завершаем мышиный перенос как обычно
-grid._listeners.dragend.forEach((fn) => fn({ target: tiles[1] }));
+grid._listeners.dragend.forEach((fn) => fn({ target: currentB }));
 assert.ok(!tileB.classList.contains('dragging'), 'dragend снимает визуал');
 
 // --- 8. getDropIndex исключает перетаскиваемую плитку из рядов ---
 // Без исключения плитка у пальца создаёт фантомный ряд — список прыгает
 assert.ok(/getDropIndex\(mouseX, mouseY, skipEl\)/.test(source), 'getDropIndex принимает skipEl');
 assert.ok(/tile !== skipEl/.test(source), 'перетаскиваемая плитка исключена из расчёта рядов');
+
+// --- 9. Мышь: полный цикл dragstart -> dragover -> drop ---
+// Регрессия: мышиный перенос переставляет плитки и сохраняет порядок
+syncSets.length = 0;
+const mouseTile = grid.children[0]; // тащим первую плитку текущего порядка
+grid._listeners.dragstart.forEach((fn) => fn({
+    target: mouseTile, dataTransfer: { setData() {} }, stopPropagation() {},
+}));
+// Курсор правее центра последней плитки (центры 65/205/345): пройдены
+// центры a и c -> слот 3 -> вставка в конец списка (со смещением -1)
+const overEvent = { clientX: 400, clientY: 50, preventDefault() { overEvent.defaultPrevented = true; } };
+grid._listeners.dragover.forEach((fn) => fn(overEvent));
+assert.ok(overEvent.defaultPrevented, 'dragover разрешает drop');
+const afterOrder = grid.children.map((c) => c.dataset.url);
+assert.equal(afterOrder[afterOrder.length - 1], mouseTile.dataset.url,
+    'первая плитка уехала в конец списка');
+grid._listeners.drop.forEach((fn) => fn({ preventDefault() {} }));
+const titleByUrl = {};
+for (const b of syncData.bookmarks) titleByUrl[b.url] = b.title;
+assert.deepEqual(savedOrder, afterOrder.map((u) => titleByUrl[u]), 'порядок сохранён как на экране');
+assert.ok(!mouseTile.classList.contains('dragging'), 'drop снимает визуал');
 
 console.log('touch-drag.test.mjs: все проверки пройдены');
