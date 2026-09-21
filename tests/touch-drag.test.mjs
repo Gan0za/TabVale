@@ -132,11 +132,17 @@ const documentStub = {
         if (selector === '.bg-type-tab') return bgTypeTabs;
         return [];
     },
-    addEventListener: () => {},
+    addEventListener() {},
     body: makeElement('body'),
     documentElement: makeElement('html'),
     title: '',
 };
+// mouseup/mouseleave мыши-переноса висят на document — собираем их
+const documentListeners = {};
+documentStub.addEventListener = (type, fn) => { (documentListeners[type] ||= []).push(fn); };
+function fireDocument(type, event = {}) {
+    (documentListeners[type] || []).forEach((fn) => fn(event));
+}
 
 const chromeStub = {
     runtime: { getURL: (p) => 'chrome-extension://test/' + p, lastError: undefined },
@@ -293,46 +299,43 @@ assert.ok(!ctxEvent.prevented, 'вне переноса contextmenu работа
 
 // --- 7. Гибрид: long-press таймер не перебивает активный мышиный перенос ---
 // Регрессия: касание ладонью запускало таймер, который через 350 мс
-// перезаписывал draggedIndex посреди мышицного переноса — мышь умирала
+// перезаписывал draggedIndex посреди мышицного переноса — мышь умирала.
+// Мышиный перенос: mousedown -> движение > 5px -> перенос
 grid._listeners.touchstart.forEach((fn) => fn({
     touches: [touch(200, 200)], target: tiles[1], stopPropagation() {},
 }));
-// Имитируем мышиный drag: dragstart по той же плитке
-const mouseDragStart = grid._listeners.dragstart[0];
 const currentB = grid.children.find((c) => c.dataset.url === "https://b.com");
-mouseDragStart({ target: currentB, dataTransfer: { setData() {} } });
-assert.ok(currentB.classList.contains('dragging'), 'мышиный dragstart включает режим переноса');
+grid._listeners.mousedown.forEach((fn) => fn({ button: 0, target: currentB, clientX: 200, clientY: 200 }));
+grid._listeners.mousemove.forEach((fn) => fn({ clientX: 260, clientY: 200 })); // > 5px порога
+assert.ok(currentB.classList.contains('dragging'), 'мышиный перенос активировался');
 await new Promise((r) => setTimeout(r, 400)); // таймер ладони срабатывает здесь
 assert.ok(currentB.classList.contains('dragging'),
     'мышиный перенос не заглушается сенсорным таймером');
 // завершаем мышиный перенос как обычно
-grid._listeners.dragend.forEach((fn) => fn({ target: currentB }));
-assert.ok(!tileB.classList.contains('dragging'), 'dragend снимает визуал');
+fireDocument('mouseup', { preventDefault() {} });
+assert.ok(!currentB.classList.contains('dragging'), 'mouseup снимает визуал');
 
 // --- 8. getDropIndex исключает перетаскиваемую плитку из рядов ---
 // Без исключения плитка у пальца создаёт фантомный ряд — список прыгает
 assert.ok(/getDropIndex\(mouseX, mouseY, skipEl\)/.test(source), 'getDropIndex принимает skipEl');
 assert.ok(/tile !== skipEl/.test(source), 'перетаскиваемая плитка исключена из расчёта рядов');
 
-// --- 9. Мышь: полный цикл dragstart -> dragover -> drop ---
+// --- 9. Мышь: полный цикл mousedown -> mousemove -> mouseup ---
 // Регрессия: мышиный перенос переставляет плитки и сохраняет порядок
 syncSets.length = 0;
 const mouseTile = grid.children[0]; // тащим первую плитку текущего порядка
-grid._listeners.dragstart.forEach((fn) => fn({
-    target: mouseTile, dataTransfer: { setData() {} }, stopPropagation() {},
+grid._listeners.mousedown.forEach((fn) => fn({
+    button: 0, target: mouseTile, clientX: 50, clientY: 50,
 }));
-// Курсор правее центра последней плитки (центры 65/205/345): пройдены
-// центры a и c -> слот 3 -> вставка в конец списка (со смещением -1)
-const overEvent = { clientX: 400, clientY: 50, preventDefault() { overEvent.defaultPrevented = true; } };
-grid._listeners.dragover.forEach((fn) => fn(overEvent));
-assert.ok(overEvent.defaultPrevented, 'dragover разрешает drop');
+grid._listeners.mousemove.forEach((fn) => fn({ clientX: 100, clientY: 60 })); // активация
+grid._listeners.mousemove.forEach((fn) => fn({ clientX: 400, clientY: 60 })); // в конец списка
 const afterOrder = grid.children.map((c) => c.dataset.url);
 assert.equal(afterOrder[afterOrder.length - 1], mouseTile.dataset.url,
     'первая плитка уехала в конец списка');
-grid._listeners.drop.forEach((fn) => fn({ preventDefault() {} }));
+fireDocument('mouseup', { preventDefault() {} });
 const titleByUrl = {};
 for (const b of syncData.bookmarks) titleByUrl[b.url] = b.title;
 assert.deepEqual(savedOrder, afterOrder.map((u) => titleByUrl[u]), 'порядок сохранён как на экране');
-assert.ok(!mouseTile.classList.contains('dragging'), 'drop снимает визуал');
+assert.ok(!mouseTile.classList.contains('dragging'), 'mouseup снимает визуал');
 
 console.log('touch-drag.test.mjs: все проверки пройдены');

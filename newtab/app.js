@@ -527,7 +527,8 @@ function setImageSource(img, src, fallback) {
 function buildBookmarkTile(bookmark, index) {
     const el = document.createElement('div');
     el.className = 'bookmark';
-    el.draggable = true;               // плитку можно перетаскивать (сортировка)
+    // Перенос плиток реализован через pointer/touch события (см. конец
+    // модуля) — нативный HTML5 drag не используется
     el.dataset.index = index;          // запоминаем номер в списке для drag-n-drop
     el.dataset.url = bookmark.url;     // стабильный ключ для FLIP-анимации перестановки
 
@@ -2377,59 +2378,9 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     bookmarksContainer.addEventListener('dragstart', (e) => {
-        // Зависшее сенсорное состояние (касание ладонью, таймер long-press)
-        // перебивало бы мышиный перенос: сгасим его до старта мыши
-        endTouchDrag(false);
-        const el = e.target.closest('.bookmark');
-        if (!el) return;
-        draggedIndex = Number(el.dataset.index);
-        el.classList.add('dragging');
-        e.dataTransfer?.setData('text/plain', String(draggedIndex));
-    });
-
-    bookmarksContainer.addEventListener('dragend', (e) => {
-        // Узлы не пересоздаются, но класс и возможные FLIP-сдвиги всё
-        // равно нужно снять со всех плиток — перенос завершён
-        bookmarksContainer.querySelectorAll('.bookmark').forEach((el) => {
-            el.classList.remove('dragging');
-            el.style.transform = '';
-        });
-        // Перенос мог быть отменён (Esc, drop вне списка) — сбрасываем,
-        // иначе следующий dragover переставит элементы со старым индексом
-        draggedIndex = null;
-    });
-
-    // Пока тащим: точка вставки вычисляется геометрически — сколько
-    // центров плиток прошёл курсор. dragover повешен на контейнер,
-    // поэтому зазоры между плитками тоже работают
-    bookmarksContainer.addEventListener('dragover', (e) => {
-        if (draggedIndex === null) return;
-        e.preventDefault(); // без этого браузер не даст сделать drop
-
-        const slot = getDropIndex(e.clientX, e.clientY);
-        // Слот "до" или "после" перетаскиваемой плитки — она уже на месте
-        if (slot === draggedIndex || slot === draggedIndex + 1) return;
-
-        // Слот в текущем списке включает сам перетаскиваемый элемент,
-        // поэтому после его удаления индекс вставки смещается на -1
-        const insertIndex = slot > draggedIndex ? slot - 1 : slot;
-        reorderBookmarksAnimated(draggedIndex, insertIndex);
-    });
-
-    bookmarksContainer.addEventListener('drop', (e) => {
+        // Нативный HTML5 drag отключён: перенос работает через pointer/
+        // touch события. Остаётся только пресечь drag изображений
         e.preventDefault();
-        // Порядок уже переставлен в dragover — здесь только сохраняем.
-        // Один раз за перенос, а не на каждый hover над соседями
-        if (draggedIndex !== null) {
-            saveState({ bookmarks: currentState.bookmarks });
-        }
-        // Завершаем перенос: убираем приглушение/поворот со всех плиток,
-        // чтобы ни одна не осталась повёрнутой после установки
-        bookmarksContainer.querySelectorAll('.bookmark').forEach((el) => {
-            el.classList.remove('dragging');
-            el.style.transform = '';
-        });
-        draggedIndex = null;
     });
     // =============================================================================
     // Сенсорный перенос — гибрид с мышью.
@@ -2594,6 +2545,137 @@ window.addEventListener('DOMContentLoaded', () => {
     // переноса (и его старта) гасим, иначе палец «отваливается» от плитки
     bookmarksContainer.addEventListener('contextmenu', (e) => {
         if (touchDrag && e.target.closest('.bookmark')) e.preventDefault();
+    });
+
+    // =============================================================================
+    // Перенос мышью через Pointer Events.
+    //
+    // Тот же механизм, что у тача: плитка вынимается из потока и едет за
+    // курсором. Нативный HTML5 drag капризен (не срабатывает в ряде сред
+    // и конфликтует с pointer-потоком), поэтому от него отказались.
+    // Мышь стартует сразу (без long-press), порог 5px отделяет перенос
+    // от клика по плитке.
+    // =============================================================================
+
+    const MOUSE_DRAG_SLOP = 5;
+    let mouseDrag = null; // { el, index, grabX, grabY, startX, startY, active, orderChanged }
+
+    // Инлайновые стили мыши-переноса: endMouseDrag снимает их все
+    const MOUSE_DRAG_STYLES = ['position', 'left', 'top', 'width', 'height', 'zIndex', 'transform', 'transition'];
+
+    /**
+     * Завершает мышиный перенос: возвращает плитку в поток, снимает
+     * визуал, сохраняет порядок (если он менялся) и сбрасывает состояние.
+     */
+    function endMouseDrag(save) {
+        if (!mouseDrag?.active) {
+            mouseDrag = null;
+            return;
+        }
+        const el = mouseDrag.el;
+        const from = el.getBoundingClientRect();
+        MOUSE_DRAG_STYLES.forEach((prop) => { el.style[prop] = ''; });
+        el.classList.remove('dragging');
+        const to = el.getBoundingClientRect();
+        const dx = from.left - to.left;
+        const dy = from.top - to.top;
+        if (dx || dy) {
+            el.style.transition = 'none';
+            el.style.transform = `translate(${dx}px, ${dy}px)`;
+            el.getBoundingClientRect();
+            el.style.transition = '';
+            el.style.transform = '';
+        }
+        if (save && mouseDrag.orderChanged) {
+            saveState({ bookmarks: currentState.bookmarks });
+        }
+        draggedIndex = null;
+        mouseDrag = null;
+    }
+
+    bookmarksContainer.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        // Во время сенсорного переноса мышь не запускаем
+        if (touchDrag?.active) return;
+        const el = e.target.closest('.bookmark');
+        if (!el) return;
+        endTouchDrag(false); // зависший тач-тайм не должен мешать
+        const rect = el.getBoundingClientRect();
+        mouseDrag = {
+            el,
+            index: Number(el.dataset.index),
+            startX: e.clientX,
+            startY: e.clientY,
+            grabX: e.clientX - rect.left,
+            grabY: e.clientY - rect.top,
+            active: false,
+            orderChanged: false,
+        };
+    });
+
+    bookmarksContainer.addEventListener('mousemove', (e) => {
+        if (!mouseDrag) return;
+
+        if (!mouseDrag.active) {
+            const dx = e.clientX - mouseDrag.startX;
+            const dy = e.clientY - mouseDrag.startY;
+            // Порог: ниже 5px это клик, не перенос
+            if (dx * dx + dy * dy < 25) return;
+            // Активируем: плитка выходит из потока
+            mouseDrag.active = true;
+            draggedIndex = mouseDrag.index;
+            const rect = mouseDrag.el.getBoundingClientRect();
+            mouseDrag.el.style.width = rect.width + 'px';
+            mouseDrag.el.style.height = rect.height + 'px';
+            mouseDrag.el.style.position = 'fixed';
+            mouseDrag.el.style.left = rect.left + 'px';
+            mouseDrag.el.style.top = rect.top + 'px';
+            mouseDrag.el.style.zIndex = '2';
+            mouseDrag.el.classList.add('dragging');
+            mouseDrag.grabX = mouseDrag.startX - rect.left;
+            mouseDrag.grabY = mouseDrag.startY - rect.top;
+
+            // Соседи плавно закрывают зазор (FLIP First + Play)
+            const before = new Map();
+            bookmarksContainer.querySelectorAll('.bookmark').forEach((other) => {
+                if (other !== mouseDrag.el) before.set(other, other.getBoundingClientRect());
+            });
+            before.forEach((oldRect, other) => {
+                const now = other.getBoundingClientRect();
+                const ddx = oldRect.left - now.left;
+                const ddy = oldRect.top - now.top;
+                if (!ddx && !ddy) return;
+                other.style.transition = 'none';
+                other.style.transform = `translate(${ddx}px, ${ddy}px)`;
+                other.getBoundingClientRect();
+                other.style.transition = '';
+                other.style.transform = '';
+            });
+        }
+
+        // Двигаем плитку за курсором
+        mouseDrag.el.style.left = (e.clientX - mouseDrag.grabX) + 'px';
+        mouseDrag.el.style.top = (e.clientY - mouseDrag.grabY) + 'px';
+
+        // Перестановка — та же геометрия, плитка исключена из расчёта рядов
+        const slot = getDropIndex(e.clientX, e.clientY, mouseDrag.el);
+        if (slot !== draggedIndex) {
+            reorderBookmarksAnimated(draggedIndex, slot);
+            mouseDrag.orderChanged = true;
+        }
+    });
+
+    // Отпускание мыши: сохраняем порядок (нужен capture — иначе mouseup
+    // над чужим элементом всё равно завершит перенос)
+    document.addEventListener('mouseup', (e) => {
+        if (!mouseDrag) return;
+        e.preventDefault();
+        endMouseDrag(true);
+    });
+
+    // Уход курсора за окно — тоже завершаем
+    document.addEventListener('mouseleave', () => {
+        if (mouseDrag) endMouseDrag(true);
     });
 
     // =============================================================================
