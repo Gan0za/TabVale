@@ -92,10 +92,14 @@ const sandbox = {
         open() {},
     },
     navigator: { language: 'ru-RU' },
-    fetch: async () => ({ json: async () => ({}) }),
+    fetch: async () => ({ json: async () => ({}), ok: true, text: async () => '<title>t</title>' }),
     URL, URLSearchParams,
     Image: class {},
     setTimeout, clearTimeout,
+    DOMParser: class {
+        parseFromString() { return { title: '' }; }
+    },
+    alert() {},
 };
 
 vm.runInNewContext(source, sandbox);
@@ -114,5 +118,28 @@ byId('show-background-form').click();
 byId('cancel-background').click();
 byId('show-search-engine-form').click();
 byId('cancel-search-engine').click();
+
+// --- Шаг 1 -> шаг 2 формы закладки: НЕ должно открывать вкладок ---
+// Регрессия: раньше заголовок считывался через скрытую вкладку
+// (chrome.tabs.create) — вкладка мелькала в панели при каждом "Добавить"
+let tabsCreated = 0;
+let permissionsRequested = false;
+chromeStub.tabs = {
+    create(opts, cb) { tabsCreated++; cb({ id: 1 }); },
+    remove() {},
+};
+chromeStub.permissions = {
+    request(opts, cb) { permissionsRequested = true; cb(true); },
+};
+chromeStub.scripting = { executeScript() {} };
+
+byId('show-bookmark-form').click();
+byId('bookmark-url-input').value = 'https://github.com';
+byId('add-bookmark').click();
+// Дождаться асинхронного fetchPageTitle (fetch + DOMParser)
+await new Promise((r) => setTimeout(r, 10));
+
+assert.equal(tabsCreated, 0, 'шаг 2 формы не открывает вкладок');
+assert.ok(permissionsRequested, 'запрашивается разрешение на чтение заголовка');
 
 console.log('init.test.mjs: все проверки пройдены');
