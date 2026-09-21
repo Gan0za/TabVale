@@ -217,6 +217,9 @@ grid.querySelectorAll = (selector) => {
     if (selector === '.bookmark') return [...grid.children];
     return [];
 };
+// showContextMenu гасит меню при открытой модалке: по умолчанию модалка
+// закрыта — на overlay должен быть класс hidden
+byId('overlay').classList.add('hidden');
 
 // Обработчики touch-событий навешены на контейнер
 for (const type of ['touchstart', 'touchmove', 'touchend', 'touchcancel']) {
@@ -317,6 +320,30 @@ grid._listeners.touchmove.forEach((fn) => fn({
 assert.equal(grid.children[grid.children.length - 1].dataset.url, 'https://b.com',
     'плитка доезжает до конца списка');
 grid._listeners.touchend.forEach((fn) => fn({ touches: [], preventDefault() {} }));
+
+// --- 7b. Long-press без движения открывает контекстное меню ---
+// Порядок после шага 7: A B C. Long-press на B и отпускание без движения:
+// меню на месте плитки (как правый клик), перенос не выполняется
+const contextMenuEl = byId('custom-context-menu');
+grid._listeners.touchstart.forEach((fn) => fn({
+    touches: [touch(200, 200)], target: tiles[1], stopPropagation() {},
+}));
+await new Promise((r) => setTimeout(r, 400)); // long-press сработал
+grid._listeners.touchend.forEach((fn) => fn({ touches: [], preventDefault() {} }));
+// Меню показано: у contextMenu снят класс hidden и стоят координаты
+assert.ok(!contextMenuEl.classList.contains('hidden'), 'long-press без движения показывает меню');
+assert.ok(contextMenuEl.style.left !== '' && contextMenuEl.style.top !== '',
+    'меню позиционировано на месте плитки');
+// Меню не открыто, если после long-press было движение (это был перенос)
+contextMenuEl.classList.add('hidden');
+grid._listeners.touchstart.forEach((fn) => fn({
+    touches: [touch(200, 200)], target: tiles[1], stopPropagation() {},
+}));
+await new Promise((r) => setTimeout(r, 400));
+grid._listeners.touchmove.forEach((fn) => fn({ touches: [touch(240, 200)], preventDefault() {} }));
+grid._listeners.touchend.forEach((fn) => fn({ touches: [], preventDefault() {} }));
+assert.ok(contextMenuEl.classList.contains('hidden'),
+    'long-press с движением — это перенос, меню не открывается');
 
 // --- 8. Единая геометрия слотов: getDropIndex с skipEl ---
 // Плитка у пальца исключается из расчёта рядов — иначе фантомный ряд
