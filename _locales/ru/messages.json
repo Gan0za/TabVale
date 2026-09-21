@@ -27,11 +27,9 @@
   "themeLabel": { "message": "Тема" },
 
   "addButton": { "message": "＋ Добавить" },
+  "addButtonShort": { "message": "Добавить" },
   "saveButton": { "message": "Сохранить" },
   "cancelButton": { "message": "Отмена" },
-  "findLogo": { "message": "Найти логотип" },
-  "logoFound": { "message": "Логотип найден!" },
-  "logoNotFound": { "message": "Логотип не найден." },
   "importButton": { "message": "Импорт (JSON)" },
   "exportButton": { "message": "Экспорт (JSON)" },
   "closeButton": { "message": "Закрыть" },

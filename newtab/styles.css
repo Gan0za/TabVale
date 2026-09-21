@@ -737,6 +737,26 @@ h1, h2 {
     padding: 12px;
 }
 
+/* Второй шаг формы закладки/поисковика: поля "Название" и "URL логотипа"
+   появляются после ввода URL (тот же механизм раскрытия, что у add-form) */
+.add-details {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    overflow: hidden;
+    transition: grid-template-rows .2s ease, opacity .18s ease;
+}
+
+.add-details.open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+}
+
+.add-details-inner {
+    min-height: 0;
+    overflow: hidden;
+}
+
 .form-actions {
     display: flex;
     justify-content: flex-end;

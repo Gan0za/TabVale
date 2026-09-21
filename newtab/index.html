@@ -102,12 +102,16 @@
                 <button id="show-bookmark-form" class="btn" data-i18n="addButton">＋ Добавить</button>
                 <div id="bookmark-form" class="add-form">
                     <div class="add-form-inner">
-                        <input type="text" id="bookmark-title-input" data-i18n-placeholder="bookmarkTitlePlaceholder" placeholder="Название">
                         <input type="url" id="bookmark-url-input" data-i18n-placeholder="bookmarkUrlPlaceholder" placeholder="URL">
-                        <input type="url" id="bookmark-icon-input" data-i18n-placeholder="iconUrlPlaceholder" placeholder="URL логотипа (опционально)">
+                        <div id="bookmark-details" class="add-details">
+                            <div class="add-details-inner">
+                                <input type="text" id="bookmark-title-input" data-i18n-placeholder="bookmarkTitlePlaceholder" placeholder="Название">
+                                <input type="url" id="bookmark-icon-input" data-i18n-placeholder="iconUrlPlaceholder" placeholder="URL логотипа (опционально)">
+                            </div>
+                        </div>
                         <div class="form-actions">
-                            <button id="find-bookmark-logo" class="btn" data-i18n="findLogo">Найти логотип</button>
-                            <button id="save-bookmark" class="btn btn-primary" data-i18n="saveButton">Сохранить</button>
+                            <button id="add-bookmark" class="btn btn-primary" data-i18n="addButtonShort">Добавить</button>
+                            <button id="save-bookmark" class="btn btn-primary hidden" data-i18n="saveButton">Сохранить</button>
                             <button id="cancel-bookmark" class="btn" data-i18n="cancelButton">Отмена</button>
                         </div>
                     </div>
@@ -132,12 +136,16 @@
                 <button id="show-search-engine-form" class="btn" data-i18n="addButton">＋ Добавить</button>
                 <div id="search-engine-form" class="add-form">
                     <div class="add-form-inner">
-                        <input type="text" id="new-search-engine-name" data-i18n-placeholder="engineNamePlaceholder" placeholder="Название">
                         <input type="text" id="new-search-engine-url" data-i18n-placeholder="engineUrlPlaceholder" placeholder="URL с %s (например https://www.google.com/search?q=%s)">
-                        <input type="url" id="new-search-engine-logo" data-i18n-placeholder="iconUrlPlaceholder" placeholder="URL логотипа (опционально)">
+                        <div id="search-engine-details" class="add-details">
+                            <div class="add-details-inner">
+                                <input type="text" id="new-search-engine-name" data-i18n-placeholder="engineNamePlaceholder" placeholder="Название">
+                                <input type="url" id="new-search-engine-logo" data-i18n-placeholder="iconUrlPlaceholder" placeholder="URL логотипа (опционально)">
+                            </div>
+                        </div>
                         <div class="form-actions">
-                            <button id="find-search-engine-logo" class="btn" data-i18n="findLogo">Найти логотип</button>
-                            <button id="add-search-engine" class="btn btn-primary" data-i18n="saveButton">Сохранить</button>
+                            <button id="add-search-engine" class="btn btn-primary" data-i18n="addButtonShort">Добавить</button>
+                            <button id="save-search-engine" class="btn btn-primary hidden" data-i18n="saveButton">Сохранить</button>
                             <button id="cancel-search-engine" class="btn" data-i18n="cancelButton">Отмена</button>
                         </div>
                     </div>

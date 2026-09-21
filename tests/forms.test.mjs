@@ -57,6 +57,23 @@ assert.ok(app_js_uses('cancel-bookmark'), 'app.js использует cancel-bo
 assert.ok(app_js_uses('cancel-background'), 'app.js использует cancel-background');
 assert.ok(app_js_uses('cancel-search-engine'), 'app.js использует cancel-search-engine');
 
+// --- Двухшаговые формы закладок и поисковиков ---
+// Шаг 1: только URL и кнопка "Добавить". Шаг 2: блок details с полями
+// название/логотип и кнопка "Сохранить"
+for (const details of ['bookmark-details', 'search-engine-details']) {
+    assert.ok(html.includes(`id="${details}"`), `в разметке есть ${details}`);
+    assert.ok(app_js_uses(details), `app.js использует ${details}`);
+}
+for (const button of ['add-bookmark', 'save-bookmark', 'add-search-engine', 'save-search-engine']) {
+    assert.ok(html.includes(`id="${button}"`), `в разметке есть кнопка ${button}`);
+    assert.ok(app_js_uses(button), `app.js использует ${button}`);
+}
+// Кнопки "Найти логотип" заменены автозаполнением — их быть не должно
+assert.ok(!html.includes('find-bookmark-logo'), 'кнопка find-bookmark-logo удалена');
+assert.ok(!html.includes('find-search-engine-logo'), 'кнопка find-search-engine-logo удалена');
+assert.ok(!js.includes('findBookmarkLogoButton'), 'app.js не ссылается на findBookmarkLogoButton');
+assert.ok(!js.includes('findSearchEngineLogoButton'), 'app.js не ссылается на findSearchEngineLogoButton');
+
 // Все кнопки в разметке имеют класс btn (единый стиль).
 // Исключения — кнопки со своей особой формой: круглая FAB,
 // кнопка выпадающего списка, вкладки настроек и пункты меню темы.
