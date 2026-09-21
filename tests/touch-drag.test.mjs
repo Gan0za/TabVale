@@ -245,21 +245,25 @@ grid._listeners.touchstart.forEach((fn) => fn({
 await new Promise((r) => setTimeout(r, 400)); // ждём дольше 350 мс
 assert.ok(tileB.classList.contains('dragging'), 'long-press включает режим переноса');
 
-// --- 3. Активный перенос: слот считается той же геометрией, что у мыши ---
+// --- 3. Активный перенос: плитка едет за пальцем, список переставляется ---
 // Палец над левой половиной A (x=50 < центра 65): слот 0, B уезжает в начало.
 // Слот 0 < draggedIndex 1 — вставка без смещения
 let moveEvent = { touches: [touch(50, 100)], preventDefault() { this.defaultPrevented = true; } };
 grid._listeners.touchmove.forEach((fn) => fn(moveEvent));
 assert.ok(moveEvent.defaultPrevented, 'страница не скроллится во время переноса');
 assert.ok(tileB.classList.contains('dragging'), 'плитка помечена как перетаскиваемая');
+assert.equal(tileB.style.position, 'fixed', 'плитка вынута из потока — едет за пальцем');
+assert.ok(tileB.style.left !== '' && tileB.style.top !== '', 'плитка следует за пальцем через left/top');
+assert.ok(!tileB.draggable, 'нативный drag отключён на время сенсорного переноса');
 assert.deepEqual(grid.children.map((c) => c.dataset.url), ['https://b.com', 'https://a.com', 'https://c.com'], 'B уехал в начало ещё до отпускания пальца');
 
-// --- 4. Отпускание: порядок сохранён, визуал снят ---
+// --- 4. Отпускание: порядок сохранён, визуал снят, drag возвращён ---
 grid._listeners.touchend.forEach((fn) => fn({
     touches: [], preventDefault() {},
 }));
 assert.ok(!tileB.classList.contains('dragging'), 'после отпускания визуал снят');
-assert.ok(tileB.style.transform === '', 'FLIP-сдвиги сняты после переноса');
+assert.ok(tileB.style.transform === '' && tileB.style.position === '' && tileB.style.left === '', 'все инлайновые стили сброшены после переноса');
+assert.ok(tileB.draggable, 'нативный drag возвращён после сенсорного переноса');
 assert.deepEqual(savedOrder, ['B', 'A', 'C'], 'порядок сохранён после сенсорного переноса');
 
 // --- 5. Короткий тап: без переноса, без сохранения ---
@@ -287,23 +291,25 @@ ctxEvent = { target: tiles[1], preventDefault() { ctxEvent.prevented = true; } }
 grid._listeners.contextmenu.forEach((fn) => fn(ctxEvent));
 assert.ok(!ctxEvent.prevented, 'вне переноса contextmenu работает (правый клик мыши)');
 
-// --- 7. Слот на своей позиции или после неё — no-op (как dragover у мыши) ---
-// Порядок после шага 4: B A C. Тащим B (index 0): слот 0 (своя позиция) и
-// слот 1 (сразу после) не должны ничего переставить
+// --- 7. Слот без перетаскиваемой плитки: no-op на своей позиции ---
+// Порядок после шага 4: B A C. Тащим B (index 0): слот считается без B,
+// поэтому no-op — только слот 0 (своя позиция), без пары "до/после"
 const currentB = grid.children.find((c) => c.dataset.url === 'https://b.com');
 grid._listeners.touchstart.forEach((fn) => fn({
     touches: [touch(200, 200)], target: currentB, stopPropagation() {},
 }));
 await new Promise((r) => setTimeout(r, 400));
 syncSets.length = 0;
+// Плитки без B: A (центр 65), C (центры 345). Курсор x=50 — левая
+// половина A, ни одного центра не пройдено: слот 0 = draggedIndex — no-op
 const beforeMove = grid.children.map((c) => c.dataset.url);
 grid._listeners.touchmove.forEach((fn) => fn({
-    touches: [touch(205, 100)], // правая половина A (центры 65/205/345): слот 1 = draggedIndex+1
+    touches: [touch(50, 100)],
     preventDefault() {},
 }));
 assert.deepEqual(grid.children.map((c) => c.dataset.url), beforeMove,
-    'слот сразу после своей плитки — no-op (без смещения -1)');
-// Правая половина последней C: слот 3 > draggedIndex 0 -> вставка 2 (конец)
+    'слот на своей позиции — no-op');
+// x=400: пройдены центры A и B... без B это A и C -> слот 2 -> B в конец
 grid._listeners.touchmove.forEach((fn) => fn({
     touches: [touch(400, 100)],
     preventDefault() {},
@@ -312,11 +318,13 @@ assert.equal(grid.children[grid.children.length - 1].dataset.url, 'https://b.com
     'плитка доезжает до конца списка');
 grid._listeners.touchend.forEach((fn) => fn({ touches: [], preventDefault() {} }));
 
-// --- 8. getDropIndex без skipEl — единая геометрия с мышью ---
-assert.ok(!/getDropIndex\(mouseX, mouseY, skipEl\)/.test(source),
-    'getDropIndex не принимает skipEl: плитка остаётся в потоке');
-assert.ok(!/\.style\.position = 'fixed'/.test(source),
-    'плитка не вынимается из потока — FLIP-доездка как в main');
+// --- 8. Единая геометрия слотов: getDropIndex с skipEl ---
+// Плитка у пальца исключается из расчёта рядов — иначе фантомный ряд
+assert.ok(/getDropIndex\(mouseX, mouseY, skipEl\)/.test(source),
+    'getDropIndex принимает skipEl');
+assert.ok(/tile !== skipEl/.test(source), 'перетаскиваемая плитка исключена из расчёта рядов');
+assert.ok(/\.style\.position = 'fixed'/.test(source),
+    'при сенсорном переносе плитка вынимается из потока и едет за пальцем');
 
 // --- 9. Мышь: нативный dragstart ставит класс и индекс ---
 syncSets.length = 0;
