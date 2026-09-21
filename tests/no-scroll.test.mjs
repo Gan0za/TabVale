@@ -33,4 +33,11 @@ assert.ok(grid, 'правило #bookmarks-container существует');
 assert.ok(!/overflow-y:\s*auto/.test(grid[0]), 'решётка не прокручивается внутри');
 assert.ok(!/flex:\s*1/.test(grid[0]), 'решётка не растянута на свободную высоту');
 
+// Кнопки в углу зафиксированы и собраны в вертикальную колонку,
+// отстоящую от контента нижним отступом панели
+const stack = css.match(/\.fab-stack\s*\{[^}]*\}/);
+assert.ok(stack, 'правило .fab-stack существует');
+assert.ok(/position:\s*fixed/.test(stack[0]), 'колонка кнопок не уезжает при скролле');
+assert.ok(/flex-direction:\s*column/.test(stack[0]), 'кнопки выстроены вертикально');
+
 console.log('no-scroll.test.mjs: все проверки пройдены');
