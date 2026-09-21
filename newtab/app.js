@@ -1045,14 +1045,12 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Заголовок страницы по её адресу. Реальный <title> читается только
-     * через вкладку с content script (у страницы расширения нет доступа
-     * к чужому DOM), поэтому:
-     *   1. Запрашиваем опциональное разрешение на конкретный сайт
-     *      (пользователь видит промт и может отказать — тогда сразу
-     *      предлагаем hostname, промт показывается не чаще раза на сайт).
-     *   2. Если разрешение выдано — вводим скрытую вкладку с target=url,
-     *      дожидаемся загрузки и забираем document.title.
+     * Заголовок страницы по её адресу. Разрешение на конкретный сайт
+     * запрашивается опционально (пользователь видит промт и может
+     * отказать — тогда сразу предлагаем hostname). Если разрешение
+     * выдано, страница скачивается через fetch и из её HTML берётся
+     * <title>: с host-разрешением расширение может читать ответ, как
+     * обычная страница. Никаких вкладок не открывается.
      * В любом случае поле заголовка остаётся редактируемым — предложение
      * можно стереть и вписать своё.
      */
@@ -1067,29 +1065,15 @@ window.addEventListener('DOMContentLoaded', () => {
                 });
             });
             if (!granted) return '';
-            const title = await new Promise((resolve) => {
-                // Таймаут 5с: сайт может отвечать вечно — ждём его не дольше
-                const timer = setTimeout(() => resolve(null), 5000);
-                chrome.tabs.create({ url: urlString, active: false }, (tab) => {
-                    if (!tab?.id) { clearTimeout(timer); resolve(null); return; }
-                    const finish = (value) => {
-                        clearTimeout(timer);
-                        chrome.tabs.remove(tab.id).catch(() => {});
-                        resolve(value);
-                    };
-                    chrome.scripting.executeScript(
-                        {
-                            target: { tabId: tab.id },
-                            func: () => document.title,
-                        },
-                        (results) => {
-                            const err = chrome.runtime?.lastError;
-                            finish(err ? null : results?.[0]?.result ?? null);
-                        }
-                    );
-                });
-            });
-            return typeof title === 'string' ? title.trim() : '';
+            // Таймаут 5с: сайт может отвечать вечно — ждём его не дольше
+            const response = await Promise.race([
+                fetch(urlString),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
+            ]);
+            if (!response.ok) return '';
+            const html = await response.text();
+            const title = new DOMParser().parseFromString(html, 'text/html').title;
+            return title.trim();
         } catch {
             return '';
         }
