@@ -26,11 +26,11 @@ assert.ok(!js.includes('renderBookmarksAnimated'), 'старая полная п
 assert.ok(js.includes('appendChild(el)'), 'узлы плиток перемещаются, а не пересоздаются');
 assert.ok(js.includes('el.dataset.index = i'), 'dataset.index синхронизируется после перестановки');
 assert.ok(js.includes('CSS.escape(b.url)'), 'поиск плитки по url защищён CSS.escape');
-// dragend сбрасывает индекс (regex — переводы строк в файле могут быть CRLF)
-assert.ok(/dragend[\s\S]*?draggedIndex = null;/.test(js), 'dragend сбрасывает draggedIndex');
-// Сохранение при drop, а не при каждой перестановке
-const dropBlock = js.match(/drop'\s*,\s*\(e\) => \{[\s\S]*?\}\);/);
-assert.ok(dropBlock && dropBlock[0].includes('saveState'), 'drop сохраняет порядок');
+// Перенос работает через pointer/touch события: mouseup сохраняет порядок
+assert.ok(/mouseup[\s\S]*?endMouseDrag\(true\)/.test(js), 'mouseup сохраняет порядок');
+assert.ok(/touchend[\s\S]*?endTouchDrag\(wasActive\)/.test(js), 'touchend сохраняет порядок');
+// Нативный HTML5 drag отключён
+assert.ok(/dragstart[\s\S]*?e\.preventDefault\(\)/.test(js), 'нативный dragstart подавлен');
 
 // --- Слот вставки: счёт центров, пройденных курсором ---
 // Эмуляция getDropIndex для ОДНОГО ряда: tiles — центры плиток по X
