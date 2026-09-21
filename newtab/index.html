@@ -106,7 +106,10 @@
                         <div id="bookmark-details" class="add-details">
                             <div class="add-details-inner">
                                 <input type="text" id="bookmark-title-input" data-i18n-placeholder="bookmarkTitlePlaceholder" placeholder="Название">
-                                <input type="url" id="bookmark-icon-input" data-i18n-placeholder="iconUrlPlaceholder" placeholder="URL логотипа (опционально)">
+                                <div class="input-with-refresh">
+                                    <input type="url" id="bookmark-icon-input" data-i18n-placeholder="iconUrlPlaceholder" placeholder="URL логотипа (опционально)">
+                                    <button id="refresh-bookmark-icon" class="icon-refresh-btn" type="button" data-i18n-aria="refreshIcon" title="⟳">⟳</button>
+                                </div>
                             </div>
                         </div>
                         <div class="form-actions">
@@ -140,7 +143,10 @@
                         <div id="search-engine-details" class="add-details">
                             <div class="add-details-inner">
                                 <input type="text" id="new-search-engine-name" data-i18n-placeholder="engineNamePlaceholder" placeholder="Название">
-                                <input type="url" id="new-search-engine-logo" data-i18n-placeholder="iconUrlPlaceholder" placeholder="URL логотипа (опционально)">
+                                <div class="input-with-refresh">
+                                    <input type="url" id="new-search-engine-logo" data-i18n-placeholder="iconUrlPlaceholder" placeholder="URL логотипа (опционально)">
+                                    <button id="refresh-search-engine-icon" class="icon-refresh-btn" type="button" data-i18n-aria="refreshIcon" title="⟳">⟳</button>
+                                </div>
                             </div>
                         </div>
                         <div class="form-actions">

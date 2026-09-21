@@ -37,6 +37,7 @@
   "bookmarkTitlePlaceholder": { "message": "Title" },
   "bookmarkUrlPlaceholder": { "message": "URL" },
   "iconUrlPlaceholder": { "message": "Icon URL (optional)" },
+  "refreshIcon": { "message": "Refresh icon from URL" },
   "bgTitlePlaceholder": { "message": "Background name" },
   "bgUrlPlaceholder": { "message": "Image URL (empty — default)" },
   "engineNamePlaceholder": { "message": "Name" },

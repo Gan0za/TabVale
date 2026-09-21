@@ -754,6 +754,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const bookmarkDetails = document.getElementById('bookmark-details');
     const addBookmarkButton = document.getElementById('add-bookmark');
     const saveBookmarkButton = document.getElementById('save-bookmark');
+    const refreshBookmarkIconButton = document.getElementById('refresh-bookmark-icon');
 
     // Форма фонов
     const backgroundManagerList = document.getElementById('background-manager-list');
@@ -769,6 +770,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const searchEngineDetails = document.getElementById('search-engine-details');
     const addSearchEngineButton = document.getElementById('add-search-engine');
     const saveSearchEngineButton = document.getElementById('save-search-engine');
+    const refreshSearchEngineIconButton = document.getElementById('refresh-search-engine-icon');
 
     // --- Текущее состояние приложения ---
     // Всё, что видит пользователь, живёт в этом объекте и синхронизируется
@@ -1422,6 +1424,14 @@ window.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') { e.preventDefault(); addBookmarkButton.click(); }
     });
 
+    // Кнопка ⟳ у поля "URL логотипа": пересчитать иконку из текущего
+    // адреса. Нужна после полной замены URL при редактировании
+    refreshBookmarkIconButton.addEventListener('click', () => {
+        const normalizedUrl = normalizeUrl(bookmarkUrlInput.value.trim());
+        if (!normalizedUrl) { alert(t('errInvalidUrl')); return; }
+        bookmarkIconInput.value = `https://${new URL(normalizedUrl).hostname}/favicon.ico`;
+    });
+
     // Кнопка "Сохранить" в форме закладок
     saveBookmarkButton.addEventListener('click', () => {
         const title = bookmarkTitleInput.value.trim();
@@ -1559,6 +1569,14 @@ window.addEventListener('DOMContentLoaded', () => {
     // Enter в поле URL — тот же переход на шаг 2
     newSearchEngineUrl.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') { e.preventDefault(); addSearchEngineButton.click(); }
+    });
+
+    // Кнопка ⟳ у поля "URL логотипа": пересчитать логотип из текущего
+    // адреса с %s (шаблон поисковика)
+    refreshSearchEngineIconButton.addEventListener('click', () => {
+        const normalizedUrl = normalizeUrl(newSearchEngineUrl.value.trim());
+        if (!normalizedUrl || !normalizedUrl.includes('%s')) { alert(t('errEngineUrl')); return; }
+        newSearchEngineLogo.value = `https://${new URL(normalizedUrl.replace('%s', '')).hostname}/favicon.ico`;
     });
 
     saveSearchEngineButton.addEventListener('click', () => {
