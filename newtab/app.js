@@ -60,6 +60,13 @@ let currentThemeMode = 'auto';
 // Кэш загруженных переводов текущего языка (заполняет applyLocale)
 let currentMessages = {};
 
+// Связка с главным модулем: refreshUI объявлен внутри обработчика
+// DOMContentLoaded и сверху недоступен. Модуль регистрирует здесь свою
+// функцию перерисовки, чтобы applyLocale могла обновить динамические
+// списки при смене языка на лету (кнопки Select/Edit/Delete и т.п.),
+// не дожидаясь перезагрузки страницы. До инициализации — null.
+let uiRefresher = null;
+
 /**
  * Возвращает строку перевода по ключу с подстановкой переменных.
  * t('importSkipped', { count: 3 }) подставит $count$ = 3.
@@ -132,10 +139,9 @@ async function applyLocale(langSetting) {
         selectedThemeName.textContent = themeLabel(currentThemeMode);
     }
 
-    // Динамические списки перерисовываем, если данные уже загружены
-    if (typeof currentState === 'object' && currentState?.searchEngines) {
-        refreshUI();
-    }
+    // Динамические списки перерисовываем, если главный модуль уже
+    // зарегистрировал перерисовку и данные загружены
+    if (uiRefresher) uiRefresher();
     return lang;
 }
 
@@ -1172,6 +1178,10 @@ window.addEventListener('DOMContentLoaded', () => {
         renderManagerList(searchEnginesList, currentState.searchEngines, (eng, idx) => renderSearchEngineManagerItem(eng, idx, currentState.currentSearchEngineIndex));
         setBackground(currentState.backgrounds, currentState.currentBackgroundIndex);
     }
+
+    // Смена языка на лету: applyLocale перерисовывает динамические списки
+    // через этот делегат (см. uiRefresher в начале файла)
+    uiRefresher = refreshUI;
 
     /**
      * Заполняет поля формы данными выбранного элемента списка.
