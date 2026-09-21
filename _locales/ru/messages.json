@@ -37,6 +37,7 @@
   "bookmarkTitlePlaceholder": { "message": "Название" },
   "bookmarkUrlPlaceholder": { "message": "URL" },
   "iconUrlPlaceholder": { "message": "URL логотипа (опционально)" },
+  "refreshIcon": { "message": "Обновить иконку по URL" },
   "bgTitlePlaceholder": { "message": "Название фона" },
   "bgUrlPlaceholder": { "message": "URL изображения (пусто — по умолчанию)" },
   "engineNamePlaceholder": { "message": "Название" },

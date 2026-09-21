@@ -757,6 +757,35 @@ h1, h2 {
     overflow: hidden;
 }
 
+/* Поле с кнопкой обновления иконки справа (формы закладки/поисковика) */
+.input-with-refresh {
+    display: flex;
+    gap: 6px;
+    align-items: stretch;
+}
+
+.input-with-refresh input {
+    flex: 1;
+    min-width: 0; /* не даёт длинному URL распереть строку */
+}
+
+/* Кнопка ⟳ пересчёта иконки из текущего URL */
+.icon-refresh-btn {
+    flex-shrink: 0;
+    width: 38px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--glass);
+    color: var(--text);
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.icon-refresh-btn:hover {
+    background: var(--glass-strong);
+}
+
 .form-actions {
     display: flex;
     justify-content: flex-end;
