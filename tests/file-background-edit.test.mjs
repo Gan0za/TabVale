@@ -167,7 +167,11 @@ const chromeStub = {
                 for (const key of [].concat(keys)) out[key] = localFiles[key];
                 cb(out);
             },
-            set(items) { Object.assign(localFiles, items); },
+            // callback обязателен: app.js сохраняет фон после local.set
+            set(items, cb) {
+                Object.assign(localFiles, items);
+                cb && cb();
+            },
         },
         onChanged: { addListener() {} },
     },
@@ -278,3 +282,64 @@ function findImg(node) {
     }
     return node.tagName === 'img' ? node : null;
 }
+
+// Ключ storage.local для fileId (тот же формат, что в app.js: fileKey)
+function fileKeyStub(fileId) {
+    return `bgFile:${fileId}`;
+}
+
+// --- 5. Выбор нового файла в диалоге: превью сразу показывает картинку ---
+// FileReader заглушки отдаёт data:URL выбранного файла синхронно
+const fileInput = byId('background-file-input');
+byId('bg-tab-file').click(); // пользователь переключился на вкладку "Устройство"
+sandbox.FileReader = class {
+    readAsDataURL() {
+        this.result = 'data:image/jpeg;base64,BBBB';
+        this.onload && this.onload();
+    }
+};
+fileInput.files = [{ name: 'photo.jpg' }];
+fileInput._listeners.change.forEach((fn) => fn({ target: fileInput }));
+await new Promise((r) => setTimeout(r, 10));
+
+assert.ok(!previewBox.classList.contains('hidden'),
+    'после выбора файла превью сразу показано');
+assert.equal(byId('background-file-thumb').src,
+    'data:image/jpeg;base64,BBBB', 'превью показывает только что выбранный файл');
+assert.equal(previewBox.dataset.pendingDataUrl,
+    'data:image/jpeg;base64,BBBB', 'data:URL выбранного файла закеширован');
+
+// Сохранение с выбранным файлом: data уходит в storage.local, фон с новым fileId
+alerts.length = 0;
+byId('background-title-input').value = 'С фото';
+byId('save-background').click();
+await new Promise((r) => setTimeout(r, 10));
+assert.equal(alerts.length, 0, 'сохранение с выбранным файлом без ошибок');
+const newBg = syncSets[syncSets.length - 1].backgrounds[1];
+assert.ok(newBg.fileId && newBg.fileId !== 'bg1', 'новый file-фон сохранён с новым fileId');
+assert.equal(localFiles[fileKeyStub(newBg.fileId)], 'data:image/jpeg;base64,BBBB',
+    'data:URL нового файла записан в storage.local');
+
+// --- 6. Смена файла при редактировании: превью обновляется, а не пропадает ---
+alerts.length = 0;
+syncSets.length = 0;
+managerList._listeners.click.forEach((fn) => fn({
+    target: findClass(managerList.children[0], 'background-manage-edit'),
+    stopPropagation() {},
+}));
+await new Promise((r) => setTimeout(r, 10));
+sandbox.FileReader = class {
+    readAsDataURL() {
+        this.result = 'data:image/gif;base64,CCCC';
+        this.onload && this.onload();
+    }
+};
+fileInput.files = [{ name: 'replacement.gif' }];
+fileInput._listeners.change.forEach((fn) => fn({ target: fileInput }));
+await new Promise((r) => setTimeout(r, 10));
+assert.ok(!previewBox.classList.contains('hidden'),
+    'при замене файла превью не пропадает — показывает новый файл');
+assert.equal(byId('background-file-thumb').src,
+    'data:image/gif;base64,CCCC', 'превью заменённого файла актуально');
+
+console.log('file-background-edit.test.mjs: все проверки пройдены');

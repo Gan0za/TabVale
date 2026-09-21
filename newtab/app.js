@@ -1184,7 +1184,9 @@ window.addEventListener('DOMContentLoaded', () => {
         switchBackgroundType('url');
         backgroundUrlInput.value = '';
         backgroundFileInput.value = '';
-        document.getElementById('background-file-preview').classList.add('hidden');
+        const previewBox = document.getElementById('background-file-preview');
+        previewBox.classList.add('hidden');
+        delete previewBox.dataset.pendingDataUrl; // кеш выбранного файла сброшен
         backgroundColorInput.value = '#4db6e2';
         updateColorValueLabel();
         applyGradientPreset(GRADIENT_PRESETS[0]);
@@ -1426,6 +1428,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 backgroundFileInput.value = '';
                 // Диалог файла нельзя заполнить программно: показываем
                 // превью уже прикреплённой картинки из storage.local
+                delete document.getElementById('background-file-preview').dataset.pendingDataUrl;
                 showFilePreview(bg);
                 backgroundColorInput.value = bg.type === 'color' ? bg.value : '#4db6e2';
                 updateColorValueLabel();
@@ -1846,11 +1849,24 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Выбор нового файла в диалоге: превью старой картинки больше не актуально
+    // Выбор файла в диалоге: сразу показываем его миниатюру в форме
+    // (и при создании, и при замене при редактировании)
     backgroundFileInput.addEventListener('change', () => {
-        if (backgroundFileInput.files?.length) {
-            document.getElementById('background-file-preview').classList.add('hidden');
-        }
+        const file = backgroundFileInput.files?.[0];
+        const box = document.getElementById('background-file-preview');
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            const dataUrl = typeof reader.result === 'string' ? reader.result : '';
+            if (!dataUrl) return;
+            // Кешируем: сохранение возьмёт готовый data:URL из превью
+            box.dataset.pendingDataUrl = dataUrl;
+            setImageSource(document.getElementById('background-file-thumb'), dataUrl, '');
+            document.getElementById('background-file-name').textContent = file.name;
+            box.classList.remove('hidden');
+        };
+        reader.onerror = () => box.classList.add('hidden');
+        reader.readAsDataURL(file);
     });
 
     // Конструктор градиента: любое изменение сразу видно в превью
@@ -1929,9 +1945,19 @@ window.addEventListener('DOMContentLoaded', () => {
 
         if (type === 'file') {
             const file = backgroundFileInput.files?.[0];
-            // Файл не выбран: при редактировании оставляем прежнюю картинку
-            // (диалог нельзя программно заполнить), при создании — отказ
+            // Файл не выбран: берём data:URL из превью (пользователь выбрал
+            // файл, но input был сброшен) либо прежнюю картинку при
+            // редактировании; при создании без файла — отказ
             if (!file) {
+                const pendingDataUrl = document.getElementById('background-file-preview')
+                    .dataset.pendingDataUrl;
+                if (pendingDataUrl) {
+                    const fileId = makeFileId();
+                    chrome.storage.local.set({ [fileKey(fileId)]: pendingDataUrl }, () => {
+                        commitBackground({ type, title, fileId });
+                    });
+                    return;
+                }
                 const editing = editingBackgroundIndex !== null
                     ? currentState.backgrounds[editingBackgroundIndex]
                     : null;
