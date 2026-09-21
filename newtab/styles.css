@@ -786,6 +786,120 @@ h1, h2 {
     background: var(--glass-strong);
 }
 
+/* =============================================================================
+   Типы фонов: переключатель, выбор файла, цвет и градиент
+   ============================================================================= */
+
+.bg-type-tabs {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.bg-type-tab {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: transparent;
+    color: var(--text-soft);
+    font-size: 13px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    white-space: nowrap;
+}
+
+.bg-type-tab:hover {
+    color: var(--text);
+    background: var(--glass);
+}
+
+.bg-type-tab.active {
+    background: var(--accent);
+    border-color: transparent;
+    color: var(--accent-text);
+}
+
+/* Кнопка выбора файла с устройства — на всю ширину, как input */
+.bg-file-input {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-soft);
+    cursor: pointer;
+}
+
+.bg-file-input::file-selector-button {
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--glass-input);
+    color: var(--text);
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+/* Строка с color-picker: поле заливки и его hex-подпись */
+.bg-color-row,
+.bg-gradient-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.bg-color-row input[type='color'],
+.bg-gradient-row input[type='color'] {
+    width: 44px;
+    height: 34px;
+    padding: 2px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--glass-input);
+    cursor: pointer;
+}
+
+.bg-color-row span {
+    font-size: 13px;
+    color: var(--text-soft);
+}
+
+/* Диапазон угла градиента растягивается на свободное место */
+.bg-gradient-row input[type='range'] {
+    flex: 1;
+    accent-color: var(--accent);
+}
+
+/* Миниатюра текущего градиента в конструкторе */
+.gradient-preview {
+    width: 44px;
+    height: 34px;
+    border-radius: var(--radius-small);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+/* Сетка пресетов градиентов: квадратики в ряд */
+.gradient-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.gradient-preset {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-small);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.15s;
+}
+
+.gradient-preset:hover {
+    transform: scale(1.12);
+}
+
 .form-actions {
     display: flex;
     justify-content: flex-end;

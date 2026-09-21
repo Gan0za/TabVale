@@ -40,6 +40,13 @@
   "refreshIcon": { "message": "Обновить иконку по URL" },
   "bgTitlePlaceholder": { "message": "Название фона" },
   "bgUrlPlaceholder": { "message": "URL изображения (пусто — по умолчанию)" },
+  "bgTypeUrl": { "message": "Ссылка" },
+  "bgTypeFile": { "message": "Устройство" },
+  "bgTypeColor": { "message": "Цвет" },
+  "bgTypeGradient": { "message": "Градиент" },
+  "gradientAngle": { "message": "Угол градиента" },
+  "fileBackground": { "message": "Картинка с устройства" },
+  "errNoFile": { "message": "Выберите файл изображения." },
   "engineNamePlaceholder": { "message": "Название" },
   "engineUrlPlaceholder": { "message": "URL с %s (например https://www.google.com/search?q=%s)" },
 

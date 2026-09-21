@@ -126,7 +126,28 @@
                 <div id="background-form" class="add-form">
                     <div class="add-form-inner">
                         <input type="text" id="background-title-input" data-i18n-placeholder="bgTitlePlaceholder" placeholder="Название фона">
+                        <!-- Переключатель типа фона: картинка / файл / цвет / градиент -->
+                        <div class="bg-type-tabs">
+                            <button class="bg-type-tab active" data-bg-type="url" data-i18n="bgTypeUrl">Ссылка</button>
+                            <button class="bg-type-tab" data-bg-type="file" data-i18n="bgTypeFile">Устройство</button>
+                            <button class="bg-type-tab" data-bg-type="color" data-i18n="bgTypeColor">Цвет</button>
+                            <button class="bg-type-tab" data-bg-type="gradient" data-i18n="bgTypeGradient">Градиент</button>
+                        </div>
                         <input type="url" id="background-url-input" data-i18n-placeholder="bgUrlPlaceholder" placeholder="URL изображения (пусто — по умолчанию)">
+                        <input type="file" id="background-file-input" accept="image/*" class="bg-file-input">
+                        <div class="bg-color-row hidden" id="background-color-row">
+                            <input type="color" id="background-color-input" value="#4db6e2">
+                            <span id="background-color-value">#4db6e2</span>
+                        </div>
+                        <div id="background-gradient-box" class="hidden">
+                            <div class="gradient-presets" id="gradient-presets"></div>
+                            <div class="bg-gradient-row">
+                                <input type="color" id="gradient-from-input" value="#667eea">
+                                <input type="color" id="gradient-to-input" value="#764ba2">
+                                <input type="range" id="gradient-angle-input" min="0" max="360" step="5" value="160" data-i18n-aria="gradientAngle">
+                                <span id="gradient-preview" class="gradient-preview"></span>
+                            </div>
+                        </div>
                         <div class="form-actions">
                             <button id="save-background" class="btn btn-primary" data-i18n="saveButton">Сохранить</button>
                             <button id="cancel-background" class="btn" data-i18n="cancelButton">Отмена</button>

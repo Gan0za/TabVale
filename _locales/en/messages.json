@@ -40,6 +40,13 @@
   "refreshIcon": { "message": "Refresh icon from URL" },
   "bgTitlePlaceholder": { "message": "Background name" },
   "bgUrlPlaceholder": { "message": "Image URL (empty — default)" },
+  "bgTypeUrl": { "message": "Link" },
+  "bgTypeFile": { "message": "Device" },
+  "bgTypeColor": { "message": "Color" },
+  "bgTypeGradient": { "message": "Gradient" },
+  "gradientAngle": { "message": "Gradient angle" },
+  "fileBackground": { "message": "Image from device" },
+  "errNoFile": { "message": "Choose an image file." },
   "engineNamePlaceholder": { "message": "Name" },
   "engineUrlPlaceholder": { "message": "URL with %s (e.g. https://www.google.com/search?q=%s)" },
 
