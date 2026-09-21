@@ -25,7 +25,8 @@ assert.ok(js.includes('reorderBookmarksAnimated'), 'есть перестано�
 assert.ok(!js.includes('renderBookmarksAnimated'), 'старая полная перерисовка удалена');
 assert.ok(js.includes('appendChild(el)'), 'узлы плиток перемещаются, а не пересоздаются');
 assert.ok(js.includes('el.dataset.index = i'), 'dataset.index синхронизируется после перестановки');
-assert.ok(js.includes('CSS.escape(b.url)'), 'поиск плитки по url защищён CSS.escape');
+// Перестановка ищет узлы по очередям на каждый URL — дубликаты URL не теряются
+assert.ok(/queues\.get\(b\.url\)/.test(js), 'узлы ищутся очередями по url (дубликаты безопасны)');
 // Мышь — нативный HTML5 drag (dragend сбрасывает состояние), тач — touchend
 assert.ok(/dragend[\s\S]*?draggedIndex = null;/.test(js), 'dragend сбрасывает draggedIndex');
 assert.ok(/touchend[\s\S]*?endTouchDrag\(wasActive\)/.test(js), 'touchend сохраняет порядок');

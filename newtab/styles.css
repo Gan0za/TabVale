@@ -393,6 +393,7 @@ h1, h2 {
 .bookmark.dragging {
     opacity: 0.5;
     transform: rotate(5deg);
+    z-index: 2; /* приподнятая плитка всегда над соседями */
 }
 
 /* Ссылка внутри плитки */
