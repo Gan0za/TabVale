@@ -2557,6 +2557,9 @@ window.addEventListener('DOMContentLoaded', () => {
             touchDrag.active = true;
             draggedIndex = touchDrag.index;
             liftTouchTile(el);
+            // Плитка приподнята, но не едет: если палец поедет — это перенос,
+            // если отпустится на месте — открываем контекстное меню
+            touchDrag.moved = false;
         }, TOUCH_DRAG_DELAY);
     }, { passive: true });
 
@@ -2577,6 +2580,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
         // Активный перенос: страница не скроллится, палец двигает плитку
         e.preventDefault();
+        // Движение после long-press — это перенос, а не запрос меню
+        touchDrag.moved = true;
         // Плитка следует за пальцем: position: fixed + left/top — без
         // transform, чтобы не конфликтовать с FLIP-анимацией соседей
         touchDrag.el.style.left = (touch.clientX - touchDrag.grabX) + 'px';
@@ -2596,11 +2601,22 @@ window.addEventListener('DOMContentLoaded', () => {
     bookmarksContainer.addEventListener('touchend', (e) => {
         if (!touchDrag) return;
         const wasActive = touchDrag.active;
+        const openedMenu = wasActive && !touchDrag.moved;
+        const menuTarget = touchDrag.el;
         // preventDefault на touchend гасит клик по ссылке — иначе после
         // переноса открывался бы сайт под пальцем
         if (wasActive) e.preventDefault();
         touchDrag.el.draggable = true; // возвращаем нативный drag для мыши
         endTouchDrag(wasActive);
+        if (openedMenu) {
+            // Long-press без движения — как правый клик: меню на месте плитки
+            const rect = menuTarget.getBoundingClientRect();
+            showContextMenu(
+                rect.left + rect.width / 2 + window.scrollX,
+                rect.top + rect.height / 2 + window.scrollY,
+                menuTarget
+            );
+        }
     });
 
     bookmarksContainer.addEventListener('touchcancel', () => {
@@ -2852,8 +2868,17 @@ window.addEventListener('DOMContentLoaded', () => {
     // Правый клик: определяем элемент и показываем соответствующее меню
     document.addEventListener('contextmenu', (e) => {
         e.preventDefault();
+        showContextMenu(e.pageX, e.pageY, e.target);
+    });
+
+    /**
+     * Показывает контекстное меню для элемента target в координатах
+     * (pageX, pageY). Общий вход для правого клика мыши и для long-press
+     * на сенсорном экране.
+     */
+    function showContextMenu(pageX, pageY, target) {
         const modalOpen = !overlay.classList.contains('hidden');
-        const { type, data } = detectMenuTarget(e.target);
+        const { type, data } = detectMenuTarget(target);
         // При открытой модалке меню нужно только для её строк —
         // остальное уходит под оверлей
         if (modalOpen && type !== 'settingsRow') { closeContextMenu(); return; }
@@ -2871,7 +2896,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     data.clipboardText = text || '';
                     data.hasClipboardText = !!data.clipboardText.trim();
                     contextMenuData = data;
-                    openContextMenu(e.pageX, e.pageY, getContextMenuItems(type, data));
+                    openContextMenu(pageX, pageY, getContextMenuItems(type, data));
                 });
             return;
         }
@@ -2886,13 +2911,13 @@ window.addEventListener('DOMContentLoaded', () => {
                     data.clipboardText = text;
                     data.hasClipboardUrl = isSafeWebUrl(text);
                     contextMenuData = data;
-                    openContextMenu(e.pageX, e.pageY, getContextMenuItems(type, data));
+                    openContextMenu(pageX, pageY, getContextMenuItems(type, data));
                 });
             return;
         }
 
-        openContextMenu(e.pageX, e.pageY, getContextMenuItems(type, data));
-    });
+        openContextMenu(pageX, pageY, getContextMenuItems(type, data));
+    }
 
     // Левый клик мимо меню закрывает его
     document.addEventListener('click', (e) => {
