@@ -2457,39 +2457,7 @@ window.addEventListener('DOMContentLoaded', () => {
             if (!touchDrag || draggedIndex !== null) return;
             touchDrag.active = true;
             draggedIndex = touchDrag.index;
-            const rect = el.getBoundingClientRect();
-
-            // FLIP First: позиции соседей ДО выхода плитки из потока —
-            // иначе замер уже после сдвига и анимация вырождается
-            const before = new Map();
-            bookmarksContainer.querySelectorAll('.bookmark').forEach((other) => {
-                if (other !== el) before.set(other, other.getBoundingClientRect());
-            });
-
-            // Плитка выходит из потока и едет за пальцем фиксированной:
-            // transform не участвует — нечему «скакать»
-            el.style.width = rect.width + 'px';
-            el.style.height = rect.height + 'px';
-            el.style.position = 'fixed';
-            el.style.left = rect.left + 'px';
-            el.style.top = rect.top + 'px';
-            el.style.zIndex = '2';
-            el.classList.add('dragging');
-            touchDrag.grabX = touchDrag.startX - rect.left;
-            touchDrag.grabY = touchDrag.startY - rect.top;
-
-            // Соседи плавно закрывают освободившийся зазор (FLIP Play)
-            before.forEach((oldRect, other) => {
-                const now = other.getBoundingClientRect();
-                const dx = oldRect.left - now.left;
-                const dy = oldRect.top - now.top;
-                if (!dx && !dy) return;
-                other.style.transition = 'none';
-                other.style.transform = `translate(${dx}px, ${dy}px)`;
-                other.getBoundingClientRect();
-                other.style.transition = '';
-                other.style.transform = '';
-            });
+            liftTile(el, touchDrag);
         }, TOUCH_DRAG_DELAY);
     }, { passive: true });
 
@@ -2564,6 +2532,47 @@ window.addEventListener('DOMContentLoaded', () => {
     const MOUSE_DRAG_STYLES = ['position', 'left', 'top', 'width', 'height', 'zIndex', 'transform', 'transition'];
 
     /**
+     * Поднимает плитку над сеткой: выходит из потока (position: fixed,
+     * left/top в координатах вьюпорта — родитель с backdrop-filter не
+     * создаёт для неё containing block) и едет за точкой указателя.
+     * Соседи замеряются ДО выхода из потока и плавно закрывают зазор.
+     * drag — mouseDrag или touchDrag; grabX/grabY рассчитываются из
+     * стартовой точки указателя.
+     */
+    function liftTile(el, drag) {
+        const rect = el.getBoundingClientRect();
+
+        // FLIP First: позиции соседей ДО выхода плитки из потока
+        const before = new Map();
+        bookmarksContainer.querySelectorAll('.bookmark').forEach((other) => {
+            if (other !== el) before.set(other, other.getBoundingClientRect());
+        });
+
+        el.style.width = rect.width + 'px';
+        el.style.height = rect.height + 'px';
+        el.style.position = 'fixed';
+        el.style.left = rect.left + 'px';
+        el.style.top = rect.top + 'px';
+        el.style.zIndex = '2';
+        el.classList.add('dragging');
+        drag.grabX = drag.startX - rect.left;
+        drag.grabY = drag.startY - rect.top;
+
+        // FLIP Play: соседи плавно закрывают освободившийся зазор
+        before.forEach((oldRect, other) => {
+            const now = other.getBoundingClientRect();
+            const ddx = oldRect.left - now.left;
+            const ddy = oldRect.top - now.top;
+            if (!ddx && !ddy) return;
+            other.style.transition = 'none';
+            other.style.transform = `translate(${ddx}px, ${ddy}px)`;
+            other.getBoundingClientRect();
+            other.style.transition = '';
+            other.style.transform = '';
+        });
+    }
+
+    /**
      * Завершает мышиный перенос: возвращает плитку в поток, снимает
      * визуал, сохраняет порядок (если он менялся) и сбрасывает состояние.
      */
@@ -2613,7 +2622,9 @@ window.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    bookmarksContainer.addEventListener('mousemove', (e) => {
+    // mousemove и mouseup — на document: курсор уходит за пределы
+    // решётки, но перенос продолжается
+    document.addEventListener('mousemove', (e) => {
         if (!mouseDrag) return;
 
         if (!mouseDrag.active) {
@@ -2621,36 +2632,9 @@ window.addEventListener('DOMContentLoaded', () => {
             const dy = e.clientY - mouseDrag.startY;
             // Порог: ниже 5px это клик, не перенос
             if (dx * dx + dy * dy < 25) return;
-            // Активируем: плитка выходит из потока
+            liftTile(mouseDrag.el, mouseDrag);
             mouseDrag.active = true;
             draggedIndex = mouseDrag.index;
-            const rect = mouseDrag.el.getBoundingClientRect();
-            mouseDrag.el.style.width = rect.width + 'px';
-            mouseDrag.el.style.height = rect.height + 'px';
-            mouseDrag.el.style.position = 'fixed';
-            mouseDrag.el.style.left = rect.left + 'px';
-            mouseDrag.el.style.top = rect.top + 'px';
-            mouseDrag.el.style.zIndex = '2';
-            mouseDrag.el.classList.add('dragging');
-            mouseDrag.grabX = mouseDrag.startX - rect.left;
-            mouseDrag.grabY = mouseDrag.startY - rect.top;
-
-            // Соседи плавно закрывают зазор (FLIP First + Play)
-            const before = new Map();
-            bookmarksContainer.querySelectorAll('.bookmark').forEach((other) => {
-                if (other !== mouseDrag.el) before.set(other, other.getBoundingClientRect());
-            });
-            before.forEach((oldRect, other) => {
-                const now = other.getBoundingClientRect();
-                const ddx = oldRect.left - now.left;
-                const ddy = oldRect.top - now.top;
-                if (!ddx && !ddy) return;
-                other.style.transition = 'none';
-                other.style.transform = `translate(${ddx}px, ${ddy}px)`;
-                other.getBoundingClientRect();
-                other.style.transition = '';
-                other.style.transform = '';
-            });
         }
 
         // Двигаем плитку за курсором

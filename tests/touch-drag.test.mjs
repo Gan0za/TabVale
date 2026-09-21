@@ -306,7 +306,7 @@ grid._listeners.touchstart.forEach((fn) => fn({
 }));
 const currentB = grid.children.find((c) => c.dataset.url === "https://b.com");
 grid._listeners.mousedown.forEach((fn) => fn({ button: 0, target: currentB, clientX: 200, clientY: 200 }));
-grid._listeners.mousemove.forEach((fn) => fn({ clientX: 260, clientY: 200 })); // > 5px порога
+fireDocument('mousemove', { clientX: 260, clientY: 200 }); // > 5px порога
 assert.ok(currentB.classList.contains('dragging'), 'мышиный перенос активировался');
 await new Promise((r) => setTimeout(r, 400)); // таймер ладони срабатывает здесь
 assert.ok(currentB.classList.contains('dragging'),
@@ -327,8 +327,8 @@ const mouseTile = grid.children[0]; // тащим первую плитку те
 grid._listeners.mousedown.forEach((fn) => fn({
     button: 0, target: mouseTile, clientX: 50, clientY: 50,
 }));
-grid._listeners.mousemove.forEach((fn) => fn({ clientX: 100, clientY: 60 })); // активация
-grid._listeners.mousemove.forEach((fn) => fn({ clientX: 400, clientY: 60 })); // в конец списка
+fireDocument('mousemove', { clientX: 100, clientY: 60 }); // активация
+fireDocument('mousemove', { clientX: 400, clientY: 60 }); // в конец списка
 const afterOrder = grid.children.map((c) => c.dataset.url);
 assert.equal(afterOrder[afterOrder.length - 1], mouseTile.dataset.url,
     'первая плитка уехала в конец списка');
