@@ -632,6 +632,11 @@ function buildManagerListItem({ buttons, selected, imageUrl, emptyImageText, tit
         imageEl.className = 'no-preview no-logo';
         imageEl.textContent = emptyImageText;
     }
+    // file-фоны подменяют заглушку на превью асинхронно: данные
+    // pictures лежат в storage.local и приходят позже отрисовки
+    if (rowType === 'background' && !imageUrl) {
+        imageEl.dataset.fileThumb = index; // индекс для последующего поиска
+    }
 
     const info = document.createElement('div');
     info.className = 'item-info';
@@ -1357,6 +1362,41 @@ window.addEventListener('DOMContentLoaded', () => {
         renderManagerList(backgroundManagerList, currentState.backgrounds, (bg, idx) => renderBackgroundManagerItem(bg, idx, currentState.currentBackgroundIndex));
         renderManagerList(searchEnginesList, currentState.searchEngines, (eng, idx) => renderSearchEngineManagerItem(eng, idx, currentState.currentSearchEngineIndex));
         setBackground(currentState.backgrounds, currentState.currentBackgroundIndex);
+        loadFileBackgroundThumbs();
+    }
+
+    /**
+     * Дозагрузка превью file-фонов в списке настроек. Картинки хранятся
+     * в storage.local, а отрисовка строки синхронная — поэтому строки с
+     * заглушкой (data-file-thumb) дополняются миниатюрами, когда данные
+     * придут из хранилища.
+     */
+    function loadFileBackgroundThumbs() {
+        const fileBackdrops = currentState.backgrounds
+            .map((bg, index) => ({ bg, index }))
+            .filter(({ bg }) => bg.type === 'file' && bg.fileId);
+        if (!fileBackdrops.length) return;
+
+        chrome.storage.local.get(
+            fileBackdrops.map(({ bg }) => fileKey(bg.fileId)),
+            (result) => {
+                const err = chrome.runtime?.lastError;
+                if (err) return;
+                for (const { bg, index } of fileBackdrops) {
+                    const dataUrl = result[fileKey(bg.fileId)];
+                    if (!dataUrl) continue;
+                    // Строки перерисовываются целиком — ищем заглушку заново
+                    const row = backgroundManagerList.querySelector?.(
+                        `.modal-list-item[data-index="${index}"]`
+                    );
+                    const placeholder = row?.querySelector?.('[data-file-thumb]');
+                    if (!placeholder) continue;
+                    const img = document.createElement('img');
+                    setImageSource(img, dataUrl, '');
+                    placeholder.replaceWith(img);
+                }
+            }
+        );
     }
 
     // Смена языка на лету: applyLocale перерисовывает динамические списки

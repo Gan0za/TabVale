@@ -51,6 +51,26 @@ function makeElement(id = '') {
         },
         addEventListener(type, fn) { (listeners[type] ||= []).push(fn); },
         removeEventListener() {},
+        // replaceWith нужен для дозагрузки превью file-фонов
+        replaceWith(replacement) {
+            const parent = el.parentNode;
+            if (!parent) return;
+            const pos = parent.children.indexOf(el);
+            if (pos !== -1) parent.children[pos] = replacement;
+            replacement.parentNode = parent;
+        },
+        // Минимальный querySelector: .modal-list-item[data-index="N"] на
+        // списке и [data-file-thumb] на строке (см. loadFileBackgroundThumbs)
+        querySelector(selector) {
+            const rowMatch = /\.modal-list-item\[data-index="(\d+)"\]/.exec(selector);
+            if (rowMatch && el.children[0] && String(el.children[0].dataset.index) === rowMatch[1]) {
+                return el.children[0];
+            }
+            if (selector === '[data-file-thumb]') {
+                return (el.children || []).find((c) => c.dataset && c.dataset.fileThumb !== undefined) || null;
+            }
+            return null;
+        },
         // Делегаты читают e.target и вызывают у него closest
         click(event) {
             const e = { stopPropagation() {}, preventDefault() {}, target: el, ...event };
@@ -59,8 +79,11 @@ function makeElement(id = '') {
         appendChild(c) { c.parentNode = el; this.children.push(c); return c; },
         append(...cs) { cs.forEach((c) => { c.parentNode = el; this.children.push(c); }); },
         remove() {},
-        setAttribute() {}, getAttribute: () => null,
-        querySelector: () => null, querySelectorAll: () => [],
+        setAttribute(name, value) {
+            if (name === 'data-file-thumb') el.dataset.fileThumb = value;
+        },
+        getAttribute: () => null,
+        querySelectorAll: () => [],
         focus() {}, select() {},
         getBoundingClientRect: () => ({ top: 0, left: 0, width: 0, height: 0 }),
         contains: () => false,
@@ -80,6 +103,17 @@ function makeElement(id = '') {
 
 function selectorClass(selector) {
     return selector.startsWith('.') ? selector.slice(1) : null;
+}
+
+// Поиск descendant с классом (для querySelector заглушки)
+function findDescendant(node, cls) {
+    for (const child of node.children || []) {
+        const className = node.className || '';
+        if (className.split(/\s+/).includes(cls)) return child;
+        const found = findDescendant(child, cls);
+        if (found) return found;
+    }
+    return null;
 }
 
 const elements = new Map();
@@ -224,4 +258,23 @@ await new Promise((r) => setTimeout(r, 10));
 assert.equal(alerts.length, 1, 'создание file-фона без файла показывает ошибку');
 assert.equal(syncSets.length, 0, 'пустой file-фон не сохранён');
 
-console.log('file-background-edit.test.mjs: все проверки пройдены');
+// --- 4. Превью в строке списка: заглушка заменяется на <img> с data:URL ---
+// loadFileBackgroundThumbs срабатывает при каждой отрисовке списка;
+// строка file-фона получает <img> с картинкой из storage.local
+const rowAfter = managerList.children[0];
+assert.ok(rowAfter, 'строка file-фона отрисована после обновления');
+const thumbImg = (rowAfter.children || []).find?.((c) => c.tagName === 'img')
+    || findClass(rowAfter, '__none__') === null && findImg(rowAfter);
+assert.ok(thumbImg, 'в строке file-фона есть <img> с превью');
+assert.equal(thumbImg.src, 'data:image/png;base64,AAAA',
+    'превью строки использует data:URL из storage.local');
+
+// Вспомогательный поиск первого <img> в дереве строки
+function findImg(node) {
+    for (const child of node.children || []) {
+        if (node.tagName === 'img' || (child.src || '').startsWith('data:image/')) return child;
+        const found = findImg(child);
+        if (found) return found;
+    }
+    return node.tagName === 'img' ? node : null;
+}
