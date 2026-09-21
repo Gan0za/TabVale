@@ -59,6 +59,10 @@
   "cut": { "message": "Вырезать" },
   "clear": { "message": "Очистить" },
   "searchEngineSettings": { "message": "Настройки поисковиков" },
+  "createBookmark": { "message": "Создать закладку" },
+  "pasteAndCreate": { "message": "Вставить и создать" },
+  "sortAsc": { "message": "Сортировать А-Я" },
+  "sortDesc": { "message": "Сортировать Я-А" },
   "emptyList": { "message": "Список пуст." },
   "noImage": { "message": "Нет" },
 

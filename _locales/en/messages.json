@@ -59,6 +59,10 @@
   "cut": { "message": "Cut" },
   "clear": { "message": "Clear" },
   "searchEngineSettings": { "message": "Search engine settings" },
+  "createBookmark": { "message": "Create bookmark" },
+  "pasteAndCreate": { "message": "Paste and create" },
+  "sortAsc": { "message": "Sort A-Z" },
+  "sortDesc": { "message": "Sort Z-A" },
   "emptyList": { "message": "List is empty." },
   "noImage": { "message": "None" },
 

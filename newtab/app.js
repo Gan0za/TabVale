@@ -592,6 +592,22 @@ function getContextMenuItems(type, data = {}) {
             items.push({ action: 'rowDelete', label: t('delete') });
             return items;
         }
+        case 'bookmarksEmpty':
+            // Меню пустого места секции закладок. Динамическое: если в буфере
+            // обмена корректный веб-адрес (data.hasClipboardUrl), первым идёт
+            // пункт "Вставить и создать" — закладка добавится без формы
+        {
+            const items = [];
+            if (data.hasClipboardUrl) {
+                items.push({ action: 'pasteAndCreateBookmark', label: t('pasteAndCreate') });
+            }
+            items.push({ action: 'addBookmark', label: t('createBookmark') });
+            items.push({ action: 'sortBookmarksAsc', label: t('sortAsc') });
+            items.push({ action: 'sortBookmarksDesc', label: t('sortDesc') });
+            items.push({ separator: true });
+            items.push({ action: 'openSettings', label: t('settings') });
+            return items;
+        }
         default:
             return [];
     }
@@ -1730,6 +1746,45 @@ window.addEventListener('DOMContentLoaded', () => {
         openInNewTab: (data) => window.open(data.url, '_blank'),
         copyLink: (data) => navigator.clipboard.writeText(data.url),
 
+        // Создание новой закладки: открываем форму закладок в настройках
+        addBookmark: () => {
+            openSettingsModal('bookmarks');
+            hideAddForm('bookmark');      // сброс полей и флага редактирования
+            showAddForm('bookmark');
+        },
+        // Сортировка плиток по алфавиту (регистронезависимо, по названию)
+        sortBookmarksAsc: () => {
+            currentState.bookmarks.sort((a, b) =>
+                (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' })
+            );
+            saveState({ bookmarks: currentState.bookmarks });
+            refreshUI();
+        },
+        // Тот же порядок, но наоборот (Я-А): сортируем по возрастанию
+        // и разворачиваем результат
+        sortBookmarksDesc: () => {
+            currentState.bookmarks.sort((a, b) =>
+                (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' })
+            ).reverse();
+            saveState({ bookmarks: currentState.bookmarks });
+            refreshUI();
+        },
+        // Вставка адреса из буфера: уже проверен при показе меню
+        // (isSafeWebUrl в data.clipboardUrl) — сразу добавляем закладку
+        pasteAndCreateBookmark: (data) => {
+            const url = (data.clipboardText || '').trim();
+            if (!isSafeWebUrl(url)) return;
+            let hostname;
+            try { hostname = new URL(url).hostname; } catch { return; }
+            currentState.bookmarks.push({
+                title: hostname,
+                url,
+                icon: `https://${hostname}/favicon.ico`,
+            });
+            saveState({ bookmarks: currentState.bookmarks });
+            refreshUI();
+        },
+
         nextBackground: () => {
             if (!currentState.backgrounds.length) return;
             // "% length" — переход по кругу: последний фон сменяется первым
@@ -1822,11 +1877,20 @@ window.addEventListener('DOMContentLoaded', () => {
             };
         }
 
-        // Поле поиска и кнопка рядом с ним
-        if (target.closest('#search-input, #search-button, #search-engine-button')) {
-            // hasText — есть ли текст в поле: от этого зависят пункты
-            // "Копировать"/"Вырезать"/"Очистить"
+        // Зона поиска: сама секция целиком (включая заголовок страницы —
+        // он над поиском) плюс плитки закладок отдельно (см. ниже)
+        const searchContainer = target.closest('#search-container');
+        if (searchContainer) {
             return { type: 'search', data: { hasText: !!searchInput.value.trim() } };
+        }
+        if (target.closest('#main-container h1')) {
+            return { type: 'search', data: { hasText: !!searchInput.value.trim() } };
+        }
+
+        // Пустое место секции закладок: клик по любой точке секции,
+        // включая заголовок h2 (плитки перехвачены проверкой выше)
+        if (target.closest('#bookmarks-section')) {
+            return { type: 'bookmarksEmpty', data: {} };
         }
 
         // Всё остальное (пустое место, заголовки) считаем фоном страницы
@@ -1854,6 +1918,21 @@ window.addEventListener('DOMContentLoaded', () => {
                 .then((text) => {
                     data.clipboardText = text || '';
                     data.hasClipboardText = !!data.clipboardText.trim();
+                    contextMenuData = data;
+                    openContextMenu(e.pageX, e.pageY, getContextMenuItems(type, data));
+                });
+            return;
+        }
+
+        if (type === 'bookmarksEmpty') {
+            // Как и для поиска, состав меню зависит от буфера обмена:
+            // если там безопасный веб-адрес, показываем "Вставить и создать"
+            navigator.clipboard.readText()
+                .catch(() => '')
+                .then((text) => {
+                    text = (text || '').trim();
+                    data.clipboardText = text;
+                    data.hasClipboardUrl = isSafeWebUrl(text);
                     contextMenuData = data;
                     openContextMenu(e.pageX, e.pageY, getContextMenuItems(type, data));
                 });
