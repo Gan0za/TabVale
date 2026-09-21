@@ -49,7 +49,7 @@ const chromeStub = {
 };
 
 // Выполняем app.js в песочнице и забираем санитизирующие функции
-const { isSafeWebUrl, sanitizeList } = vm_run(source, {
+const { isSafeWebUrl, sanitizeList, sanitizeBackgrounds } = vm_run(source, {
     chrome: chromeStub,
     document: documentStub,
     window: { addEventListener() {} },
@@ -58,7 +58,10 @@ const { isSafeWebUrl, sanitizeList } = vm_run(source, {
 });
 
 function vm_run(code, context) {
-    return vm.runInNewContext(code + '\n;({ isSafeWebUrl, sanitizeList })', context);
+    return vm.runInNewContext(
+        code + '\n;({ isSafeWebUrl, sanitizeList, sanitizeBackgrounds })',
+        context
+    );
 }
 
 // --- 1. isSafeWebUrl: только http/https ---
@@ -129,13 +132,23 @@ const enginesFix = sanitizeList([
 assert.equal(enginesFix.items.length, 2, 'оба движка с name прошли санитизацию');
 assert.equal(enginesFix.skipped, 1, 'движок без %s отброшен');
 
-// --- 8. Фон с пустым url допустим (фон "По умолчанию") ---
-const bgFix = sanitizeList([
-    { title: 'По умолчанию', url: '' },
+// --- 8. Фоны: свои типы (url/file/color/gradient) ---
+const bgFix = sanitizeBackgrounds([
+    { title: 'По умолчанию', url: '' },                     // legacy -> url
     { title: 'Картинка', url: 'https://example.com/bg.jpg' },
-    { title: 'Плохой', url: 'javascript:alert(1)' },
-], { allowEmptyUrl: true });
-assert.equal(bgFix.items.length, 2, 'пустой url фона допустим, javascript: отброшен');
+    { title: 'Плохой', url: 'javascript:alert(1)' },        // отброс
+    { title: 'Заливка', type: 'color', value: '#ff0000' },
+    { title: 'Плохая заливка', type: 'color', value: 'red; background:url(x)' }, // отброс
+    { title: 'Градиент', type: 'gradient', from: '#111111', to: '#222222', angle: 45 },
+    { title: 'Нет цвета', type: 'color' },                  // отброс
+]);
+assert.equal(bgFix.items.length, 4, 'пустой url допустим, javascript: и битые отброшены');
+assert.equal(bgFix.skipped, 3, 'счётчик: 3 пропущено (javascript:, не-hex, нет цвета)');
+assert.deepEqual(
+    JSON.parse(JSON.stringify(bgFix.items.map((b) => b.type))),
+    ['url', 'url', 'color', 'gradient'],
+    'legacy-фон нормализуется в type=url, типы сохраняются'
+);
 
 // --- 9.javascript: в списке закладок по-прежнему отбрасывается ---
 const bookmarkGuard = sanitizeList([

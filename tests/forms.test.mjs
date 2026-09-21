@@ -76,8 +76,9 @@ assert.ok(!js.includes('findSearchEngineLogoButton'), 'app.js не ссылае�
 
 // Все кнопки в разметке имеют класс btn (единый стиль).
 // Исключения — кнопки со своей особой формой: круглая FAB,
-// кнопка выпадающего списка, вкладки настроек и пункты меню темы.
-const exceptions = ['settings-fab', 'dropdown-button', 'settings-tab', 'data-mode'];
+// кнопка выпадающего списка, вкладки настроек, переключатель типа фона
+// и пункты меню темы.
+const exceptions = ['settings-fab', 'dropdown-button', 'settings-tab', 'data-mode', 'bg-type-tab'];
 const allButtons = html.match(/<button[^>]*>/g) || [];
 for (const tag of allButtons) {
     const isException = exceptions.some((e) => tag.includes(e));

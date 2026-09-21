@@ -17,6 +17,7 @@
     --glass: rgba(255, 255, 255, 0.55);        /* панели и формы */
     --glass-strong: rgba(255, 255, 255, 0.75); /* модалка и меню — плотнее */
     --glass-input: rgba(255, 255, 255, 0.65);  /* поля ввода */
+    --surface: #f2f5f8;                        /* непрозрачная поверхность для нативных попапов */
     --border: rgba(44, 62, 80, 0.12);          /* тонкие рамки */
     --accent: #007acc;                         /* акцент: активные элементы */
     --accent-text: #ffffff;
@@ -52,6 +53,7 @@
     --glass: rgba(30, 40, 50, 0.5);
     --glass-strong: rgba(24, 32, 40, 0.78);
     --glass-input: rgba(255, 255, 255, 0.08);
+    --surface: #24303c;
     --border: rgba(255, 255, 255, 0.14);
     --accent: #4db6e2;
     --accent-text: #0b1c26;
@@ -784,6 +786,167 @@ h1, h2 {
 
 .icon-refresh-btn:hover {
     background: var(--glass-strong);
+}
+
+/* =============================================================================
+   Типы фонов: переключатель, выбор файла, цвет и градиент
+   ============================================================================= */
+
+.bg-type-tabs {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.bg-type-tab {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: transparent;
+    color: var(--text-soft);
+    font-size: 13px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    white-space: nowrap;
+}
+
+.bg-type-tab:hover {
+    color: var(--text);
+    background: var(--glass);
+}
+
+.bg-type-tab.active {
+    background: var(--accent);
+    border-color: transparent;
+    color: var(--accent-text);
+}
+
+/* Кнопка выбора файла с устройства — на всю ширину, как input */
+.bg-file-input {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-soft);
+    cursor: pointer;
+}
+
+.bg-file-input::file-selector-button {
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--glass-input);
+    color: var(--text);
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+/* Превью уже прикреплённой картинки file-фона: показывается при
+   редактировании, пока пользователь не выбрал новый файл */
+.bg-file-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-soft);
+}
+
+.bg-file-preview img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+}
+
+/* Строка с color-picker: поле заливки и его hex-подпись */
+.bg-color-row,
+.bg-gradient-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.bg-color-row input[type='color'],
+.bg-gradient-row input[type='color'] {
+    width: 44px;
+    height: 34px;
+    padding: 2px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--glass-input);
+    cursor: pointer;
+}
+
+.bg-color-row span {
+    font-size: 13px;
+    color: var(--text-soft);
+}
+
+/* Строка выбора положения картинки-фона: подпись + селектор */
+.bg-position-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-soft);
+}
+
+.bg-position-row select {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    /* Непрозрачная поверхность: полупрозрачное стекло на <select>
+       заставляет Chromium рисовать нативный попап на белом фоне,
+       и на тёмной теме текст пропадает */
+    background-color: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+}
+
+/* Пункты попапа: без явных цветов браузер рисует их белыми на белом */
+.bg-position-row select option {
+    background-color: var(--surface);
+    color: var(--text);
+}
+
+/* Диапазон угла градиента растягивается на свободное место */
+.bg-gradient-row input[type='range'] {
+    flex: 1;
+    accent-color: var(--accent);
+}
+
+/* Миниатюра текущего градиента в конструкторе */
+.gradient-preview {
+    width: 44px;
+    height: 34px;
+    border-radius: var(--radius-small);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+/* Сетка пресетов градиентов: квадратики в ряд */
+.gradient-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.gradient-preset {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-small);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.15s;
+}
+
+.gradient-preset:hover {
+    transform: scale(1.12);
 }
 
 .form-actions {
