@@ -2421,6 +2421,136 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     // =============================================================================
+    // Сенсорный перенос — гибрид с мышью.
+    //
+    // HTML5 drag-n-drop на тачскринах не работает: добавляем те же шаги
+    // через touch-события. Логика общая: long-press (350 мс) запускает
+    // перенос, дальше работает тот же getDropIndex + reorderBookmarksAnimated,
+    // а отпускание пальца сохраняет порядок как drop у мыши. Короткий тап
+    // по-прежнему открывает закладку, свайп — скроллит страницу.
+    // =============================================================================
+
+    const TOUCH_DRAG_DELAY = 350; // long-press до старта переноса
+    const TOUCH_DRAG_SLOP = 10;   // движение пальца раньше — это скролл
+
+    let touchDrag = null;      // { el, grabX, grabY, fingerX, fingerY, active }
+    let touchTimer = null;
+    let touchOrderChanged = false;
+
+    /**
+     * Двигает перетаскиваемую плитку за пальцем: сдвиг от еёNatural-позиции
+     * к точке пальца с учётом того, где палец схватил плитку.
+     * transition: none — плитка следует мгновенно, FLIP соседей не трогаем.
+     */
+    function followFinger(drag) {
+        const rect = drag.el.getBoundingClientRect();
+        const dx = drag.fingerX - drag.grabX - rect.left;
+        const dy = drag.fingerY - drag.grabY - rect.top;
+        drag.el.style.transition = 'none';
+        drag.el.style.transform = `translate(${dx}px, ${dy}px) rotate(5deg)`;
+    }
+
+    /**
+     * Завершает сенсорный перенос: снимает визуал, сохраняет порядок
+     * (если он менялся) и сбрасывает состояние. save=true — порядок
+     * сохранить, false — только откатить визуал.
+     */
+    function endTouchDrag(save) {
+        clearTimeout(touchTimer);
+        if (touchDrag?.active) {
+            bookmarksContainer.querySelectorAll('.bookmark').forEach((el) => {
+                el.classList.remove('dragging');
+                el.style.transform = '';
+                el.style.zIndex = '';
+            });
+            if (save && touchOrderChanged) {
+                saveState({ bookmarks: currentState.bookmarks });
+            }
+            draggedIndex = null;
+        }
+        touchDrag = null;
+    }
+
+    bookmarksContainer.addEventListener('touchstart', (e) => {
+        if (e.touches.length !== 1) return;
+        const el = e.target.closest('.bookmark');
+        if (!el) return;
+        const touch = e.touches[0];
+        touchDrag = {
+            el,
+            index: Number(el.dataset.index),
+            startX: touch.clientX,
+            startY: touch.clientY,
+            grabX: 0,
+            grabY: 0,
+            fingerX: touch.clientX,
+            fingerY: touch.clientY,
+            active: false,
+        };
+        // Long-press запускает перенос; до него тап и скролл работают как обычно
+        touchTimer = setTimeout(() => {
+            if (!touchDrag) return;
+            touchDrag.active = true;
+            draggedIndex = touchDrag.index;
+            touchDrag.el.classList.add('dragging');
+            // Плитка под пальцем поверх соседей
+            touchDrag.el.style.zIndex = '2';
+            const rect = touchDrag.el.getBoundingClientRect();
+            touchDrag.grabX = touchDrag.startX - rect.left;
+            touchDrag.grabY = touchDrag.startY - rect.top;
+        }, TOUCH_DRAG_DELAY);
+    }, { passive: true });
+
+    bookmarksContainer.addEventListener('touchmove', (e) => {
+        if (!touchDrag) return;
+        const touch = e.touches[0];
+        touchDrag.fingerX = touch.clientX;
+        touchDrag.fingerY = touch.clientY;
+
+        if (!touchDrag.active) {
+            // Палец сместился раньше long-press — это скролл, перенос отменён
+            const dx = touch.clientX - touchDrag.startX;
+            const dy = touch.clientY - touchDrag.startY;
+            if (dx * dx + dy * dy > TOUCH_DRAG_SLOP * TOUCH_DRAG_SLOP) {
+                clearTimeout(touchTimer);
+                touchDrag = null;
+            }
+            return;
+        }
+
+        // Активный перенос: страница не скроллится, палец двигает плитку
+        e.preventDefault();
+
+        const slot = getDropIndex(touch.clientX, touch.clientY);
+        if (slot !== draggedIndex && slot !== draggedIndex + 1) {
+            const insertIndex = slot > draggedIndex ? slot - 1 : slot;
+            reorderBookmarksAnimated(draggedIndex, insertIndex);
+            touchOrderChanged = true;
+        }
+        followFinger(touchDrag);
+    }, { passive: false });
+
+    bookmarksContainer.addEventListener('touchend', (e) => {
+        if (!touchDrag) return;
+        const wasActive = touchDrag.active;
+        // preventDefault на touchend гасит клик по ссылке — иначе после
+        // переноса открывался бы сайт под пальцем
+        if (wasActive) e.preventDefault();
+        endTouchDrag(wasActive);
+    });
+
+    bookmarksContainer.addEventListener('touchcancel', () => {
+        // Порядок к моменту отмены валиден — сохраняем, если менялся
+        endTouchDrag(true);
+    });
+
+    // Long-press на Android нативно открывает контекстное меню — во время
+    // переноса (и его старта) гасим, иначе палец «отваливается» от плитки
+    bookmarksContainer.addEventListener('contextmenu', (e) => {
+        if (touchDrag && e.target.closest('.bookmark')) e.preventDefault();
+    });
+
+    // =============================================================================
     // Собственные контекстные меню (правая кнопка мыши)
     //
     // Одно всплывающее меню на всю страницу, но его состав зависит от того,
