@@ -2299,8 +2299,12 @@ window.addEventListener('DOMContentLoaded', () => {
         // Invert + Play: едем из старой позиции в новую.
         // Перетаскиваемая плитка анимируется тоже, но с сохранением
         // поворота из .dragging — иначе при каждом перестроении
-        // "моргал" бы наклон
+        // "моргал" бы наклон.
+        // При сенсорном переносе её не трогаем вовсе: она вынута из
+        // потока (position: fixed) и едет за пальцем — FLIP-сдвиги
+        // вернули бы её в сетку, и плитка «скакала» бы
         bookmarksContainer.querySelectorAll('.bookmark').forEach((el) => {
+            if (touchDrag?.active && el === touchDrag.el) return;
             const isDragged = Number(el.dataset.index) === draggedIndex;
             const prev = before.get(el.dataset.url);
             if (!prev) return;
@@ -2326,9 +2330,14 @@ window.addEventListener('DOMContentLoaded', () => {
      *      курсором внутри этого ряда (слева направо).
      * Так курсор на нижнем ряду не "проходит" центры верхнего — иначе
      * слот прыгал бы через 2-3 позиции и элемент улетал вверх.
+     *
+     * skipEl — перетаскиваемая плитка (сенсорный перенос вынимает её из
+     * потока и возит за пальцем; без исключения она создаёт фантомный
+     * ряд под курсором, и список прыгает).
      */
-    function getDropIndex(mouseX, mouseY) {
-        const tiles = [...bookmarksContainer.querySelectorAll('.bookmark')];
+    function getDropIndex(mouseX, mouseY, skipEl) {
+        const tiles = [...bookmarksContainer.querySelectorAll('.bookmark')]
+            .filter((tile) => tile !== skipEl);
         if (!tiles.length) return 0;
 
         // Группировка в ряды: плитки с top в пределах 10px — один ряд
@@ -2368,6 +2377,9 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     bookmarksContainer.addEventListener('dragstart', (e) => {
+        // Зависшее сенсорное состояние (касание ладонью, таймер long-press)
+        // перебивало бы мышиный перенос: сгасим его до старта мыши
+        endTouchDrag(false);
         const el = e.target.closest('.bookmark');
         if (!el) return;
         draggedIndex = Number(el.dataset.index);
@@ -2433,36 +2445,38 @@ window.addEventListener('DOMContentLoaded', () => {
     const TOUCH_DRAG_DELAY = 350; // long-press до старта переноса
     const TOUCH_DRAG_SLOP = 10;   // движение пальца раньше — это скролл
 
-    let touchDrag = null;      // { el, grabX, grabY, fingerX, fingerY, active }
+    let touchDrag = null;      // { el, index, grabX, grabY, startX, startY, active }
     let touchTimer = null;
     let touchOrderChanged = false;
 
-    /**
-     * Двигает перетаскиваемую плитку за пальцем: сдвиг от еёNatural-позиции
-     * к точке пальца с учётом того, где палец схватил плитку.
-     * transition: none — плитка следует мгновенно, FLIP соседей не трогаем.
-     */
-    function followFinger(drag) {
-        const rect = drag.el.getBoundingClientRect();
-        const dx = drag.fingerX - drag.grabX - rect.left;
-        const dy = drag.fingerY - drag.grabY - rect.top;
-        drag.el.style.transition = 'none';
-        drag.el.style.transform = `translate(${dx}px, ${dy}px) rotate(5deg)`;
-    }
+    // Инлайновые стили, которыми сенсорный перенос управляет плиткой:
+    // endTouchDrag обязан снять их все, иначе остатки (position: fixed,
+    // transition: none) ломают и вёрстку, и последующие переносы мышью
+    const TOUCH_DRAG_STYLES = ['position', 'left', 'top', 'width', 'height', 'zIndex', 'transform', 'transition'];
 
     /**
-     * Завершает сенсорный перенос: снимает визуал, сохраняет порядок
-     * (если он менялся) и сбрасывает состояние. save=true — порядок
-     * сохранить, false — только откатить визуал.
+     * Завершает сенсорный перенос: возвращает плитку в поток, снимает
+     * визуал, сохраняет порядок (если он менялся) и сбрасывает состояние.
+     * save=true — порядок сохранить, false — только откатить визуал.
      */
     function endTouchDrag(save) {
         clearTimeout(touchTimer);
         if (touchDrag?.active) {
-            bookmarksContainer.querySelectorAll('.bookmark').forEach((el) => {
-                el.classList.remove('dragging');
+            const el = touchDrag.el;
+            // Позиция до возврата в поток — для плавной доездки на место
+            const from = el.getBoundingClientRect();
+            TOUCH_DRAG_STYLES.forEach((prop) => { el.style[prop] = ''; });
+            el.classList.remove('dragging');
+            const to = el.getBoundingClientRect();
+            const dx = from.left - to.left;
+            const dy = from.top - to.top;
+            if (dx || dy) {
+                el.style.transition = 'none';
+                el.style.transform = `translate(${dx}px, ${dy}px)`;
+                el.getBoundingClientRect();
+                el.style.transition = '';
                 el.style.transform = '';
-                el.style.zIndex = '';
-            });
+            }
             if (save && touchOrderChanged) {
                 saveState({ bookmarks: currentState.bookmarks });
             }
@@ -2476,6 +2490,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const el = e.target.closest('.bookmark');
         if (!el) return;
         const touch = e.touches[0];
+        touchOrderChanged = false;
         touchDrag = {
             el,
             index: Number(el.dataset.index),
@@ -2483,29 +2498,50 @@ window.addEventListener('DOMContentLoaded', () => {
             startY: touch.clientY,
             grabX: 0,
             grabY: 0,
-            fingerX: touch.clientX,
-            fingerY: touch.clientY,
             active: false,
         };
-        // Long-press запускает перенос; до него тап и скролл работают как обычно
+        // Long-press запускает перенос; до него тап и скролл работают как
+        // обычно. Если мышиный перенос уже идёт — сенсорный не начинаем,
+        // чтобы таймер ладони не перебил draggedIndex активного переноса
         touchTimer = setTimeout(() => {
-            if (!touchDrag) return;
+            if (!touchDrag || draggedIndex !== null) return;
             touchDrag.active = true;
             draggedIndex = touchDrag.index;
-            touchDrag.el.classList.add('dragging');
-            // Плитка под пальцем поверх соседей
-            touchDrag.el.style.zIndex = '2';
-            const rect = touchDrag.el.getBoundingClientRect();
+            const rect = el.getBoundingClientRect();
+            // Плитка выходит из потока и едет за пальцем фиксированной:
+            // transform не участвует — нечему «скакать»
+            el.style.width = rect.width + 'px';
+            el.style.height = rect.height + 'px';
+            el.style.position = 'fixed';
+            el.style.left = rect.left + 'px';
+            el.style.top = rect.top + 'px';
+            el.style.zIndex = '2';
+            el.classList.add('dragging');
             touchDrag.grabX = touchDrag.startX - rect.left;
             touchDrag.grabY = touchDrag.startY - rect.top;
+
+            // Соседи плавно закрывают освободившийся зазор (FLIP)
+            const before = new Map();
+            bookmarksContainer.querySelectorAll('.bookmark').forEach((other) => {
+                if (other !== el) before.set(other, other.getBoundingClientRect());
+            });
+            before.forEach((oldRect, other) => {
+                const now = other.getBoundingClientRect();
+                const dx = oldRect.left - now.left;
+                const dy = oldRect.top - now.top;
+                if (!dx && !dy) return;
+                other.style.transition = 'none';
+                other.style.transform = `translate(${dx}px, ${dy}px)`;
+                other.getBoundingClientRect();
+                other.style.transition = '';
+                other.style.transform = '';
+            });
         }, TOUCH_DRAG_DELAY);
     }, { passive: true });
 
     bookmarksContainer.addEventListener('touchmove', (e) => {
         if (!touchDrag) return;
         const touch = e.touches[0];
-        touchDrag.fingerX = touch.clientX;
-        touchDrag.fingerY = touch.clientY;
 
         if (!touchDrag.active) {
             // Палец сместился раньше long-press — это скролл, перенос отменён
@@ -2520,14 +2556,19 @@ window.addEventListener('DOMContentLoaded', () => {
 
         // Активный перенос: страница не скроллится, палец двигает плитку
         e.preventDefault();
+        // Плитка следует за пальцем: position: fixed + left/top — без
+        // transform, чтобы не конфликтовать с FLIP-анимацией соседей
+        touchDrag.el.style.left = (touch.clientX - touchDrag.grabX) + 'px';
+        touchDrag.el.style.top = (touch.clientY - touchDrag.grabY) + 'px';
 
-        const slot = getDropIndex(touch.clientX, touch.clientY);
+        // Плитка под пальцем исключена из расчёта рядов: иначе её позиция
+        // у пальца создавала бы фантомный ряд и список прыгал
+        const slot = getDropIndex(touch.clientX, touch.clientY, touchDrag.el);
         if (slot !== draggedIndex && slot !== draggedIndex + 1) {
             const insertIndex = slot > draggedIndex ? slot - 1 : slot;
             reorderBookmarksAnimated(draggedIndex, insertIndex);
             touchOrderChanged = true;
         }
-        followFinger(touchDrag);
     }, { passive: false });
 
     bookmarksContainer.addEventListener('touchend', (e) => {
