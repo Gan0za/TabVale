@@ -46,9 +46,9 @@ const sandbox = {
     chrome: chromeStub, document: documentStub,
     window: { addEventListener() {} }, Image: class {}, URL,
 };
-const { normalizeBackground, buildBackgroundCss, swatchDataUrl, GRADIENT_PRESETS } =
+const { normalizeBackground, buildBackgroundCss, swatchDataUrl, GRADIENT_PRESETS, backgroundPlacementCss } =
     vm.runInNewContext(
-        source + '\n;({ normalizeBackground, buildBackgroundCss, swatchDataUrl, GRADIENT_PRESETS })',
+        source + '\n;({ normalizeBackground, buildBackgroundCss, swatchDataUrl, GRADIENT_PRESETS, backgroundPlacementCss })',
         sandbox
     );
 
@@ -88,7 +88,27 @@ const withData = normalizeBackground({ title: 'F', type: 'file', data: 'data:ima
 assert.ok(withData.fileId, 'file-фон с data получает сгенерированный fileId');
 assert.equal(withData.data, 'data:image/png;base64,AAA', 'data сохраняется для раскладывания в local');
 
-// --- normalizeBackground: legacy и некорректные записи ---
+// --- Выбор положения картинки (url и file) ---
+// Поле position: cover (по умолчанию), contain, tile, center. У записей,
+// где положение не задавалось, поля нет — при применении берётся cover
+assert.deepEqual(
+    JSON.parse(JSON.stringify(normalizeBackground({ title: 'P', type: 'url', url: 'https://a.com/b.jpg', position: 'contain' }))),
+    { type: 'url', title: 'P', url: 'https://a.com/b.jpg', position: 'contain' },
+    'url-фон сохраняет положение contain'
+);
+const filePos = normalizeBackground({ title: 'F2', type: 'file', fileId: 'bg9', position: 'tile' });
+assert.equal(filePos.position, 'tile', 'file-фон сохраняет положение tile');
+// Некорректное положение отбрасывается, у записи без position — cover
+assert.equal(
+    normalizeBackground({ title: 'P', type: 'url', url: 'https://a.com/b.jpg', position: 'drop table' }).position,
+    'cover',
+    'битое положение заменяется на cover'
+);
+assert.equal(
+    normalizeBackground({ title: 'P', type: 'url', url: 'https://a.com/b.jpg' }).position,
+    undefined,
+    'запись без position не хранит поле — при применении берётся cover'
+);
 assert.deepEqual(
     JSON.parse(JSON.stringify(normalizeBackground({ title: 'Legacy', url: 'https://a.com/bg.jpg' }))),
     { type: 'url', title: 'Legacy', url: 'https://a.com/bg.jpg' },
@@ -147,5 +167,41 @@ for (const [from, to, angle] of GRADIENT_PRESETS) {
     assert.ok(/^#[0-9a-fA-F]{6}$/.test(from) && /^#[0-9a-fA-F]{6}$/.test(to), `пресет ${from} содержит корректные hex`);
     assert.ok(angle >= 0 && angle <= 360, `пресет ${from} имеет корректный угол`);
 }
+
+// --- backgroundPlacementCss: положение в css size/position/repeat ---
+// Объекты из vm-песочницы не равны локальным по прототипу, поэтому
+// сверяем через JSON-раундтрип
+assert.deepEqual(
+    JSON.parse(JSON.stringify(backgroundPlacementCss('cover'))),
+    { size: 'cover', position: 'center', repeat: 'no-repeat' },
+    'cover: растянуть, центр, без повторов'
+);
+assert.deepEqual(
+    JSON.parse(JSON.stringify(backgroundPlacementCss('contain'))),
+    { size: 'contain', position: 'center', repeat: 'no-repeat' },
+    'contain: вписать целиком'
+);
+assert.deepEqual(
+    JSON.parse(JSON.stringify(backgroundPlacementCss('tile'))),
+    { size: 'auto', position: 'top left', repeat: 'repeat' },
+    'tile: замостить без масштабирования'
+);
+assert.deepEqual(
+    JSON.parse(JSON.stringify(backgroundPlacementCss('center'))),
+    { size: 'auto', position: 'center', repeat: 'no-repeat' },
+    'center: 1:1 по центру'
+);
+assert.deepEqual(
+    JSON.parse(JSON.stringify(backgroundPlacementCss('hack; background:url(x)'))),
+    { size: 'cover', position: 'center', repeat: 'no-repeat' },
+    'некорректное положение -> значения по умолчанию'
+);
+
+// buildBackgroundCss учитывает положение
+assert.equal(
+    buildBackgroundCss({ type: 'url', title: 'U', url: 'https://a.com/b.jpg', position: 'tile' }),
+    'url("https://a.com/b.jpg")',
+    'url-картинка: значение background не меняется (положение применяется отдельно)'
+);
 
 console.log('background-types.test.mjs: все проверки пройдены');

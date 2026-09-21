@@ -85,7 +85,9 @@ assert.deepEqual(
 );
 
 // --- Меню фона по-прежнему существует как отдельный тип ---
-const background = getContextMenuItems('background', {});
+// hasBackgrounds: true — есть фоны (полный состав меню),
+// canSwitchBackground — фонов больше одного, пункт смены на месте
+const background = getContextMenuItems('background', { hasBackgrounds: true, canSwitchBackground: true });
 assert.deepEqual(
     Array.from(background.filter(i => !i.separator).map(i => i.action)),
     ['nextBackground', 'editBackground', 'backgroundSettings', 'openSettings'],

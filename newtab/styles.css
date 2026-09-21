@@ -17,6 +17,7 @@
     --glass: rgba(255, 255, 255, 0.55);        /* панели и формы */
     --glass-strong: rgba(255, 255, 255, 0.75); /* модалка и меню — плотнее */
     --glass-input: rgba(255, 255, 255, 0.65);  /* поля ввода */
+    --surface: #f2f5f8;                        /* непрозрачная поверхность для нативных попапов */
     --border: rgba(44, 62, 80, 0.12);          /* тонкие рамки */
     --accent: #007acc;                         /* акцент: активные элементы */
     --accent-text: #ffffff;
@@ -52,6 +53,7 @@
     --glass: rgba(30, 40, 50, 0.5);
     --glass-strong: rgba(24, 32, 40, 0.78);
     --glass-input: rgba(255, 255, 255, 0.08);
+    --surface: #24303c;
     --border: rgba(255, 255, 255, 0.14);
     --accent: #4db6e2;
     --accent-text: #0b1c26;
@@ -880,6 +882,34 @@ h1, h2 {
 .bg-color-row span {
     font-size: 13px;
     color: var(--text-soft);
+}
+
+/* Строка выбора положения картинки-фона: подпись + селектор */
+.bg-position-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-soft);
+}
+
+.bg-position-row select {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    /* Непрозрачная поверхность: полупрозрачное стекло на <select>
+       заставляет Chromium рисовать нативный попап на белом фоне,
+       и на тёмной теме текст пропадает */
+    background-color: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+}
+
+/* Пункты попапа: без явных цветов браузер рисует их белыми на белом */
+.bg-position-row select option {
+    background-color: var(--surface);
+    color: var(--text);
 }
 
 /* Диапазон угла градиента растягивается на свободное место */

@@ -298,14 +298,24 @@ function normalizeBackground(bg) {
             && bg.data.length <= 15_000_000
             ? bg.data
             : '';
-        if (data) return { type, title, fileId: fileId || makeFileId(), data };
-        return fileId ? { type, title, fileId } : null;
+        const position = bg.position ? keyOfPlacement(bg.position) : undefined;
+        if (data) {
+            const entry = { type, title, fileId: fileId || makeFileId(), data };
+            if (position) entry.position = position;
+            return entry;
+        }
+        if (!fileId) return null;
+        const entry = { type, title, fileId };
+        if (position) entry.position = position;
+        return entry;
     }
 
     // url — текущий и legacy-формат
     const url = bg.url || '';
     if (url && !isSafeWebUrl(url)) return null;
-    return { type: 'url', title, url };
+    const entry = { type: 'url', title, url };
+    if (bg.position) entry.position = keyOfPlacement(bg.position);
+    return entry;
 }
 
 /**
@@ -360,6 +370,26 @@ function swatchDataUrl(bg) {
         return `data:image/svg+xml,${encodeURIComponent(svg)}`;
     }
     return null;
+}
+
+/**
+ * Положение картинки-фона (поле position записи) в css-свойства
+ * background-size/position/repeat. Допустимые значения: cover, contain,
+ * tile (замостить), center (1:1 по центру). Всё неизвестное -> cover.
+ */
+const BG_POSITIONS = ['cover', 'contain', 'tile', 'center'];
+
+function keyOfPlacement(position) {
+    return BG_POSITIONS.includes(position) ? position : 'cover';
+}
+
+function backgroundPlacementCss(position) {
+    switch (keyOfPlacement(position)) {
+        case 'contain': return { size: 'contain', position: 'center', repeat: 'no-repeat' };
+        case 'tile': return { size: 'auto', position: 'top left', repeat: 'repeat' };
+        case 'center': return { size: 'auto', position: 'center', repeat: 'no-repeat' };
+        default: return { size: 'cover', position: 'center', repeat: 'no-repeat' };
+    }
 }
 
 // Пресеты градиентов [от, до, угол] — клик заполняет конструктор
@@ -691,14 +721,21 @@ function getContextMenuItems(type, data = {}) {
         case 'background':
             // Меню пустого фона: смена фона и переходы в настройки.
             // "Редактировать" открывает редактор текущего (выбранного) фона,
-            // "Настройки" — под разделителем, как в меню плитки закладки
-            return [
-                { action: 'nextBackground', label: t('nextBackground') },
-                { action: 'editBackground', label: t('edit') },
-                { action: 'backgroundSettings', label: t('backgroundSettings') },
-                { separator: true },
-                { action: 'openSettings', label: t('settings') },
-            ];
+            // "Настройки" — под разделителем, как в меню плитки закладки.
+            // "Редактировать" есть, если есть хоть один фон; "Следующий
+            // фон" — только при двух и больше: с одним переключать нечего.
+            // Если фонов нет, оба пункта скрываются
+        {
+            const items = [];
+            if (data.hasBackgrounds) items.push({ action: 'editBackground', label: t('edit') });
+            if (data.canSwitchBackground) {
+                items.unshift({ action: 'nextBackground', label: t('nextBackground') });
+            }
+            items.push({ action: 'backgroundSettings', label: t('backgroundSettings') });
+            items.push({ separator: true });
+            items.push({ action: 'openSettings', label: t('settings') });
+            return items;
+        }
         case 'search':
             // Меню поля поиска — динамическое: состав зависит от того,
             // есть ли текст в поле (data.hasText) и в буфере обмена
@@ -850,8 +887,22 @@ function setBackground(backgrounds, currentBackgroundIndex) {
         return;
     }
 
+    const isPicture = background.type === 'url' || background.type === 'file' || background.url;
+
     const apply = (cssValue) => {
         document.body.style.background = cssValue;
+        // Положение задаём только картинкам; заливки и градиенты
+        // заполняют экран сами (сброс на значения по умолчанию из CSS)
+        if (isPicture) {
+            const placement = backgroundPlacementCss(background.position);
+            document.body.style.backgroundSize = placement.size;
+            document.body.style.backgroundPosition = placement.position;
+            document.body.style.backgroundRepeat = placement.repeat;
+        } else {
+            document.body.style.backgroundSize = '';
+            document.body.style.backgroundPosition = '';
+            document.body.style.backgroundRepeat = '';
+        }
     };
 
     if (background.type === 'color' || background.type === 'gradient') {
@@ -939,6 +990,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const backgroundUrlInput = document.getElementById('background-url-input');
     const saveBackgroundButton = document.getElementById('save-background');
     const backgroundFileInput = document.getElementById('background-file-input');
+    const backgroundPositionRow = document.getElementById('background-position-row');
+    const backgroundPositionInput = document.getElementById('background-position-input');
     const backgroundColorInput = document.getElementById('background-color-input');
     const gradientFromInput = document.getElementById('gradient-from-input');
     const gradientToInput = document.getElementById('gradient-to-input');
@@ -1037,6 +1090,16 @@ window.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
         closeAllPopovers(themeMenu);
         themeMenu.classList.toggle('hidden');
+    });
+    themeMenu?.addEventListener('click', (e) => {
+        // Клик по пункту или его тексту: ищем кнопку с data-mode
+        const item = e.target.closest('button[data-mode]');
+        if (!item) return;
+        const mode = item.dataset.mode;
+        currentThemeMode = mode;
+        storageSet({ theme: mode });
+        applyTheme(mode);
+        themeMenu.classList.add('hidden');
     });
 
     // Селектор темы в модалке («Общие»): работает как dropdown поисковика,
@@ -1184,6 +1247,7 @@ window.addEventListener('DOMContentLoaded', () => {
         switchBackgroundType('url');
         backgroundUrlInput.value = '';
         backgroundFileInput.value = '';
+        backgroundPositionInput.value = 'cover';
         const previewBox = document.getElementById('background-file-preview');
         previewBox.classList.add('hidden');
         delete previewBox.dataset.pendingDataUrl; // кеш выбранного файла сброшен
@@ -1423,13 +1487,14 @@ window.addEventListener('DOMContentLoaded', () => {
                 const bg = currentState.backgrounds[index];
                 backgroundTitleInput.value = bg.title || '';
                 const type = bg.type || 'url';
+                // Диалог файла нельзя заполнить программно: сбрасываем кеш
+                // выбранного файла — превью прежней картинки покажет
+                // showFilePreview (вызвается из switchBackgroundType)
+                delete document.getElementById('background-file-preview').dataset.pendingDataUrl;
                 switchBackgroundType(type);
                 backgroundUrlInput.value = bg.url || '';
                 backgroundFileInput.value = '';
-                // Диалог файла нельзя заполнить программно: показываем
-                // превью уже прикреплённой картинки из storage.local
-                delete document.getElementById('background-file-preview').dataset.pendingDataUrl;
-                showFilePreview(bg);
+                backgroundPositionInput.value = keyOfPlacement(bg.position);
                 backgroundColorInput.value = bg.type === 'color' ? bg.value : '#4db6e2';
                 updateColorValueLabel();
                 if (bg.type === 'gradient') {
@@ -1465,15 +1530,21 @@ window.addEventListener('DOMContentLoaded', () => {
     /**
      * Удаляет элемент списка по кнопке (с пересчётом выбранного индекса).
      * listKey — имя поля в currentState, indexKey — имя поля-индекса выбранного.
+     * Для file-фонов попутно чистит bgFile:* в storage.local: без этого
+     * картинки оставались в хранилище навсегда и засоряли квоту.
      */
     function deleteItem(listKey, indexKey, index) {
-        currentState[listKey].splice(index, 1);
+        const removed = currentState[listKey].splice(index, 1)[0];
         // Если после удаления выбранный индекс вышел за пределы списка
         // (например, удалили последний фон), сдвигаем его к последнему элементу
         if (currentState[indexKey] >= currentState[listKey].length) {
             currentState[indexKey] = Math.max(0, currentState[listKey].length - 1);
         }
         saveState({ [listKey]: currentState[listKey], [indexKey]: currentState[indexKey] });
+        // Чистка только когда удаляются именно фоны и это file-фон
+        if (listKey === 'backgrounds' && removed?.type === 'file' && removed.fileId) {
+            chrome.storage.local.remove(fileKey(removed.fileId));
+        }
         refreshUI();
     }
 
@@ -1795,8 +1866,20 @@ window.addEventListener('DOMContentLoaded', () => {
         });
         backgroundUrlInput.classList.toggle('hidden', type !== 'url');
         backgroundFileInput.classList.toggle('hidden', type !== 'file');
+        // Положение картинки выбирается только у url- и file-фонов
+        backgroundPositionRow.classList.toggle('hidden', type !== 'url' && type !== 'file');
         document.getElementById('background-color-row').classList.toggle('hidden', type !== 'color');
         document.getElementById('background-gradient-box').classList.toggle('hidden', type !== 'gradient');
+        // Превью выбранного файла принадлежит вкладке "Устройство":
+        // на других вкладках его прячем, при возврате — восстанавливаем
+        const previewBox = document.getElementById('background-file-preview');
+        if (type !== 'file') {
+            previewBox.classList.add('hidden');
+        } else if (previewBox.dataset.pendingDataUrl) {
+            previewBox.classList.remove('hidden');
+        } else if (editingBackgroundIndex !== null) {
+            showFilePreview(currentState.backgrounds[editingBackgroundIndex]);
+        }
     }
 
     // Клик по вкладкам типа
@@ -1944,7 +2027,19 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         if (type === 'file') {
+            const position = backgroundPositionInput.value;
             const file = backgroundFileInput.files?.[0];
+            // Запись data:URL в storage.local с проверкой квоты: без неё
+            // ошибка терялась в консоль (Unchecked runtime.lastError),
+            // а фон молча не сохранялся
+            const saveFileData = (dataUrl) => {
+                const fileId = makeFileId();
+                chrome.storage.local.set({ [fileKey(fileId)]: dataUrl }, () => {
+                    const err = chrome.runtime?.lastError;
+                    if (err) { alert(t('errFileTooBig')); return; }
+                    commitBackground({ type, title, fileId, position });
+                });
+            };
             // Файл не выбран: берём data:URL из превью (пользователь выбрал
             // файл, но input был сброшен) либо прежнюю картинку при
             // редактировании; при создании без файла — отказ
@@ -1952,10 +2047,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 const pendingDataUrl = document.getElementById('background-file-preview')
                     .dataset.pendingDataUrl;
                 if (pendingDataUrl) {
-                    const fileId = makeFileId();
-                    chrome.storage.local.set({ [fileKey(fileId)]: pendingDataUrl }, () => {
-                        commitBackground({ type, title, fileId });
-                    });
+                    saveFileData(pendingDataUrl);
                     return;
                 }
                 const editing = editingBackgroundIndex !== null
@@ -1963,7 +2055,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     : null;
                 if (editingBackgroundIndex !== null && editing
                     && editing.type === 'file' && editing.fileId) {
-                    commitBackground({ type, title, fileId: editing.fileId });
+                    commitBackground({ type, title, fileId: editing.fileId, position });
                 } else {
                     alert(t('errNoFile'));
                 }
@@ -1974,10 +2066,7 @@ window.addEventListener('DOMContentLoaded', () => {
             reader.onload = () => {
                 const dataUrl = typeof reader.result === 'string' ? reader.result : '';
                 if (!dataUrl) { alert(t('errNoFile')); return; }
-                const fileId = makeFileId();
-                chrome.storage.local.set({ [fileKey(fileId)]: dataUrl }, () => {
-                    commitBackground({ type, title, fileId });
-                });
+                saveFileData(dataUrl);
             };
             reader.onerror = () => alert(t('importError', { error: 'FileReader' }));
             reader.readAsDataURL(file);
@@ -1985,7 +2074,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         // url — картинка по ссылке (пустой url допустим: "По умолчанию")
-        commitBackground({ type: 'url', title, url: backgroundUrlInput.value.trim() });
+        commitBackground({ type: 'url', title, url: backgroundUrlInput.value.trim(), position: backgroundPositionInput.value });
     });
 
     /**
@@ -1995,14 +2084,23 @@ window.addEventListener('DOMContentLoaded', () => {
     function commitBackground(backgroundData) {
         const normalized = normalizeBackground(backgroundData);
         if (!normalized) { alert(t('errTitle')); return; }
+        let addedIndex = null;
         if (editingBackgroundIndex !== null) {
             // При редактировании сохраняем fileId старой записи, если новый
             // файл не выбирали (normalized fileId сгенерирован заново)
             currentState.backgrounds[editingBackgroundIndex] = normalized;
         } else {
             currentState.backgrounds.push(normalized);
+            // Новый фон сразу становится текущим: пользователь только что
+            // его настроил и ожидает увидеть на экране, а не прежний фон
+            editingBackgroundIndex = currentState.backgrounds.length - 1;
+            currentState.currentBackgroundIndex = editingBackgroundIndex;
         }
-        saveState({ backgrounds: currentState.backgrounds });
+        saveState({
+            backgrounds: currentState.backgrounds,
+            currentBackgroundIndex: currentState.currentBackgroundIndex,
+        });
+        editingBackgroundIndex = null;
         refreshUI();
         hideAddForm('background');
     }
@@ -2498,8 +2596,14 @@ window.addEventListener('DOMContentLoaded', () => {
             return { type: 'bookmarksEmpty', data: {} };
         }
 
-        // Всё остальное (пустое место, заголовки) считаем фоном страницы
-        return { type: 'background', data: {} };
+        // Всё остальное (пустое место, заголовки) считаем фоном страницы.
+        // hasBackgrounds решает, показывать ли пункт правки, а
+        // canSwitchBackground (нужно >= 2 фонов) — пункт смены фона
+        const hasBackgrounds = currentState.backgrounds.length > 0;
+        return {
+            type: 'background',
+            data: { hasBackgrounds, canSwitchBackground: currentState.backgrounds.length > 1 },
+        };
     }
 
     // Правый клик: определяем элемент и показываем соответствующее меню

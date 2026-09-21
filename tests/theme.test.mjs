@@ -43,6 +43,15 @@ for (const [mode, icon] of [['auto', '🌗'], ['light', '☀️'], ['dark', '�
 }
 assert.ok(js.includes('themeToggle.textContent'), 'app.js обновляет иконку кнопки');
 
+// --- Мини-меню темы на главной странице обрабатывает клики по пунктам ---
+// Регрессия: при переделке селектора в «Общих» обработчик клика по
+// пунктам FAB-меню (#theme-menu) был потерян — меню открывалось, но
+// выбор Авто/Светлая/Тёмная не работал
+assert.ok(
+    /themeMenu\??\.addEventListener\('click'[\s\S]*?dataset\.mode[\s\S]*?applyTheme\(/.test(js),
+    'app.js: клик по пункту FAB-меню темы читает data-mode и применяет тему'
+);
+
 // --- Тема участвует в импорте/экспорте ---
 assert.ok(js.includes('...currentState, theme:'), 'экспорт включает текущий режим темы');
 assert.ok(js.includes("themeModes.includes(payload.theme)"),
@@ -57,6 +66,19 @@ assert.ok(css.includes('color-scheme: light'), 'светлая тема объя
 // --- Скроллбары оформлены ---
 assert.ok(css.includes('scrollbar-width: thin'), 'тонкий скроллбар для Firefox');
 assert.ok(css.includes('::-webkit-scrollbar'), 'стили скроллбара для Chromium');
+
+// --- Селектор положения картинки: непрозрачный фон в обеих темах ---
+// Регрессия: полупрозрачное стекло на <select> заставляет Chromium рисовать
+// нативный попап на белой подложке — на тёмной теме текст нечитаем
+assert.ok(css.includes('--surface:'), 'в design system есть плотный цвет поверхности');
+assert.ok((css.match(/--surface:/g) || []).length >= 2,
+    '--surface задан и в светлой, и в тёмной теме');
+const posSelectBlock = css.match(/\.bg-position-row select\s*\{[\s\S]*?\}/);
+assert.ok(posSelectBlock, 'стили селектора положения найдены');
+assert.ok(posSelectBlock[0].includes('background-color: var(--surface)'),
+    'селектор положения использует непрозрачный --surface');
+assert.ok(css.includes('.bg-position-row select option'),
+    'пункты <option> стилизованы явно — попап не остаётся белым');
 
 // --- Контекстное меню адаптивно: ширина по содержимому, а не фиксированная ---
 assert.ok(!css.includes('width: 220px'), 'нет жёсткой ширины меню');
