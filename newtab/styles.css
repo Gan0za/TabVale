@@ -182,7 +182,9 @@ h1, h2 {
     max-width: 1200px;
     /* Высота по содержимому: панель обнимает закладки и растёт с каждой
        новой строкой. На пустом экране её держит min-height самого body */
-    margin: 20px auto;
+    /* Снизу запас под вертикальную колонку кнопок (3x48 + зазоры + 20px),
+       чтобы нижняя строка плиток не уходила под них */
+    margin: 20px auto 172px;
     padding: 24px;
     background: var(--glass);
     backdrop-filter: var(--blur);
@@ -602,33 +604,6 @@ h1, h2 {
     flex-direction: column;
 }
 
-/* На узких экранах модалке тесно: уменьшаем отступы и переносим
-   длинные ряды кнопок на новую строку, чтобы ничего не обрезалось */
-@media (max-width: 600px) {
-    .modal {
-        padding: 14px;
-    }
-
-    .settings-tabs {
-        margin-bottom: 10px;
-    }
-
-    .settings-tab {
-        padding: 8px 10px;
-        font-size: 13px;
-    }
-
-    .modal-actions,
-    .form-actions {
-        flex-wrap: wrap;
-    }
-
-    .modal-actions .btn,
-    .form-actions .btn {
-        padding: 8px 12px;
-    }
-}
-
 /* =============================================================================
    Списки в модальном окне
    ============================================================================= */
@@ -1026,10 +1001,9 @@ h1, h2 {
     margin-top: 12px;
 }
 
-/* Кнопка настроек (круглая, снизу справа) */
+/* Круглые кнопки (тема/язык/настройки): позицию задаёт .fab-stack,
+   который держит их колонкой в правом нижнем углу */
 .settings-fab {
-    position: fixed;
-    bottom: 20px;
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -1041,7 +1015,6 @@ h1, h2 {
     font-size: 20px;
     cursor: pointer;
     box-shadow: var(--shadow);
-    z-index: 1000;
     transition: transform 0.15s;
 }
 
@@ -1049,20 +1022,25 @@ h1, h2 {
     transform: scale(1.05);
 }
 
-/* Три круглые кнопки в правом нижнем углу: тема + язык + настройки.
-   right-отступ каждой задан отдельно, чтобы кнопки стояли в ряд */
-.settings-fab#settings-button { right: 20px; }
-.settings-fab#language-toggle { right: 78px; }
-.settings-fab#theme-toggle { right: 136px; }
-
-/* Меню языка раскрывается над кнопкой 🌐 (право — под кнопкой) */
-#language-menu { right: 78px; }
-
-/* Мини-меню выбора темы: раскрывается над кнопкой 🌗 */
-.theme-menu {
+/* Три круглые кнопки (тема + язык + настройки) — вертикальная колонка
+   в правом нижнем углу. Сам стек фиксирован, кнопки внутри обычные */
+.fab-stack {
     position: fixed;
-    bottom: 78px;
-    right: 78px;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+/* Меню темы и языка раскрываются влево от колонки кнопок: theme — у
+   первой кнопки (top: 0), language — у второй (48px кнопка + 10px
+   зазор = 58px шаг) */
+.theme-menu {
+    position: absolute;
+    top: 0;
+    right: 58px;
     display: flex;
     flex-direction: column;
     background: var(--glass-strong);
@@ -1073,6 +1051,10 @@ h1, h2 {
     box-shadow: var(--shadow);
     z-index: 1001;
     overflow: hidden;
+}
+
+#language-menu {
+    top: 58px;
 }
 
 .theme-menu button {
@@ -1142,5 +1124,191 @@ h1, h2 {
 /* Иконка режима темы внутри кнопки селектора (🌗 до текста) */
 #theme-general-button .theme-icon {
     margin-right: 6px;
+}
+
+/* =============================================================================
+   Адаптивность: планшеты, вертикальные и мобильные экраны
+
+   Точки собраны в один блок:
+     <= 1024px — узкий десктоп/горизонтальный планшет: панель теснее
+     <= 768px  — вертикальный планшет: панель без рамок, плитки мельче
+     <= 600px  — мобильный: колонка, крупные элементы, модалка на экран
+     <= 480px  — маленький телефон: компактные плитки, тапабельные кнопки
+     низкий ландшафт — нечего делить по вертикали, панели без отступов
+   ============================================================================= */
+
+/* --- Планшет и узкий десктоп: панели дышат, но сетка сохраняется --- */
+@media (max-width: 1024px) {
+    .container {
+        /* Панель прижимается к краям экрана: боковые поля даёт padding */
+        margin: 16px 16px;
+        max-width: none;
+    }
+
+    /* Модалка занимает больше места — на планшете 640px тесновато */
+    .modal {
+        width: min(94vw, 720px);
+        height: min(88vh, 780px);
+    }
+}
+
+/* --- Вертикальный планшет: панель во всю ширину, компактная шапка --- */
+@media (max-width: 768px) {
+    body {
+        /* Скроллбар в мобильных браузерах выезжает из-под пальца:
+           резерв места не нужен, полоса и так всегда на виду */
+        scrollbar-gutter: auto;
+    }
+
+    .container {
+        /* Панель без рамок — на узком экране стекло съедает место,
+           а оторванная от краёв панель выглядит лишней прослойкой */
+        margin: 12px 12px 156px; /* снизу место под колонку кнопок */
+        padding: 16px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    /* Плитки: уже и компактнее, чтобы в ряд влезало хотя бы 2-3 */
+    .bookmark {
+        width: 112px;
+        min-height: 104px;
+    }
+
+    .bookmark img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .bookmark-title {
+        font-size: 13px;
+    }
+
+    .settings-fab {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+    }
+
+    /* Колонка кнопок плотнее к краю: 44px кнопка + 8px зазор = 52px шаг,
+       меню раскрываются влево на 54px */
+    .fab-stack {
+        right: 12px;
+        bottom: 12px;
+        gap: 8px;
+    }
+
+    #language-menu {
+        top: 52px;
+    }
+
+    .theme-menu {
+        right: 54px;
+    }
+}
+
+/* --- Мобильный: поиск в колонку, модалка на весь экран --- */
+@media (max-width: 600px) {
+    .container {
+        margin: 8px 8px 148px;
+        padding: 12px;
+    }
+
+    /* Поисковая строка перестаёт вмещаться в ряд — уходит в колонку */
+    .search-row {
+        flex-wrap: wrap;
+    }
+
+    #search-input {
+        flex-basis: 100%;
+    }
+
+    /* Селектор поисковика растягивается на всю ширину строки */
+    #search-engine-dropdown {
+        flex: 1;
+    }
+
+    .dropdown {
+        max-width: none;
+    }
+
+    .search-row .btn {
+        flex: 1;
+        /* Тапабельная высота: меньше 32px пальцу не справиться */
+        padding: 12px 16px;
+    }
+
+    #search-input {
+        padding: 12px 14px;
+        font-size: 16px; /* iOS не зумит поле при фокусе при >= 16px */
+    }
+
+    /* Модалка на весь экран: спискам и формам тесно в плавающем окне */
+    .modal {
+        width: 100vw;
+        height: 100vh;
+        max-height: none;
+        border-radius: 0;
+        border: none;
+        padding: 12px;
+    }
+
+    .modal-actions,
+    .form-actions {
+        flex-wrap: wrap;
+    }
+
+    .modal-actions .btn,
+    .form-actions .btn {
+        padding: 8px 12px;
+    }
+}
+
+/* --- Маленький телефон: компактнее плитки и тапабельность --- */
+@media (max-width: 420px) {
+    .bookmark {
+        width: 96px;
+        min-height: 92px;
+        padding: 6px;
+    }
+
+    .bookmark img {
+        width: 36px;
+        height: 36px;
+    }
+
+    /* Кнопки строк списков — по высоте пальца (>= 30px) */
+    .modal-list-actions button {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .general-actions .btn {
+        width: 100%;
+    }
+}
+
+/* --- Низкий ландшафт (телефон набок): вертикали на вес золота --- */
+@media (max-height: 480px) and (orientation: landscape) {
+    .container {
+        margin: 8px;
+        padding: 10px;
+    }
+
+    h1 {
+        margin-bottom: 4px;
+        font-size: 16px;
+    }
+
+    #bookmarks-section {
+        margin-top: 10px;
+    }
+
+    .modal {
+        height: 94vh;
+        padding: 10px;
+    }
 }
 
