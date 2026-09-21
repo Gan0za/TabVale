@@ -2609,13 +2609,10 @@ window.addEventListener('DOMContentLoaded', () => {
         touchDrag.el.draggable = true; // возвращаем нативный drag для мыши
         endTouchDrag(wasActive);
         if (openedMenu) {
-            // Long-press без движения — как правый клик: меню на месте плитки
+            // Long-press без движения — как правый клик: меню на месте плитки.
+            // Меню position: fixed — нужны координаты вьюпорта, без прокрутки
             const rect = menuTarget.getBoundingClientRect();
-            showContextMenu(
-                rect.left + rect.width / 2 + window.scrollX,
-                rect.top + rect.height / 2 + window.scrollY,
-                menuTarget
-            );
+            showContextMenu(rect.left + rect.width / 2, rect.top + rect.height / 2, menuTarget);
         }
     });
 
@@ -2868,15 +2865,15 @@ window.addEventListener('DOMContentLoaded', () => {
     // Правый клик: определяем элемент и показываем соответствующее меню
     document.addEventListener('contextmenu', (e) => {
         e.preventDefault();
-        showContextMenu(e.pageX, e.pageY, e.target);
+        showContextMenu(e.clientX, e.clientY, e.target);
     });
 
     /**
      * Показывает контекстное меню для элемента target в координатах
-     * (pageX, pageY). Общий вход для правого клика мыши и для long-press
-     * на сенсорном экране.
+     * вьюпорта (clientX, clientY). Общий вход для правого клика мыши и
+     * для long-press на сенсорном экране.
      */
-    function showContextMenu(pageX, pageY, target) {
+    function showContextMenu(clientX, clientY, target) {
         const modalOpen = !overlay.classList.contains('hidden');
         const { type, data } = detectMenuTarget(target);
         // При открытой модалке меню нужно только для её строк —
@@ -2896,7 +2893,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     data.clipboardText = text || '';
                     data.hasClipboardText = !!data.clipboardText.trim();
                     contextMenuData = data;
-                    openContextMenu(pageX, pageY, getContextMenuItems(type, data));
+                    openContextMenu(clientX, clientY, getContextMenuItems(type, data));
                 });
             return;
         }
@@ -2911,12 +2908,12 @@ window.addEventListener('DOMContentLoaded', () => {
                     data.clipboardText = text;
                     data.hasClipboardUrl = isSafeWebUrl(text);
                     contextMenuData = data;
-                    openContextMenu(pageX, pageY, getContextMenuItems(type, data));
+                    openContextMenu(clientX, clientY, getContextMenuItems(type, data));
                 });
             return;
         }
 
-        openContextMenu(pageX, pageY, getContextMenuItems(type, data));
+        openContextMenu(clientX, clientY, getContextMenuItems(type, data));
     }
 
     // Левый клик мимо меню закрывает его
