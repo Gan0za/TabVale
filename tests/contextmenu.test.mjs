@@ -69,8 +69,8 @@ const settingsIdx = bookmark.findIndex(i => i.action === 'openSettings');
 assert.equal(bookmark[settingsIdx - 1].separator, true,
     'разделитель идёт перед пунктом "Настройки"');
 
-// --- Меню пустого фона ---
-const background = getContextMenuItems('background', {});
+// --- Меню пустого фона (фонов несколько) ---
+const background = getContextMenuItems('background', { hasBackgrounds: true, canSwitchBackground: true });
 // Разделители не имеют action, поэтому при сверке действий их отфильтровываем
 assert.deepEqual(
     Array.from(background.filter(i => !i.separator).map(i => i.action)),
@@ -87,6 +87,26 @@ assert.equal(
     background.find(i => i.action === 'editBackground').label,
     ruMessages.edit.message,
     'пункт редактирования фона берёт подпись из словаря'
+);
+
+// --- Меню фона, когда фонов нет (удалили все) ---
+// "Следующий фон" и "Редактировать" не показываются: менять и править
+// нечего. "Настройки фонов" остаются — туда можно пойти и добавить фон
+const bgEmpty = getContextMenuItems('background', { hasBackgrounds: false });
+assert.deepEqual(
+    Array.from(bgEmpty.filter(i => !i.separator).map(i => i.action)),
+    ['backgroundSettings', 'openSettings'],
+    'без фонов: только настройки фонов и настройки'
+);
+
+// --- Меню фона, когда фон один ---
+// "Редактировать" показывается, а "Следующий фон" нет: с одним фоном
+// переключать нечего
+const bgSingle = getContextMenuItems('background', { hasBackgrounds: true, canSwitchBackground: false });
+assert.deepEqual(
+    Array.from(bgSingle.filter(i => !i.separator).map(i => i.action)),
+    ['editBackground', 'backgroundSettings', 'openSettings'],
+    'один фон: без "Следующего фона", но с редактированием'
 );
 
 // --- Меню поля поиска (динамическое) ---
