@@ -2377,6 +2377,14 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     bookmarksContainer.addEventListener('dragstart', (e) => {
+        // Пока палец касается плитки (long-press засечён или перенос идёт),
+        // нативный drag запрещён: иначе второй палец/ладонь запускают
+        // браузерный перенос второй плитки, он перезаписывает draggedIndex
+        // активного сенсорного переноса — и всё зависает
+        if (touchDrag) {
+            e.preventDefault();
+            return;
+        }
         const el = e.target.closest('.bookmark');
         if (!el) return;
         draggedIndex = Number(el.dataset.index);

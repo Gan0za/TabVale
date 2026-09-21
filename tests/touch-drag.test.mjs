@@ -354,4 +354,33 @@ function draggedIndexNow() {
     return grid.children.findIndex((c) => c.classList.contains('dragging'));
 }
 
+// --- 10. Второй палец во время сенсорного переноса не запускает мышиный drag ---
+// Регрессия: ладонь/второй палец порождала dragstart второй плитки, тот
+// перезаписывал draggedIndex активного сенсорного переноса — всё зависало.
+// Порядок после шага 7: A B C (вернули). Тащим B сенсорным переносом...
+grid._listeners.touchstart.forEach((fn) => fn({
+    touches: [touch(200, 200)], target: tiles[1], stopPropagation() {},
+}));
+await new Promise((r) => setTimeout(r, 400));
+assert.ok(tiles[1].classList.contains('dragging'), 'сенсорный перенос активен');
+// ...и в этот момент второй палец порождает dragstart на другой плитке
+const secondTile = tiles[0];
+let dragPrevented = false;
+grid._listeners.dragstart.forEach((fn) => fn({
+    target: secondTile, dataTransfer, preventDefault() { dragPrevented = true; },
+}));
+assert.ok(dragPrevented, 'dragstart второй плитки подавлен во время сенсорного переноса');
+assert.ok(!secondTile.classList.contains('dragging'), 'вторая плитка не вошла в режим переноса');
+assert.ok(tiles[1].classList.contains('dragging'), 'первый сенсорный перенос не пострадал');
+// завершаем сенсорный перенос
+grid._listeners.touchend.forEach((fn) => fn({ touches: [], preventDefault() {} }));
+// после окончания касания нативный drag снова работает
+dragPrevented = false;
+grid._listeners.dragstart.forEach((fn) => fn({
+    target: secondTile, dataTransfer, preventDefault() { dragPrevented = true; },
+}));
+assert.ok(!dragPrevented, 'после отпускания пальца dragstart работает как обычно');
+assert.ok(secondTile.classList.contains('dragging'), 'мышиный перенос запускается');
+grid._listeners.drop.forEach((fn) => fn({ preventDefault() {} }));
+
 console.log('touch-drag.test.mjs: все проверки пройдены');
