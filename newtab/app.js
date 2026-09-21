@@ -2431,7 +2431,6 @@ window.addEventListener('DOMContentLoaded', () => {
         });
         draggedIndex = null;
     });
-
     // =============================================================================
     // Сенсорный перенос — гибрид с мышью.
     //
@@ -2508,6 +2507,14 @@ window.addEventListener('DOMContentLoaded', () => {
             touchDrag.active = true;
             draggedIndex = touchDrag.index;
             const rect = el.getBoundingClientRect();
+
+            // FLIP First: позиции соседей ДО выхода плитки из потока —
+            // иначе замер уже после сдвига и анимация вырождается
+            const before = new Map();
+            bookmarksContainer.querySelectorAll('.bookmark').forEach((other) => {
+                if (other !== el) before.set(other, other.getBoundingClientRect());
+            });
+
             // Плитка выходит из потока и едет за пальцем фиксированной:
             // transform не участвует — нечему «скакать»
             el.style.width = rect.width + 'px';
@@ -2520,11 +2527,7 @@ window.addEventListener('DOMContentLoaded', () => {
             touchDrag.grabX = touchDrag.startX - rect.left;
             touchDrag.grabY = touchDrag.startY - rect.top;
 
-            // Соседи плавно закрывают освободившийся зазор (FLIP)
-            const before = new Map();
-            bookmarksContainer.querySelectorAll('.bookmark').forEach((other) => {
-                if (other !== el) before.set(other, other.getBoundingClientRect());
-            });
+            // Соседи плавно закрывают освободившийся зазор (FLIP Play)
             before.forEach((oldRect, other) => {
                 const now = other.getBoundingClientRect();
                 const dx = oldRect.left - now.left;
@@ -2562,11 +2565,13 @@ window.addEventListener('DOMContentLoaded', () => {
         touchDrag.el.style.top = (touch.clientY - touchDrag.grabY) + 'px';
 
         // Плитка под пальцем исключена из расчёта рядов: иначе её позиция
-        // у пальца создавала бы фантомный ряд и список прыгал
+        // у пальца создавала бы фантомный ряд и список прыгал.
+        // Слот без самой плитки — это готовый индекс вставки: no-op только
+        // на своей текущей позиции, без смещения -1 (оно из мышиных
+        // dragover, где слот включает перетаскиваемую плитку)
         const slot = getDropIndex(touch.clientX, touch.clientY, touchDrag.el);
-        if (slot !== draggedIndex && slot !== draggedIndex + 1) {
-            const insertIndex = slot > draggedIndex ? slot - 1 : slot;
-            reorderBookmarksAnimated(draggedIndex, insertIndex);
+        if (slot !== draggedIndex) {
+            reorderBookmarksAnimated(draggedIndex, slot);
             touchOrderChanged = true;
         }
     }, { passive: false });
