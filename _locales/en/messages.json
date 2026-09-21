@@ -27,11 +27,9 @@
   "themeLabel": { "message": "Theme" },
 
   "addButton": { "message": "＋ Add" },
+  "addButtonShort": { "message": "Add" },
   "saveButton": { "message": "Save" },
   "cancelButton": { "message": "Cancel" },
-  "findLogo": { "message": "Find logo" },
-  "logoFound": { "message": "Logo found!" },
-  "logoNotFound": { "message": "Logo not found." },
   "importButton": { "message": "Import (JSON)" },
   "exportButton": { "message": "Export (JSON)" },
   "closeButton": { "message": "Close" },

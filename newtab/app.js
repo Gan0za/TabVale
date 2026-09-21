@@ -695,36 +695,29 @@ function setBackground(backgrounds, currentBackgroundIndex) {
 }
 
 /**
- * Ищет логотип сайта, по очереди проверяя источники.
- * Первая картинка, которая успешно загрузилась за 3 секунды, выигрывает.
+ * Название по умолчанию из адреса: https://www.github.com -> Github.
+ * Поддерживает адреса поисковиков с %s (шаблоны вида
+ * https://www.google.com/search?q=%s) — %s отбрасывается до разбора.
  */
-async function fetchLogoWithFallback(urlString) {
+function suggestNameFromUrl(urlString) {
     try {
-        const domain = new URL(urlString).hostname;
-
-        // Возвращает true, если картинка по ссылке реально загружается
-        const checkImage = (imgUrl, timeout = 3000) => {
-            return new Promise((resolve) => {
-                const img = new Image();
-                const timer = setTimeout(() => resolve(false), timeout);
-                img.onload = () => { clearTimeout(timer); resolve(true); };
-                img.onerror = () => { clearTimeout(timer); resolve(false); };
-                img.src = imgUrl;
-            });
-        };
-
-        const sources = [
-            `https://${domain}/favicon.ico`,
-            `https://${domain}/favicon.svg`,
-            `https://${domain}/favicon.png`,
-            `https://icons.duckduckgo.com/ip3/${domain}.ico`,
-            `https://www.google.com/s2/favicons?domain=${domain}&sz=256`,
-        ];
-
-        for (const src of sources) {
-            if (await checkImage(src)) return src;
-        }
+        const hostname = new URL(String(urlString).replace('%s', '')).hostname;
+        const first = hostname.replace(/^www\./, '').split('.')[0];
+        return first ? first.charAt(0).toUpperCase() + first.slice(1) : '';
+    } catch {
         return '';
+    }
+}
+
+/**
+ * Приводит адрес пользователя к виду с протоколом: "github.com" ->
+ * "https://github.com". Возвращает '' для некорректных адресов.
+ */
+function normalizeUrl(rawUrl) {
+    const url = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
+    try {
+        new URL(url);
+        return url;
     } catch {
         return '';
     }
@@ -758,7 +751,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const bookmarkTitleInput = document.getElementById('bookmark-title-input');
     const bookmarkUrlInput = document.getElementById('bookmark-url-input');
     const bookmarkIconInput = document.getElementById('bookmark-icon-input');
-    const findBookmarkLogoButton = document.getElementById('find-bookmark-logo');
+    const bookmarkDetails = document.getElementById('bookmark-details');
+    const addBookmarkButton = document.getElementById('add-bookmark');
     const saveBookmarkButton = document.getElementById('save-bookmark');
 
     // Форма фонов
@@ -772,8 +766,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const newSearchEngineName = document.getElementById('new-search-engine-name');
     const newSearchEngineUrl = document.getElementById('new-search-engine-url');
     const newSearchEngineLogo = document.getElementById('new-search-engine-logo');
-    const findSearchEngineLogoButton = document.getElementById('find-search-engine-logo');
+    const searchEngineDetails = document.getElementById('search-engine-details');
     const addSearchEngineButton = document.getElementById('add-search-engine');
+    const saveSearchEngineButton = document.getElementById('save-search-engine');
 
     // --- Текущее состояние приложения ---
     // Всё, что видит пользователь, живёт в этом объекте и синхронизируется
@@ -990,22 +985,125 @@ window.addEventListener('DOMContentLoaded', () => {
 
     function resetBookmarkForm() {
         editingBookmarkIndex = null;
-        bookmarkTitleInput.value = '';
         bookmarkUrlInput.value = '';
+        collapseDetails(bookmarkDetails);
+        bookmarkTitleInput.value = '';
         bookmarkIconInput.value = '';
-    }
-
-    function resetBackgroundForm() {
-        editingBackgroundIndex = null;
-        backgroundTitleInput.value = '';
-        backgroundUrlInput.value = '';
+        toggleBookmarkStep({ editing: false });
     }
 
     function resetSearchEngineForm() {
         editingSearchEngineIndex = null;
-        newSearchEngineName.value = '';
         newSearchEngineUrl.value = '';
+        collapseDetails(searchEngineDetails);
+        newSearchEngineName.value = '';
         newSearchEngineLogo.value = '';
+        toggleSearchEngineStep({ editing: false });
+    }
+
+    // =============================================================================
+    // Двухшаговые формы закладок и поисковиков
+    //
+    // Шаг 1 ("Добавить"): видно только поле URL. Шаг 2 ("Сохранить"):
+    // после ввода URL раскрываются поля "Название" и "URL логотипа",
+    // заполненные предложенными значениями. Форма фонов остаётся одношаговой.
+    // =============================================================================
+
+    /**
+     * Раскрывает/сворачивает блок полей второго шага (grid 0fr -> 1fr).
+     */
+    function expandDetails(el) {
+        el?.classList.add('open');
+    }
+
+    function collapseDetails(el) {
+        el?.classList.remove('open');
+    }
+
+    /**
+     * Переключает кнопки шага: на шаге 1 видна "Добавить", на шаге 2 —
+     * "Сохранить". Признак editing заставляет форму открыться сразу
+     * на втором шаге (правка существующего элемента).
+     */
+    function toggleFormStep({ editing, addButton, saveButton }) {
+        addButton.classList.toggle('hidden', editing);
+        saveButton.classList.toggle('hidden', !editing);
+    }
+
+    function toggleBookmarkStep({ editing }) {
+        toggleFormStep({ editing, addButton: addBookmarkButton, saveButton: saveBookmarkButton });
+    }
+
+    function toggleSearchEngineStep({ editing }) {
+        toggleFormStep({ editing, addButton: addSearchEngineButton, saveButton: saveSearchEngineButton });
+    }
+
+    /**
+     * Заголовок страницы по её адресу. Реальный <title> читается только
+     * через вкладку с content script (у страницы расширения нет доступа
+     * к чужому DOM), поэтому:
+     *   1. Запрашиваем опциональное разрешение на конкретный сайт
+     *      (пользователь видит промт и может отказать — тогда сразу
+     *      предлагаем hostname, промт показывается не чаще раза на сайт).
+     *   2. Если разрешение выдано — вводим скрытую вкладку с target=url,
+     *      дожидаемся загрузки и забираем document.title.
+     * В любом случае поле заголовка остаётся редактируемым — предложение
+     * можно стереть и вписать своё.
+     */
+    async function fetchPageTitle(urlString) {
+        try {
+            const url = new URL(urlString);
+            if (url.protocol !== 'http:' && url.protocol !== 'https:') return '';
+            const granted = await new Promise((resolve) => {
+                chrome.permissions.request({ origins: [url.origin + '/*'] }, (ok) => {
+                    void chrome.runtime?.lastError;
+                    resolve(!!ok);
+                });
+            });
+            if (!granted) return '';
+            const title = await new Promise((resolve) => {
+                // Таймаут 5с: сайт может отвечать вечно — ждём его не дольше
+                const timer = setTimeout(() => resolve(null), 5000);
+                chrome.tabs.create({ url: urlString, active: false }, (tab) => {
+                    if (!tab?.id) { clearTimeout(timer); resolve(null); return; }
+                    const finish = (value) => {
+                        clearTimeout(timer);
+                        chrome.tabs.remove(tab.id).catch(() => {});
+                        resolve(value);
+                    };
+                    chrome.scripting.executeScript(
+                        {
+                            target: { tabId: tab.id },
+                            func: () => document.title,
+                        },
+                        (results) => {
+                            const err = chrome.runtime?.lastError;
+                            finish(err ? null : results?.[0]?.result ?? null);
+                        }
+                    );
+                });
+            });
+            return typeof title === 'string' ? title.trim() : '';
+        } catch {
+            return '';
+        }
+    }
+
+    /**
+     * Заполняет поля второго шага формы: предлагает заголовок страницы
+     * (hostname, если <title> недоступен) и адрес favicon.
+     */
+    function fillBookmarkDetails(urlString) {
+        const hostname = suggestNameFromUrl(urlString);
+        bookmarkTitleInput.value = hostname;
+        bookmarkIconInput.value = `https://${new URL(urlString).hostname}/favicon.ico`;
+        // <title> получаем в фоне и подставляем, если пользователь ещё
+        // не начал печатать своё название
+        fetchPageTitle(urlString).then((title) => {
+            if (title && !bookmarkTitleInput.value.trim()) {
+                bookmarkTitleInput.value = title;
+            }
+        });
     }
 
     // --- Раскрывающиеся формы добавления ---
@@ -1054,7 +1152,7 @@ window.addEventListener('DOMContentLoaded', () => {
         settingsModal.classList.remove('hidden');
         overlay.classList.remove('hidden');
 
-        const focusMap = { bookmarks: bookmarkTitleInput, backgrounds: backgroundTitleInput, 'search-engines': newSearchEngineName };
+        const focusMap = { bookmarks: bookmarkUrlInput, backgrounds: backgroundTitleInput, 'search-engines': newSearchEngineUrl };
         focusMap[tab]?.focus();
     }
 
@@ -1112,6 +1210,15 @@ window.addEventListener('DOMContentLoaded', () => {
         };
         fillers[form]();
         showAddForm(form); // форма добавления — она же форма редактирования
+        // Редактирование начинается сразу со второго шага: все поля
+        // заполнены, видна кнопка "Сохранить"
+        if (form === 'bookmark') {
+            expandDetails(bookmarkDetails);
+            toggleBookmarkStep({ editing: true });
+        } else if (form === 'searchEngine') {
+            expandDetails(searchEngineDetails);
+            toggleSearchEngineStep({ editing: true });
+        }
         // Имя вкладки модалки совпадает с ключом формы
         openSettingsModal(form === 'searchEngine' ? 'search-engines' : form + 's');
     }
@@ -1152,7 +1259,6 @@ window.addEventListener('DOMContentLoaded', () => {
         window.location.href = url;
     }
 
-    // =============================================================================
     // Загрузка начального состояния
     // =============================================================================
 
@@ -1306,6 +1412,26 @@ window.addEventListener('DOMContentLoaded', () => {
     addForms.bookmark.showButton.addEventListener('click', () => showAddForm('bookmark'));
     document.getElementById('cancel-bookmark').addEventListener('click', () => hideAddForm('bookmark'));
 
+    // Кнопка "Добавить" (шаг 1): проверяет URL, предлагает название и
+    // иконку, раскрывает остальные поля формы
+    addBookmarkButton.addEventListener('click', () => {
+        const rawUrl = bookmarkUrlInput.value.trim();
+        if (!rawUrl) { alert(t('errBookmarkUrl')); return; }
+        const normalizedUrl = normalizeUrl(rawUrl);
+        if (!normalizedUrl) { alert(t('errInvalidUrl')); return; }
+
+        fillBookmarkDetails(normalizedUrl);
+        expandDetails(bookmarkDetails);
+        toggleBookmarkStep({ editing: true });
+        bookmarkTitleInput.focus();
+        bookmarkTitleInput.select(); // предложенное название легко заменить
+    });
+
+    // Enter в поле URL — тот же переход на шаг 2
+    bookmarkUrlInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); addBookmarkButton.click(); }
+    });
+
     // Кнопка "Сохранить" в форме закладок
     saveBookmarkButton.addEventListener('click', () => {
         const title = bookmarkTitleInput.value.trim();
@@ -1315,7 +1441,8 @@ window.addEventListener('DOMContentLoaded', () => {
         if (!title || !rawUrl) { alert(t('errTitleAndUrl')); return; }
 
         // Если пользователь ввёл адрес без "https://", добавим его сами
-        const normalizedUrl = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
+        const normalizedUrl = normalizeUrl(rawUrl);
+        if (!normalizedUrl) { alert(t('errInvalidUrl')); return; }
         let urlObj;
         try { urlObj = new URL(normalizedUrl); } catch { alert(t('errInvalidUrl')); return; }
 
@@ -1330,26 +1457,6 @@ window.addEventListener('DOMContentLoaded', () => {
         saveState({ bookmarks: currentState.bookmarks });
         refreshUI();
         hideAddForm('bookmark'); // прячем форму после сохранения
-    });
-
-    // Кнопка "Найти логотип": запускает перебор источников favicon
-    findBookmarkLogoButton.addEventListener('click', async () => {
-        const url = bookmarkUrlInput.value.trim();
-        if (!url) { alert(t('errBookmarkUrl')); return; }
-        findBookmarkLogoButton.disabled = true;
-        findBookmarkLogoButton.textContent = t('searchButton') + '...';
-        try {
-            const logoUrl = await fetchLogoWithFallback(url);
-            if (logoUrl) {
-                bookmarkIconInput.value = logoUrl;
-                alert(t('logoFound'));
-            } else {
-                alert(t('logoNotFound'));
-            }
-        } finally {
-            findBookmarkLogoButton.disabled = false;
-            findBookmarkLogoButton.textContent = t('findLogo');
-        }
     });
 
     // --- Кнопки "Ред."/"Удалить" в списке настроек закладок ---
@@ -1442,7 +1549,29 @@ window.addEventListener('DOMContentLoaded', () => {
     addForms.searchEngine.showButton.addEventListener('click', () => showAddForm('searchEngine'));
     document.getElementById('cancel-search-engine').addEventListener('click', () => hideAddForm('searchEngine'));
 
+    // Кнопка "Добавить" (шаг 1): проверяет URL с %s, предлагает название
+    // и логотип, раскрывает остальные поля
     addSearchEngineButton.addEventListener('click', () => {
+        const rawUrl = newSearchEngineUrl.value.trim();
+        // %s в URL обязателен — иначе некуда подставлять запрос
+        if (!rawUrl || !rawUrl.includes('%s')) { alert(t('errEngineUrl')); return; }
+        const normalizedUrl = normalizeUrl(rawUrl);
+        if (!normalizedUrl || !normalizedUrl.includes('%s')) { alert(t('errEngineUrl')); return; }
+
+        newSearchEngineName.value = suggestNameFromUrl(normalizedUrl);
+        newSearchEngineLogo.value = `https://${new URL(normalizedUrl.replace('%s', '')).hostname}/favicon.ico`;
+        expandDetails(searchEngineDetails);
+        toggleSearchEngineStep({ editing: true });
+        newSearchEngineName.focus();
+        newSearchEngineName.select();
+    });
+
+    // Enter в поле URL — тот же переход на шаг 2
+    newSearchEngineUrl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); addSearchEngineButton.click(); }
+    });
+
+    saveSearchEngineButton.addEventListener('click', () => {
         const name = newSearchEngineName.value.trim();
         const url = newSearchEngineUrl.value.trim();
         const logo = newSearchEngineLogo.value.trim();
@@ -1460,25 +1589,6 @@ window.addEventListener('DOMContentLoaded', () => {
         saveState({ searchEngines: currentState.searchEngines });
         refreshUI();
         hideAddForm('searchEngine');
-    });
-
-    findSearchEngineLogoButton.addEventListener('click', async () => {
-        const url = newSearchEngineUrl.value.trim();
-        if (!url || !url.includes('%s')) { alert(t('errEngineUrl')); return; }
-        findSearchEngineLogoButton.disabled = true;
-        findSearchEngineLogoButton.textContent = t('searchButton') + '...';
-        try {
-            const logoUrl = await fetchLogoWithFallback(url);
-            if (logoUrl) {
-                newSearchEngineLogo.value = logoUrl;
-                alert(t('logoFound'));
-            } else {
-                alert(t('logoNotFound'));
-            }
-        } finally {
-            findSearchEngineLogoButton.disabled = false;
-            findSearchEngineLogoButton.textContent = t('findLogo');
-        }
     });
 
     searchEnginesList.addEventListener('click', (e) => {
