@@ -81,8 +81,9 @@ assert.ok(css.includes('.bg-position-row select option'),
     'пункты <option> стилизованы явно — попап не остаётся белым');
 
 // --- Контекстное меню адаптивно: ширина по содержимому, а не фиксированная ---
-assert.ok(!css.includes('width: 220px'), 'нет жёсткой ширины меню');
-assert.ok(css.includes('min-width: 180px') && css.includes('max-width: 280px'),
+const cm = css.match(/\.context-menu\s*\{[^}]*\}/);
+assert.ok(cm && !/(?<![-a-z])width:\s*\d/.test(cm[0]), 'нет жёсткой ширины меню');
+assert.ok(cm && cm[0].includes('min-width: 180px') && cm[0].includes('max-width: 280px'),
     'меню ограничено минимальной и максимальной шириной');
 
 // --- Модалка настроек: фиксированная высота, прокрутка внутри ---

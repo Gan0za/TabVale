@@ -223,12 +223,20 @@ h1, h2 {
 /* Выпадающий список поисковых систем */
 .dropdown {
     position: relative;
+    /* Селектор не растягивается вслед за длинным названием: кнопка
+       ограничена, подпись внутри поджимается многоточием */
+    max-width: 220px;
+    min-width: 150px;
 }
 
 .dropdown-button {
     display: flex;
     align-items: center;
     gap: 8px;
+    /* Кнопка заполняет контейнер, а не content: иначе длинная подпись
+       распирает её поверх соседей (ellipsis не срабатывает) */
+    width: 100%;
+    box-sizing: border-box;
     padding: 8px 14px;
     border: 1px solid var(--border);
     border-radius: var(--radius-small);
@@ -255,6 +263,16 @@ h1, h2 {
     margin-left: auto;
     font-size: 10px;
     color: var(--text-soft);
+}
+
+/* Подпись поисковика на кнопке селектора: длинное название не должно
+   распирать кнопку — поджимается многоточием. min-width: 0 обязателен:
+   flex-элемент без него не сжимается меньше содержимого */
+#selected-engine-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .dropdown-menu {
@@ -307,12 +325,20 @@ h1, h2 {
 }
 
 .dropdown-item img {
+    /* Квадратная иконка без обрезки — круглые логотипы поисковиков.
+       Флажки языков переопределяются ниже (пропорции флага 3:2) */
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.dropdown-item img.flag-icon {
     /* Пропорции флага 3:2 (SVG в newtab/flags): квадрат искажал бы его */
     width: 20px;
     height: 14px;
     object-fit: cover;
     border-radius: 2px;
-    flex-shrink: 0;
 }
 
 /* =============================================================================
@@ -1092,6 +1118,15 @@ h1, h2 {
 .general-actions {
     gap: 8px;
     flex-wrap: wrap;
+}
+
+/* Кнопка сброса настроек — деструктивное действие, красный акцент */
+.btn-danger {
+    color: var(--danger);
+}
+
+.btn-danger:hover {
+    background: var(--danger-soft);
 }
 
 /* Флаг на кнопке селектора языка: пропорции флага 3:2. Отдельное правило
