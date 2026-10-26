@@ -22,6 +22,7 @@ export const SCRIPT_FILES = [
     'newtab/core/render.js',
     'newtab/core/state.js',
     'newtab/features/popovers.js',
+    'newtab/features/theme.js',
     'newtab/app.js',
 ];
 

@@ -34,6 +34,9 @@ function makeElement(tag) {
     };
 }
 const documentStub = {
+    // documentElement нужен applyTheme (data-theme) и applyLocale (lang):
+    // код темы выполняется при вычислении исходника, не в DOMContentLoaded
+    documentElement: { lang: '', dataset: {} },
     createElement: makeElement,
     getElementById: () => null,
     querySelector: () => null,
@@ -52,7 +55,7 @@ const chromeStub = {
 const { isSafeWebUrl, sanitizeList, sanitizeBackgrounds } = vm_run(source, {
     chrome: chromeStub,
     document: documentStub,
-    window: { addEventListener() {} },
+    window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) },
     Image: class {},
     URL,
 });

@@ -27,6 +27,9 @@ function makeElement(tag) {
     };
 }
 const documentStub = {
+    // documentElement нужен applyTheme (data-theme) и applyLocale (lang):
+    // код темы выполняется при вычислении исходника, не в DOMContentLoaded
+    documentElement: { lang: '', dataset: {} },
     createElement: makeElement,
     getElementById: () => null,
     querySelector: () => null,
@@ -44,7 +47,7 @@ const chromeStub = {
 
 const sandbox = {
     chrome: chromeStub, document: documentStub,
-    window: { addEventListener() {} }, Image: class {}, URL,
+    window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, Image: class {}, URL,
 };
 const { normalizeBackground, buildBackgroundCss, swatchDataUrl, GRADIENT_PRESETS, backgroundPlacementCss } =
     vm.runInNewContext(

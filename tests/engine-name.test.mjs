@@ -21,8 +21,10 @@ const css = fs.readFileSync(path.join(projectRoot, 'newtab', 'styles.css'), 'utf
 // топ-уровне (core/state.js) ещё при вычислении исходника, не в DOMContentLoaded
 const sandbox = {
     console,
-    window: { addEventListener() {} },
-    document: { getElementById: () => null, querySelectorAll: () => [] },
+    window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) },
+    document: { getElementById: () => null, querySelectorAll: () => [], documentElement: { lang: '', dataset: {} } },
+    // chrome-заглушка: код темы при вычислении исходника читает theme из storage
+    chrome: { runtime: {}, storage: { sync: { get(k, cb) { cb({}); }, set(i, cb) { cb && cb(); } } } },
 };
 const { clampSearchName, SEARCH_NAME_MAX } = vm.runInNewContext(
     source + '\n;({ clampSearchName, SEARCH_NAME_MAX })',

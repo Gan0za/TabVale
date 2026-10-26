@@ -34,6 +34,9 @@ function makeElement(tag) {
 }
 
 const documentStub = {
+    // documentElement нужен applyTheme (data-theme) и applyLocale (lang):
+    // код темы выполняется при вычислении исходника, не в DOMContentLoaded
+    documentElement: { lang: '', dataset: {} },
     createElement: makeElement,
     getElementById: () => null,
     querySelector: () => null,
@@ -60,7 +63,7 @@ const { getIconUrl, buildBookmarkTile, setImageSource } = vm.runInNewContext(
     {
         chrome: chromeStub,
         document: documentStub,
-        window: { addEventListener() {} },
+        window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) },
         Image: ImageStub,
         URL,
     }
