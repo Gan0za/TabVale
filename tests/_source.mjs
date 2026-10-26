@@ -15,7 +15,8 @@ export const projectRoot = path.resolve(__dirname, '..', '..');
 
 // Порядок загрузки: сначала ядро (config, i18n, storage, render),
 // затем фичи, последним — bootstrap (см. refactor/split).
-const SCRIPT_FILES = [
+export const SCRIPT_FILES = [
+    'newtab/core/config.js',
     'newtab/app.js',
 ];
 
