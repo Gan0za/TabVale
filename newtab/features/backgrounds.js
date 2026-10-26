@@ -37,11 +37,6 @@ function switchBackgroundType(type) {
     }
 }
 
-// Клик по вкладкам типа
-document.querySelectorAll('.bg-type-tab').forEach((tab) => {
-    tab.addEventListener('click', () => switchBackgroundType(tab.dataset.bgType));
-});
-
 /**
  * Ставит конструктор градиента в заданный пресет [from, to, angle]
  * и обновляет превью.
@@ -91,6 +86,11 @@ function showFilePreview(bg) {
  * Регистрирует слушатели секции. Вызывается из бутстрапа app.js.
  */
 function initBackgrounds() {
+        // Клик по вкладкам типа фона (Ссылка/Устройство/Цвет/Градиент)
+        document.querySelectorAll('.bg-type-tab').forEach((tab) => {
+            tab.addEventListener('click', () => switchBackgroundType(tab.dataset.bgType));
+        });
+
         // Выбор файла в диалоге: сразу показываем его миниатюру в форме
         // (и при создании, и при замене при редактировании)
         backgroundFileInput.addEventListener('change', () => {
@@ -132,28 +132,6 @@ function initBackgrounds() {
             });
             gradientPresets.appendChild(preset);
         });
-
-        /**
-         * Читает выбранный файл с устройства и кладёт data:URL в
-         * storage.local под сгенерированным fileId. sync квоты не тратит:
-         * картинки локальны по своей природе (решение 1a).
-         */
-        function readBackgroundFile() {
-            const file = backgroundFileInput.files?.[0];
-            if (!file) return Promise.resolve('');
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const dataUrl = typeof reader.result === 'string' ? reader.result : '';
-                    if (dataUrl) {
-                        chrome.storage.local.set({ [fileKey(makeFileId())]: dataUrl });
-                    }
-                    resolve(dataUrl);
-                };
-                reader.onerror = () => resolve('');
-                reader.readAsDataURL(file);
-            });
-        }
 
         // Кнопки "＋ Добавить" и "Отмена" — показ/скрытие формы
         addForms.background.showButton.addEventListener('click', () => showAddForm('background'));

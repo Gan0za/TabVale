@@ -106,6 +106,4 @@ function initBookmarks() {
                 refreshUI();
             }
         });
-
-        initSearch();
 }
