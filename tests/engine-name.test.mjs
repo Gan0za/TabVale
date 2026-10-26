@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..', '..');
-const source = fs.readFileSync(path.join(projectRoot, 'newtab', 'app.js'), 'utf8');
+import { SOURCE as source } from './_source.mjs';
 const css = fs.readFileSync(path.join(projectRoot, 'newtab', 'styles.css'), 'utf8');
 
 // --- clampSearchName: обрезка названия при сохранении ---

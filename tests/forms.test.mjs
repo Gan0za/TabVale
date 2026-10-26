@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..', '..');
 const html = fs.readFileSync(path.join(projectRoot, 'newtab', 'index.html'), 'utf8');
-const js = fs.readFileSync(path.join(projectRoot, 'newtab', 'app.js'), 'utf8');
+import { SOURCE as js } from './_source.mjs';
 
 // --- Для каждого типа: кнопка показа, форма и кнопка отмены ---
 const formTypes = ['bookmark', 'background', 'search-engine'];

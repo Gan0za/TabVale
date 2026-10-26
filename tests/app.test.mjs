@@ -15,7 +15,7 @@ import vm from 'node:vm';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..', '..');
-const source = fs.readFileSync(path.join(projectRoot, 'newtab', 'app.js'), 'utf8');
+import { SOURCE as source } from './_source.mjs';
 
 // --- Минимальные заглушки DOM ---
 // Элемент хранит свойства и детей, чтобы код app.js мог с ним работать
