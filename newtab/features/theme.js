@@ -6,15 +6,16 @@
 // к <html> через атрибут data-theme — по нему CSS включает нужные
 // переменные (см. styles.css).
 //
-// Код выполняется при загрузке файла (скрипт в конце <body>): вешаем
-// слушатели и читаем сохранённый режим сразу, не дожидаясь
-// DOMContentLoaded. Зависимости: core/state.js (refs), core/storage.js
-// (storageGet/storageSet), core/i18n.js (themeLabel, currentThemeMode),
-// features/popovers.js (closeAllPopovers).
+// Wiring слушателей — в initTheme(), вызывается из бутстрапа app.js.
+// Зависимости: core/storage.js (storageGet/storageSet), core/i18n.js
+// (themeLabel, currentThemeMode), features/popovers.js (closeAllPopovers).
 // =============================================================================
 
 const themeToggle = document.getElementById('theme-toggle');
 const themeMenu = document.getElementById('theme-menu');
+// Селектор темы в «Общих» настройках: его закрывает чужой closeAllPopovers
+// (features/popovers.js), поэтому ссылка на топ-уровне, а не внутри initTheme
+const themeGeneralList = document.getElementById('theme-general-list');
 
 // Иконка кнопки меняется вместе с режимом: авто — половинка,
 // светлая — солнце, тёмная — луна (см. index.html, data-mode)
@@ -91,7 +92,6 @@ function initTheme() {
     // Селектор темы в модалке («Общие»): работает как dropdown поисковика,
     // открывается классом open (CSS display: none -> block)
     const themeGeneralButton = document.getElementById('theme-general-button');
-    const themeGeneralList = document.getElementById('theme-general-list');
     themeGeneralButton?.addEventListener('click', (e) => {
         e.stopPropagation();
         closeAllPopovers(themeGeneralList);

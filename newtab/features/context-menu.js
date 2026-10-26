@@ -257,13 +257,6 @@ function detectMenuTarget(target) {
     };
 }
 
-// Правый клик: определяем элемент и показываем соответствующее меню
-document.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-    if (touchDrag) return; // посреди сенсорного переноса меню не открываем
-    showContextMenu(e.clientX, e.clientY, e.target);
-});
-
 /**
  * Показывает контекстное меню для элемента target в координатах
  * вьюпорта (clientX, clientY). Общий вход для правого клика мыши и
@@ -335,6 +328,13 @@ function closeContextMenu() {
  * Вызывается из бутстрапа app.js.
  */
 function initContextMenu() {
+    // Правый клик: определяем элемент и показываем соответствующее меню
+    document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        if (touchDrag) return; // посреди сенсорного переноса меню не открываем
+        showContextMenu(e.clientX, e.clientY, e.target);
+    });
+
     // Левый клик мимо меню закрывает его
     document.addEventListener('click', (e) => {
         if (!contextMenu.contains(e.target)) closeContextMenu();

@@ -239,7 +239,7 @@ function loadFileBackgroundThumbs() {
 }
 
 // Смена языка на лету: applyLocale перерисовывает динамические списки
-// через этот делегат (см. uiRefresher в начале файла)
+// через этот делегат (см. uiRefresher в core/i18n.js)
 uiRefresher = refreshUI;
 
 /**
