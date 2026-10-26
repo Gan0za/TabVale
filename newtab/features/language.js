@@ -50,40 +50,47 @@ function changeLanguage(code) {
     applyLocale(code).then(() => updateLanguageButton(code));
 }
 
-// Оба меню (🌐 и селектор в «Общих») наполняются одинаково
-storageGet('lang', (result) => {
-    const langSetting = result.lang || 'auto';
-    buildLanguageMenu(languageMenu, resolveLocale(langSetting), changeLanguage);
-    buildLanguageMenu(languageList, resolveLocale(langSetting), changeLanguage);
-    updateLanguageButton(langSetting);
-});
 
-languageToggle?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    closeAllPopovers(languageMenu);
-    languageMenu.classList.toggle('hidden');
-    // При каждом открытии обновить подсветку текущего языка
-    if (!languageMenu.classList.contains('hidden')) {
-        storageGet('lang', (result) => {
-            buildLanguageMenu(languageMenu, resolveLocale(result.lang || 'auto'), changeLanguage);
-        });
-    }
-});
-languageButton?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    closeAllPopovers(languageList);
-    // dropdown-menu открывается классом open (display: none -> block);
-    // hidden снят closeAllPopovers только у чужих меню — у своего его
-    // и не было
-    languageList.classList.toggle('open');
-    if (languageList.classList.contains('open')) {
-        storageGet('lang', (result) => {
-            buildLanguageMenu(languageList, resolveLocale(result.lang || 'auto'), changeLanguage);
-        });
-    }
-});
-// Клик мимо меню языка закрывает его
-document.addEventListener('click', (e) => {
-    if (!languageMenu.contains(e.target)) languageMenu.classList.add('hidden');
-    if (!languageList.contains(e.target)) languageList.classList.remove('open');
-});
+/**
+ * Наполняет оба меню языками и вешает слушатели переключателей.
+ * Вызывается из бутстрапа app.js.
+ */
+function initLanguage() {
+    // Оба меню (🌐 и селектор в «Общих») наполняются одинаково
+    storageGet('lang', (result) => {
+        const langSetting = result.lang || 'auto';
+        buildLanguageMenu(languageMenu, resolveLocale(langSetting), changeLanguage);
+        buildLanguageMenu(languageList, resolveLocale(langSetting), changeLanguage);
+        updateLanguageButton(langSetting);
+    });
+
+    languageToggle?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllPopovers(languageMenu);
+        languageMenu.classList.toggle('hidden');
+        // При каждом открытии обновить подсветку текущего языка
+        if (!languageMenu.classList.contains('hidden')) {
+            storageGet('lang', (result) => {
+                buildLanguageMenu(languageMenu, resolveLocale(result.lang || 'auto'), changeLanguage);
+            });
+        }
+    });
+    languageButton?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllPopovers(languageList);
+        // dropdown-menu открывается классом open (display: none -> block);
+        // hidden снят closeAllPopovers только у чужих меню — у своего его
+        // и не было
+        languageList.classList.toggle('open');
+        if (languageList.classList.contains('open')) {
+            storageGet('lang', (result) => {
+                buildLanguageMenu(languageList, resolveLocale(result.lang || 'auto'), changeLanguage);
+            });
+        }
+    });
+    // Клик мимо меню языка закрывает его
+    document.addEventListener('click', (e) => {
+        if (!languageMenu.contains(e.target)) languageMenu.classList.add('hidden');
+        if (!languageList.contains(e.target)) languageList.classList.remove('open');
+    });
+}
