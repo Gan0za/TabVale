@@ -1433,6 +1433,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     function closeContextMenu() {
         contextMenu.classList.add('hidden');
+        // Закрытие (Esc, клик мимо) тоже инвалидирует ждущий асинхронный
+        // ответ: иначе устаревшее чтение буфера переоткрыло бы меню
+        contextMenuToken++;
     }
 
     /**
