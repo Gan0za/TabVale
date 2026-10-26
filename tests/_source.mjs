@@ -17,6 +17,7 @@ export const projectRoot = path.resolve(__dirname, '..', '..');
 // затем фичи, последним — bootstrap (см. refactor/split).
 export const SCRIPT_FILES = [
     'newtab/core/config.js',
+    'newtab/core/i18n.js',
     'newtab/app.js',
 ];
 
