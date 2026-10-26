@@ -24,6 +24,14 @@ export const SCRIPT_FILES = [
     'newtab/features/popovers.js',
     'newtab/features/theme.js',
     'newtab/features/language.js',
+    'newtab/features/ui-actions.js',
+    'newtab/features/drag.js',
+    'newtab/features/context-menu.js',
+    'newtab/features/search.js',
+    'newtab/features/settings.js',
+    'newtab/features/bookmarks.js',
+    'newtab/features/backgrounds.js',
+    'newtab/features/search-engines.js',
     'newtab/app.js',
 ];
 

@@ -51,53 +51,61 @@ function applyTheme(mode) {
     });
 }
 
-// Реагируем на переключение темы в системе, пока активен режим "auto"
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-    storageGet('theme', (result) => {
-        if ((result.theme || 'auto') === 'auto') applyTheme('auto');
+
+/**
+ * Вешает слушатели темы и загружает сохранённый режим.
+ * Вызывается из бутстрапа app.js: wiring не выполняется на уровне
+ * вычисления файла (песочницы тестов гоняют декларации без DOM).
+ */
+function initTheme() {
+    // Реагируем на переключение темы в системе, пока активен режим "auto"
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        storageGet('theme', (result) => {
+            if ((result.theme || 'auto') === 'auto') applyTheme('auto');
+        });
     });
-});
 
-// Загружаем сохранённый режим и включаем переключатель
-storageGet('theme', (result) => {
-    currentThemeMode = result.theme || 'auto';
-    applyTheme(currentThemeMode);
-});
-themeToggle?.addEventListener('click', (e) => {
-    // Показать/спрять мини-меню выбора темы.
-    // stopPropagation: иначе клик дойдёт до document и тут же закроет меню
-    e.stopPropagation();
-    closeAllPopovers(themeMenu);
-    themeMenu.classList.toggle('hidden');
-});
-themeMenu?.addEventListener('click', (e) => {
-    // Клик по пункту или его тексту: ищем кнопку с data-mode
-    const item = e.target.closest('button[data-mode]');
-    if (!item) return;
-    const mode = item.dataset.mode;
-    currentThemeMode = mode;
-    storageSet({ theme: mode });
-    applyTheme(mode);
-    themeMenu.classList.add('hidden');
-});
+    // Загружаем сохранённый режим и включаем переключатель
+    storageGet('theme', (result) => {
+        currentThemeMode = result.theme || 'auto';
+        applyTheme(currentThemeMode);
+    });
+    themeToggle?.addEventListener('click', (e) => {
+        // Показать/спрять мини-меню выбора темы.
+        // stopPropagation: иначе клик дойдёт до document и тут же закроет меню
+        e.stopPropagation();
+        closeAllPopovers(themeMenu);
+        themeMenu.classList.toggle('hidden');
+    });
+    themeMenu?.addEventListener('click', (e) => {
+        // Клик по пункту или его тексту: ищем кнопку с data-mode
+        const item = e.target.closest('button[data-mode]');
+        if (!item) return;
+        const mode = item.dataset.mode;
+        currentThemeMode = mode;
+        storageSet({ theme: mode });
+        applyTheme(mode);
+        themeMenu.classList.add('hidden');
+    });
 
-// Селектор темы в модалке («Общие»): работает как dropdown поисковика,
-// открывается классом open (CSS display: none -> block)
-const themeGeneralButton = document.getElementById('theme-general-button');
-const themeGeneralList = document.getElementById('theme-general-list');
-themeGeneralButton?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    closeAllPopovers(themeGeneralList);
-    themeGeneralList.classList.toggle('open');
-});
-themeGeneralList?.addEventListener('click', (e) => {
-    // Клик по пункту или по его иконке: ищем кнопку пункта
-    const item = e.target.closest('.dropdown-item');
-    if (!item) return;
-    const mode = item.dataset.mode;
-    if (!mode) return;
-    currentThemeMode = mode;
-    storageSet({ theme: mode });
-    applyTheme(mode);
-    themeGeneralList.classList.remove('open');
-});
+    // Селектор темы в модалке («Общие»): работает как dropdown поисковика,
+    // открывается классом open (CSS display: none -> block)
+    const themeGeneralButton = document.getElementById('theme-general-button');
+    const themeGeneralList = document.getElementById('theme-general-list');
+    themeGeneralButton?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllPopovers(themeGeneralList);
+        themeGeneralList.classList.toggle('open');
+    });
+    themeGeneralList?.addEventListener('click', (e) => {
+        // Клик по пункту или по его иконке: ищем кнопку пункта
+        const item = e.target.closest('.dropdown-item');
+        if (!item) return;
+        const mode = item.dataset.mode;
+        if (!mode) return;
+        currentThemeMode = mode;
+        storageSet({ theme: mode });
+        applyTheme(mode);
+        themeGeneralList.classList.remove('open');
+    });
+}
