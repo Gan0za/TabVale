@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..', '..');
-const js = fs.readFileSync(path.join(projectRoot, 'newtab', 'app.js'), 'utf8');
+import { SOURCE as js } from './_source.mjs';
 
 // --- Статические проверки: ключевые части нового механизма на месте ---
 assert.ok(js.includes('reorderBookmarksAnimated'), 'есть перестановка с FLIP без пересоздания узлов');
