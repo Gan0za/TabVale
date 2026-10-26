@@ -17,7 +17,13 @@ import { SOURCE as source } from './_source.mjs';
 const css = fs.readFileSync(path.join(projectRoot, 'newtab', 'styles.css'), 'utf8');
 
 // --- clampSearchName: обрезка названия при сохранении ---
-const sandbox = { console, window: { addEventListener() {} } };
+// document-заглушка: после сплита ссылки на элементы захватываются на
+// топ-уровне (core/state.js) ещё при вычислении исходника, не в DOMContentLoaded
+const sandbox = {
+    console,
+    window: { addEventListener() {} },
+    document: { getElementById: () => null, querySelectorAll: () => [] },
+};
 const { clampSearchName, SEARCH_NAME_MAX } = vm.runInNewContext(
     source + '\n;({ clampSearchName, SEARCH_NAME_MAX })',
     sandbox

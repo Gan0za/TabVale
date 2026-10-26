@@ -40,7 +40,7 @@ for (const [name, call] of toggles) {
 // --- 2. Механизмы видимости не смешиваются ---
 // FAB-меню скрываются через hidden, dropdown'ы — через снятие open.
 // Если closeAllPopovers добавляет hidden dropdown'у, тот навсегда закрыт.
-const fnMatch = js.match(/function closeAllPopovers\(except\) \{[\s\S]*?\r?\n    \}/);
+const fnMatch = js.match(/function closeAllPopovers\(except\) \{[\s\S]*?\r?\n\}/);
 assert.ok(fnMatch, 'closeAllPopovers объявлена');
 const fn = fnMatch[0];
 assert.ok(fn.includes("menu.classList.add('hidden')"), 'FAB-меню закрываются hidden');
