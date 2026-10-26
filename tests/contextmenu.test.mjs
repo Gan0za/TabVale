@@ -48,7 +48,7 @@ const ruMessages = JSON.parse(
 
 const sandbox = {
     chrome: chromeStub, document: documentStub,
-    window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, Image: class {}, URL,
+    window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, navigator: { language: 'ru-RU' }, Image: class {}, URL,
 };
 // Словарь подставляется через хвост к коду app.js: после объявления
 // let currentMessages (TDZ для присваивания ДО объявления пройден)

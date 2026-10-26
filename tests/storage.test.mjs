@@ -69,7 +69,7 @@ const { storageGet, storageSet } = vm.runInNewContext(
     {
         chrome: makeChromeStub({ lastError: undefined, data: { theme: 'dark' } }).chromeStub,
         document: documentNoRuntime,
-        window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) },
+        window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, navigator: { language: 'ru-RU' },
         URL,
     }
 );
@@ -83,7 +83,7 @@ storageGet('theme', (result) => {
 const failing = makeChromeStub({ lastError: new Error('quota exceeded'), data: {} });
 const { storageGet: failingGet } = vm.runInNewContext(
     source + '\n;({ storageGet, storageSet })',
-    { chrome: failing.chromeStub, document: documentNoRuntime, window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, URL }
+    { chrome: failing.chromeStub, document: documentNoRuntime, window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, navigator: { language: 'ru-RU' }, URL }
 );
 let called = false;
 failingGet('theme', (result) => {
@@ -105,7 +105,7 @@ assert.equal(directCalls.length, 0, 'прямых вызовов chrome.storage.
 // --- 4. getState подставляет значения по умолчанию через обёртку ---
 const { getState } = vm.runInNewContext(
     source + '\n;({ getState })',
-    { chrome: makeChromeStub({ lastError: undefined, data: {} }).chromeStub, document: documentNoRuntime, window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, URL }
+    { chrome: makeChromeStub({ lastError: undefined, data: {} }).chromeStub, document: documentNoRuntime, window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, navigator: { language: 'ru-RU' }, URL }
 );
 getState((state) => {
     assert.ok(state.searchEngines.length > 0, 'дефолтные движки подставлены');
