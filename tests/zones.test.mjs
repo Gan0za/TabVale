@@ -46,7 +46,7 @@ const ruMessages = JSON.parse(
 
 const sandbox = {
     chrome: chromeStub, document: documentStub,
-    window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, Image: class {}, URL,
+    window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, navigator: { language: 'ru-RU' }, Image: class {}, URL,
 };
 const { getContextMenuItems } = vm.runInNewContext(
     source + `\n;currentMessages = ${JSON.stringify(ruMessages)};\n;({ getContextMenuItems })`,

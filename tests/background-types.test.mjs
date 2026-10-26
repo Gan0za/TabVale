@@ -47,7 +47,7 @@ const chromeStub = {
 
 const sandbox = {
     chrome: chromeStub, document: documentStub,
-    window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, Image: class {}, URL,
+    window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, navigator: { language: 'ru-RU' }, Image: class {}, URL,
 };
 const { normalizeBackground, buildBackgroundCss, swatchDataUrl, GRADIENT_PRESETS, backgroundPlacementCss } =
     vm.runInNewContext(

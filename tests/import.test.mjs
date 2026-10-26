@@ -55,7 +55,7 @@ const chromeStub = {
 const { isSafeWebUrl, sanitizeList, sanitizeBackgrounds } = vm_run(source, {
     chrome: chromeStub,
     document: documentStub,
-    window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) },
+    window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, navigator: { language: 'ru-RU' },
     Image: class {},
     URL,
 });

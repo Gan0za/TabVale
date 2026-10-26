@@ -63,7 +63,7 @@ const { getIconUrl, buildBookmarkTile, setImageSource } = vm.runInNewContext(
     {
         chrome: chromeStub,
         document: documentStub,
-        window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) },
+        window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, navigator: { language: 'ru-RU' },
         Image: ImageStub,
         URL,
     }

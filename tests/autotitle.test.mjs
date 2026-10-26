@@ -41,7 +41,7 @@ const chromeStub = {
 
 const sandbox = {
     chrome: chromeStub, document: documentStub,
-    window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, Image: class {}, URL,
+    window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, navigator: { language: 'ru-RU' }, Image: class {}, URL,
 };
 const { suggestNameFromUrl, normalizeUrl } = vm.runInNewContext(
     source + '\n;({ suggestNameFromUrl, normalizeUrl })',
