@@ -228,4 +228,16 @@ await new Promise((r) => setTimeout(r, 10));
 assert.ok(menuActions().includes('editBookmark') && !menuActions().includes('pasteAndSearch'),
     'устаревший ответ поиска не перезаписал меню плитки (токен отбросил его)');
 
+// --- 3b. Закрытие меню (Esc) инвалидирует ждущий ответ буфера ---
+// Иначе устаревшее чтение переоткрыло бы меню после явного закрытия
+let resolveSecond;
+readTextImpl = () => new Promise((res) => { resolveSecond = res; });
+fireDocument('contextmenu', { clientX: 10, clientY: 10, target: searchContainer, preventDefault() {} });
+fireDocument('keydown', { key: 'Escape' }); // Esc закрывает меню
+assert.ok(contextMenu.classList.contains('hidden'), 'Esc закрыл меню');
+resolveSecond('hello');
+await new Promise((r) => setTimeout(r, 10));
+assert.ok(contextMenu.classList.contains('hidden'),
+    'ответ буфера после закрытия меню не переоткрывает его (токен в closeContextMenu)');
+
 console.log('menu-actions.test.mjs: все проверки пройдены');
