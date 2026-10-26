@@ -20,74 +20,6 @@
 // =============================================================================
 
 window.addEventListener('DOMContentLoaded', () => {
-    // --- Элементы страницы (HTML-разметка в newtab/index.html) ---
-    const searchInput = document.getElementById('search-input');
-    const searchEngineDropdownBtn = document.getElementById('search-engine-button');
-    const searchEngineList = document.getElementById('search-engine-list');
-    const searchButton = document.getElementById('search-button');
-    const bookmarksContainer = document.getElementById('bookmarks-container');
-
-    const contextMenu = document.getElementById('custom-context-menu');
-    const overlay = document.getElementById('overlay');
-    const settingsModal = document.getElementById('settings-modal');
-    const settingsButton = document.getElementById('settings-button');
-    const closeSettingsButton = document.getElementById('close-settings');
-    const exportSettingsJsonButton = document.getElementById('export-settings-json');
-    const importSettingsJsonButton = document.getElementById('import-settings-json');
-    const importSettingsFileInput = document.getElementById('import-settings-file');
-    const settingsTabs = document.querySelectorAll('.settings-tab');
-    const settingsPanes = document.querySelectorAll('.settings-pane');
-
-    // Форма закладок
-    const bookmarkManagerList = document.getElementById('bookmark-manager-list');
-    const bookmarkTitleInput = document.getElementById('bookmark-title-input');
-    const bookmarkUrlInput = document.getElementById('bookmark-url-input');
-    const bookmarkIconInput = document.getElementById('bookmark-icon-input');
-    const bookmarkDetails = document.getElementById('bookmark-details');
-    const addBookmarkButton = document.getElementById('add-bookmark');
-    const saveBookmarkButton = document.getElementById('save-bookmark');
-    const refreshBookmarkIconButton = document.getElementById('refresh-bookmark-icon');
-
-    // Форма фонов
-    const backgroundManagerList = document.getElementById('background-manager-list');
-    const backgroundTitleInput = document.getElementById('background-title-input');
-    const backgroundUrlInput = document.getElementById('background-url-input');
-    const saveBackgroundButton = document.getElementById('save-background');
-    const backgroundFileInput = document.getElementById('background-file-input');
-    const backgroundPositionRow = document.getElementById('background-position-row');
-    const backgroundPositionInput = document.getElementById('background-position-input');
-    const backgroundColorInput = document.getElementById('background-color-input');
-    const gradientFromInput = document.getElementById('gradient-from-input');
-    const gradientToInput = document.getElementById('gradient-to-input');
-    const gradientAngleInput = document.getElementById('gradient-angle-input');
-    const gradientPreview = document.getElementById('gradient-preview');
-    const gradientPresets = document.getElementById('gradient-presets');
-
-    // Форма поисковых систем
-    const searchEnginesList = document.getElementById('search-engines-list');
-    const newSearchEngineName = document.getElementById('new-search-engine-name');
-    const newSearchEngineUrl = document.getElementById('new-search-engine-url');
-    const newSearchEngineLogo = document.getElementById('new-search-engine-logo');
-    const searchEngineDetails = document.getElementById('search-engine-details');
-    const addSearchEngineButton = document.getElementById('add-search-engine');
-    const saveSearchEngineButton = document.getElementById('save-search-engine');
-    const refreshSearchEngineIconButton = document.getElementById('refresh-search-engine-icon');
-
-    // --- Текущее состояние приложения ---
-    // Всё, что видит пользователь, живёт в этом объекте и синхронизируется
-    // с chrome.storage.sync при каждом изменении.
-    let currentState = {
-        searchEngines: DEFAULT_SEARCH_ENGINES,
-        bookmarks: DEFAULT_BOOKMARKS,
-        backgrounds: DEFAULT_BACKGROUNDS,
-        currentBackgroundIndex: 0,
-        currentSearchEngineIndex: 0
-    };
-
-    // Какой элемент списка сейчас редактируется (null = создаётся новый)
-    let editingBookmarkIndex = null;
-    let editingBackgroundIndex = null;
-    let editingSearchEngineIndex = null;
 
     // =============================================================================
     // Тема оформления
@@ -196,28 +128,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const languageButton = document.getElementById('language-button');
     const languageList = document.getElementById('language-list');
 
-    /**
-     * Закрывает все всплывающие меню, кроме указанного (except).
-     *
-     * Зачем: кнопки-переключатели вызывают stopPropagation — клик по ним
-     * не доходит до document и не закрывает чужие меню. Без явного закрытия
-     * селекторы остаются открытыми и перекрывают друг друга.
-     *
-     * Меню двух видов, у каждого свой механизм видимости:
-     *   - FAB-меню (тема и язык на главном экране): скрыты классом hidden;
-     *   - dropdown-меню (селекторы в «Общих», поисковик): видны по классу open.
-     * Если dropdown'у добавить hidden, он навсегда потеряет видимость
-     * (display: none !important перебивает .open), поэтому механизмы
-     * не смешиваются.
-     */
-    function closeAllPopovers(except) {
-        for (const menu of [themeMenu, languageMenu]) {
-            if (menu && menu !== except) menu.classList.add('hidden');
-        }
-        for (const menu of [themeGeneralList, languageList, searchEngineList]) {
-            if (menu && menu !== except) menu.classList.remove('open');
-        }
-    }
 
     /**
      * Показывает выбранный язык на кнопках обоих переключателей
