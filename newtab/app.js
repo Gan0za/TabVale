@@ -2266,6 +2266,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // =============================================================================
 
     let draggedIndex = null;
+    // Порядок менялся в мыши-переносе: dragend/drop пишут storage только
+    // когда перестановки были (у сенсорного переноса есть touchOrderChanged)
+    let mouseOrderChanged = false;
 
     /**
      * FLIP-доездка плитки на место: из визуального сдвига (dx, dy) —
@@ -2420,6 +2423,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const el = e.target.closest('.bookmark');
         if (!el) return;
         draggedIndex = Number(el.dataset.index);
+        mouseOrderChanged = false;
         el.classList.add('dragging');
         e.dataTransfer?.setData('text/plain', String(draggedIndex));
     });
@@ -2439,9 +2443,10 @@ window.addEventListener('DOMContentLoaded', () => {
         // Узлы не пересоздаются, но класс и возможные FLIP-сдвиги всё
         // равно нужно снять со всех плиток — перенос завершён.
         // Порядок на экране уже новый: сохраняем его даже при отмене
-        // (Esc, drop вне окна) — иначе экран и storage расходятся
+        // (Esc, drop вне окна) — иначе экран и storage расходятся.
+        // Но если перестановок не было вовсе, storage не трогаем
         clearDragVisual();
-        if (draggedIndex !== null) {
+        if (draggedIndex !== null && mouseOrderChanged) {
             saveState({ bookmarks: currentState.bookmarks });
         }
         draggedIndex = null;
@@ -2461,14 +2466,16 @@ window.addEventListener('DOMContentLoaded', () => {
         // Слот в текущем списке включает сам перетаскиваемый элемент,
         // поэтому после его удаления индекс вставки смещается на -1
         const insertIndex = slot > draggedIndex ? slot - 1 : slot;
+        mouseOrderChanged = true;
         reorderBookmarksAnimated(draggedIndex, insertIndex);
     });
 
     bookmarksContainer.addEventListener('drop', (e) => {
         e.preventDefault();
         // Порядок уже переставлен в dragover — здесь только сохраняем.
-        // Один раз за перенос, а не на каждый hover над соседями
-        if (draggedIndex !== null) {
+        // Один раз за перенос, а не на каждый hover над соседями; без
+        // перестановок писать нечего
+        if (draggedIndex !== null && mouseOrderChanged) {
             saveState({ bookmarks: currentState.bookmarks });
         }
         // Завершаем перенос: убираем приглушение/поворот со всех плиток,
@@ -2490,7 +2497,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const TOUCH_DRAG_DELAY = 350; // long-press до старта переноса
     const TOUCH_DRAG_SLOP = 10;   // движение пальца раньше — это скролл
 
-    let touchDrag = null;      // { el, index, grabX, grabY, startX, startY, active, moved }
+    let touchDrag = null;      // { el, index, grabX, grabY, startX, startY, lastX, lastY, active, moved }
     let touchTimer = null;
     let touchOrderChanged = false;
 
@@ -2521,8 +2528,11 @@ window.addEventListener('DOMContentLoaded', () => {
         el.style.top = rect.top + 'px';
         // zIndex остаётся в .bookmark.dragging (styles.css)
         el.classList.add('dragging');
-        touchDrag.grabX = touchDrag.startX - rect.left;
-        touchDrag.grabY = touchDrag.startY - rect.top;
+        // Граб-смещение от последней позиции пальца, а не от точки касания:
+        // за 350 мс long-press палец мог сместиться в пределах slop — иначе
+        // на первом движении плитка дёргается обратно к точке касания
+        touchDrag.grabX = touchDrag.lastX - rect.left;
+        touchDrag.grabY = touchDrag.lastY - rect.top;
 
         // FLIP Play: соседи плавно закрывают освободившийся зазор
         before.forEach((oldRect, other) => {
@@ -2567,6 +2577,8 @@ window.addEventListener('DOMContentLoaded', () => {
             index: Number(el.dataset.index),
             startX: touch.clientX,
             startY: touch.clientY,
+            lastX: touch.clientX, // последняя позиция пальца до старта переноса
+            lastY: touch.clientY,
             grabX: 0,
             grabY: 0,
             active: false,
@@ -2594,6 +2606,10 @@ window.addEventListener('DOMContentLoaded', () => {
         const touch = e.touches[0];
 
         if (!touchDrag.active) {
+            // Палец мог дрейфовать в пределах slop: запоминаем последнюю
+            // позицию — от неё позже считается граб-смещение (liftTouchTile)
+            touchDrag.lastX = touch.clientX;
+            touchDrag.lastY = touch.clientY;
             // Палец сместился раньше long-press — это скролл, перенос отменён
             const dx = touch.clientX - touchDrag.startX;
             const dy = touch.clientY - touchDrag.startY;
@@ -2720,6 +2736,10 @@ window.addEventListener('DOMContentLoaded', () => {
     // правого клика: когда пользователь выбирает пункт, под курсором
     // уже сам пункт меню, и определять элемент заново было бы нельзя
     let contextMenuData = {};
+    // Счётчик вызовов showContextMenu: пока асинхронный ответ (чтение
+    // буфера) ждёт, могли открыть другое меню — устаревший ответ
+    // отбрасывается по токену и не перезаписывает актуальное меню
+    let contextMenuToken = 0;
 
     /**
      * Действия пунктов меню. Каждое действие — короткая функция,
@@ -2736,8 +2756,14 @@ window.addEventListener('DOMContentLoaded', () => {
             saveState({ bookmarks: currentState.bookmarks });
             refreshUI();
         },
-        openInNewTab: (data) => window.open(data.url, '_blank'),
-        copyLink: (data) => navigator.clipboard.writeText(data.url),
+        // opener гасим: открытый сайт не должен получать ссылку на страницу
+        // расширения (обратный табнабинг; у плиточных ссылок для этого
+        // стоит rel="noreferrer")
+        openInNewTab: (data) => window.open(data.url, '_blank', 'noopener,noreferrer'),
+        // Без catch — unhandled rejection, если запись в буфер запрещена
+        copyLink: (data) => navigator.clipboard.writeText(data.url).catch(() => {
+            alert(t('copyFailed'));
+        }),
 
         // Создание новой закладки: открываем форму закладок в настройках
         addBookmark: () => {
@@ -2906,16 +2932,16 @@ window.addEventListener('DOMContentLoaded', () => {
     /**
      * Показывает контекстное меню для элемента target в координатах
      * вьюпорта (clientX, clientY). Общий вход для правого клика мыши и
-     * для long-press на сенсорном экране.
+     * для long-press на сенсорном экране. Асинхронные ветки (буфер
+     * обмена) защищены токеном: устаревший ответ не открывает меню.
      */
-    // Правка гонки: если открыт второй right-click, пока прошлый ждёт буфер
-    // обмена, — открытая часть меню будет закрыта следующим вызовом
     function showContextMenu(clientX, clientY, target) {
         const modalOpen = !overlay.classList.contains('hidden');
         const { type, data } = detectMenuTarget(target);
         // При открытой модалке меню нужно только для её строк —
         // остальное уходит под оверлей
         if (modalOpen && type !== 'settingsRow') { closeContextMenu(); return; }
+        const token = ++contextMenuToken;
         contextMenuData = data; // запоминаем для обработчика выбора пункта
 
         if (type === 'search') {
@@ -2927,6 +2953,9 @@ window.addEventListener('DOMContentLoaded', () => {
             navigator.clipboard.readText()
                 .catch(() => '')
                 .then((text) => {
+                    // Пока читали буфер, могли открыть другое меню —
+                    // устаревший ответ не должен его перезаписать
+                    if (token !== contextMenuToken) return;
                     data.clipboardText = text || '';
                     data.hasClipboardText = !!data.clipboardText.trim();
                     contextMenuData = data;
@@ -2941,6 +2970,7 @@ window.addEventListener('DOMContentLoaded', () => {
             navigator.clipboard.readText()
                 .catch(() => '')
                 .then((text) => {
+                    if (token !== contextMenuToken) return; // открыли другое меню
                     text = (text || '').trim();
                     data.clipboardText = text;
                     data.hasClipboardUrl = isSafeWebUrl(text);
