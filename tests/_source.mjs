@@ -19,6 +19,7 @@ export const SCRIPT_FILES = [
     'newtab/core/config.js',
     'newtab/core/storage.js',
     'newtab/core/i18n.js',
+    'newtab/core/render.js',
     'newtab/app.js',
 ];
 
