@@ -410,4 +410,40 @@ assert.ok(!dragPrevented, 'после отпускания пальца dragstar
 assert.ok(secondTile.classList.contains('dragging'), 'мышиный перенос запускается');
 grid._listeners.drop.forEach((fn) => fn({ preventDefault() {} }));
 
+// --- 12. Мышь без перестановок: storage не пишется (mouseOrderChanged) ---
+// Регрессия: dragend/drop писали bookmarks в storage даже когда dragover
+// ни разу не переставил список (просто клик-перенос без движения)
+syncSets.length = 0;
+const quietTile = grid.children[0];
+grid._listeners.dragstart.forEach((fn) => fn({ target: quietTile, dataTransfer, clientX: 50, clientY: 50 }));
+grid._listeners.dragend.forEach((fn) => fn({}));
+assert.equal(syncSets.length, 0, 'dragend без перестановок не пишет storage');
+// dragover с no-op слотом (своя позиция) — тоже без записи
+grid._listeners.dragstart.forEach((fn) => fn({ target: quietTile, dataTransfer, clientX: 50, clientY: 50 }));
+grid._listeners.dragover.forEach((fn) => fn({ clientX: 50, clientY: 100, preventDefault() {} }));
+grid._listeners.dragend.forEach((fn) => fn({}));
+assert.equal(syncSets.length, 0, 'dragend после no-op dragover не пишет storage');
+// а с перестановкой — пишет один раз
+grid._listeners.dragstart.forEach((fn) => fn({ target: quietTile, dataTransfer, clientX: 50, clientY: 50 }));
+grid._listeners.dragover.forEach((fn) => fn({ clientX: 400, clientY: 100, preventDefault() {} }));
+grid._listeners.dragend.forEach((fn) => fn({}));
+assert.equal(syncSets.length, 1, 'dragend с перестановкой пишет storage один раз');
+
+// --- 13. Граб-смещение от последней позиции пальца (дрейф в slop) ---
+// Регрессия: граб считался от точки касания (startX) — если за 350 мс
+// long-press палец сместился в пределах slop, плитка дёргалась на старте
+grid._listeners.touchstart.forEach((fn) => fn({
+    touches: [touch(200, 200)], target: tiles[1], stopPropagation() {},
+}));
+// дрейф 5px в пределах slop (10px) — перенос не отменяется
+grid._listeners.touchmove.forEach((fn) => fn({ touches: [touch(205, 195)], preventDefault() {} }));
+await new Promise((r) => setTimeout(r, 400)); // long-press
+const driftTile = tiles[1];
+const rectLeft = driftTile.getBoundingClientRect().left;
+grid._listeners.touchmove.forEach((fn) => fn({ touches: [touch(210, 195)], preventDefault() {} }));
+const placedLeft = parseFloat(driftTile.style.left);
+assert.ok(Math.abs(placedLeft - (rectLeft + 5)) < 1e-6,
+    'плитка едет от позиции пальца на long-press, без рывка к точке касания');
+grid._listeners.touchend.forEach((fn) => fn({ touches: [], preventDefault() {} }));
+
 console.log('touch-drag.test.mjs: все проверки пройдены');
