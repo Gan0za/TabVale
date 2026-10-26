@@ -90,7 +90,7 @@ const { t, resolveLocale } = vm.runInNewContext(
     source + '\n;({ t, resolveLocale })',
     {
         chrome: chromeStub, document: documentStub,
-        window: { addEventListener() {} },
+        window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) },
         navigator: { language: 'en-US' },
         fetch: async () => { throw new Error('не нужен в тесте'); },
         URL,
@@ -105,7 +105,7 @@ assert.equal(t('nonexistentKey'), 'nonexistentKey', 'нет ключа — во�
 // проверяем подстановку переменных
 const sandbox2 = {
     chrome: chromeStub, document: documentStub,
-    window: { addEventListener() {} }, navigator: { language: 'en-US' }, URL,
+    window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, navigator: { language: 'en-US' }, URL,
 };
 const { t: tFilled } = vm.runInNewContext(
     source + '\ncurrentMessages = { importSkipped: { message: "Пропущено: $count$" }, plain: { message: "Просто строка" } };\n;({ t })',

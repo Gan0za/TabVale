@@ -30,6 +30,9 @@ function makeElement(tag) {
     };
 }
 const documentStub = {
+    // documentElement нужен applyTheme (data-theme) и applyLocale (lang):
+    // код темы выполняется при вычислении исходника, не в DOMContentLoaded
+    documentElement: { lang: '', dataset: {} },
     createElement: makeElement,
     getElementById: () => null,
     querySelector: () => null,
@@ -66,7 +69,7 @@ const { storageGet, storageSet } = vm.runInNewContext(
     {
         chrome: makeChromeStub({ lastError: undefined, data: { theme: 'dark' } }).chromeStub,
         document: documentNoRuntime,
-        window: { addEventListener() {} },
+        window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) },
         URL,
     }
 );
@@ -80,7 +83,7 @@ storageGet('theme', (result) => {
 const failing = makeChromeStub({ lastError: new Error('quota exceeded'), data: {} });
 const { storageGet: failingGet } = vm.runInNewContext(
     source + '\n;({ storageGet, storageSet })',
-    { chrome: failing.chromeStub, document: documentNoRuntime, window: { addEventListener() {} }, URL }
+    { chrome: failing.chromeStub, document: documentNoRuntime, window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, URL }
 );
 let called = false;
 failingGet('theme', (result) => {
@@ -102,7 +105,7 @@ assert.equal(directCalls.length, 0, 'прямых вызовов chrome.storage.
 // --- 4. getState подставляет значения по умолчанию через обёртку ---
 const { getState } = vm.runInNewContext(
     source + '\n;({ getState })',
-    { chrome: makeChromeStub({ lastError: undefined, data: {} }).chromeStub, document: documentNoRuntime, window: { addEventListener() {} }, URL }
+    { chrome: makeChromeStub({ lastError: undefined, data: {} }).chromeStub, document: documentNoRuntime, window: { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) }, URL }
 );
 getState((state) => {
     assert.ok(state.searchEngines.length > 0, 'дефолтные движки подставлены');
