@@ -17,7 +17,7 @@ y fondos.
   vacía y `Alt+←/→`.
 - Marcadores con iconos y ordenación arrastrando; movimiento entre pantallas.
 - Fondos: URL, archivo local, color o degradado.
-- Temas (automático/claro/oscuro) e idiomas (inglés/ruso).
+- Temas (automático/claro/oscuro) e idiomas de la interfaz (13).
 - Importación y exportación de ajustes en JSON.
 
 ## Instalación

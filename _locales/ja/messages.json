@@ -1,0 +1,319 @@
+{
+  "appName": {
+    "message": "Custom New Tab"
+  },
+  "appDescription": {
+    "message": "検索、ブックマーク、背景切り替え付きの新しいタブページ"
+  },
+  "pageTitle": {
+    "message": "新しいタブ"
+  },
+  "searchPlaceholder": {
+    "message": "検索..."
+  },
+  "searchButton": {
+    "message": "検索"
+  },
+  "bookmarksSection": {
+    "message": "ブックマーク"
+  },
+  "themeAuto": {
+    "message": "自動"
+  },
+  "themeLight": {
+    "message": "ライト"
+  },
+  "themeDark": {
+    "message": "ダーク"
+  },
+  "themeToggleAria": {
+    "message": "テーマを変更"
+  },
+  "settingsTitle": {
+    "message": "設定"
+  },
+  "tabBookmarks": {
+    "message": "ブックマーク"
+  },
+  "tabBackgrounds": {
+    "message": "背景"
+  },
+  "tabSearchEngines": {
+    "message": "検索エンジン"
+  },
+  "generalSection": {
+    "message": "一般"
+  },
+  "languageLabel": {
+    "message": "言語"
+  },
+  "langAuto": {
+    "message": "自動（ブラウザの言語）"
+  },
+  "themeLabel": {
+    "message": "テーマ"
+  },
+  "addButton": {
+    "message": "＋ 追加"
+  },
+  "addButtonShort": {
+    "message": "追加"
+  },
+  "saveButton": {
+    "message": "保存"
+  },
+  "cancelButton": {
+    "message": "キャンセル"
+  },
+  "importButton": {
+    "message": "インポート（JSON）"
+  },
+  "exportButton": {
+    "message": "エクスポート（JSON）"
+  },
+  "resetButton": {
+    "message": "設定をリセット"
+  },
+  "resetConfirm": {
+    "message": "すべてのブックマーク、背景、検索エンジンを削除して既定値に戻しますか？"
+  },
+  "resetDone": {
+    "message": "設定をリセットしました。"
+  },
+  "closeButton": {
+    "message": "閉じる"
+  },
+  "bookmarkTitlePlaceholder": {
+    "message": "タイトル"
+  },
+  "bookmarkUrlPlaceholder": {
+    "message": "URL"
+  },
+  "iconUrlPlaceholder": {
+    "message": "アイコン URL（任意）"
+  },
+  "refreshIcon": {
+    "message": "URL からアイコンを更新"
+  },
+  "bgTitlePlaceholder": {
+    "message": "背景名"
+  },
+  "bgUrlPlaceholder": {
+    "message": "画像 URL（空 — 既定）"
+  },
+  "bgTypeUrl": {
+    "message": "リンク"
+  },
+  "bgTypeFile": {
+    "message": "デバイス"
+  },
+  "bgTypeColor": {
+    "message": "色"
+  },
+  "bgTypeGradient": {
+    "message": "グラデーション"
+  },
+  "bgPositionLabel": {
+    "message": "配置"
+  },
+  "bgPositionCover": {
+    "message": "拡大"
+  },
+  "bgPositionContain": {
+    "message": "合わせる"
+  },
+  "bgPositionTile": {
+    "message": "タイル"
+  },
+  "bgPositionCenter": {
+    "message": "1:1 中央"
+  },
+  "gradientAngle": {
+    "message": "グラデーション角度"
+  },
+  "fileBackground": {
+    "message": "デバイスの画像"
+  },
+  "errNoFile": {
+    "message": "画像ファイルを選択してください。"
+  },
+  "errFileTooBig": {
+    "message": "画像を保存できませんでした：ブラウザの保存容量を超えました。"
+  },
+  "engineNamePlaceholder": {
+    "message": "名前"
+  },
+  "engineUrlPlaceholder": {
+    "message": "%s を含む URL（例 https://www.google.com/search?q=%s）"
+  },
+  "edit": {
+    "message": "編集"
+  },
+  "editShort": {
+    "message": "編集"
+  },
+  "delete": {
+    "message": "削除"
+  },
+  "select": {
+    "message": "選択"
+  },
+  "openInNewTab": {
+    "message": "新しいタブで開く"
+  },
+  "copyLink": {
+    "message": "リンクをコピー"
+  },
+  "settings": {
+    "message": "設定"
+  },
+  "nextBackground": {
+    "message": "次の背景"
+  },
+  "backgroundSettings": {
+    "message": "背景設定"
+  },
+  "pasteAndSearch": {
+    "message": "貼り付けて検索"
+  },
+  "paste": {
+    "message": "貼り付け"
+  },
+  "copy": {
+    "message": "コピー"
+  },
+  "cut": {
+    "message": "切り取り"
+  },
+  "clear": {
+    "message": "クリア"
+  },
+  "searchEngineSettings": {
+    "message": "検索エンジン設定"
+  },
+  "createBookmark": {
+    "message": "ブックマークを作成"
+  },
+  "pasteAndCreate": {
+    "message": "貼り付けて作成"
+  },
+  "sortAsc": {
+    "message": "A-Z で並べ替え"
+  },
+  "sortDesc": {
+    "message": "Z-A で並べ替え"
+  },
+  "emptyList": {
+    "message": "リストは空です。"
+  },
+  "noImage": {
+    "message": "なし"
+  },
+  "importSuccess": {
+    "message": "設定をインポートしました"
+  },
+  "importSkipped": {
+    "message": "設定をインポートしました。無効な項目をスキップしました：$count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importError": {
+    "message": "インポートエラー：$error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "errTitleAndUrl": {
+    "message": "タイトルと URL を入力してください。"
+  },
+  "errInvalidUrl": {
+    "message": "有効な URL を入力してください。"
+  },
+  "errBookmarkUrl": {
+    "message": "ブックマークの URL を入力してください。"
+  },
+  "errTitle": {
+    "message": "タイトルを入力してください。"
+  },
+  "errNameAndUrl": {
+    "message": "名前と %s を含む URL を入力してください。"
+  },
+  "errEngineUrl": {
+    "message": "%s を含む URL を入力してください。"
+  },
+  "copyFailed": {
+    "message": "テキストをコピーできませんでした。"
+  },
+  "cutFailed": {
+    "message": "テキストを切り取れませんでした。"
+  },
+  "defaultBackground": {
+    "message": "既定"
+  },
+  "defaultScreen": {
+    "message": "ホーム"
+  },
+  "screenName": {
+    "message": "画面 $n$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyScreen": {
+    "message": "この画面にはまだブックマークがありません。"
+  },
+  "emptyScreenAdd": {
+    "message": "ブックマークを追加"
+  },
+  "tabScreens": {
+    "message": "画面"
+  },
+  "screenLabel": {
+    "message": "画面"
+  },
+  "addScreen": {
+    "message": "＋ 画面を追加"
+  },
+  "screenTitlePlaceholder": {
+    "message": "画面名"
+  },
+  "deleteScreenTitle": {
+    "message": "画面を削除しますか？"
+  },
+  "moveToHome": {
+    "message": "ホームへ移動"
+  },
+  "deleteWithScreen": {
+    "message": "画面と一緒に削除"
+  },
+  "moveToScreenTitle": {
+    "message": "画面へ移動"
+  },
+  "moveToScreen": {
+    "message": "画面へ移動…"
+  },
+  "bookmarksCount": {
+    "message": "$n$ 件のブックマーク",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveLeft": {
+    "message": "左へ移動"
+  },
+  "moveRight": {
+    "message": "右へ移動"
+  },
+  "mainScreenCannotDelete": {
+    "message": "ホーム画面は削除できません。名前を変更するか、別の画面を削除してください。"
+  }
+}

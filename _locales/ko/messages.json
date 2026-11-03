@@ -1,0 +1,319 @@
+{
+  "appName": {
+    "message": "Custom New Tab"
+  },
+  "appDescription": {
+    "message": "검색, 북마크, 배경 전환이 있는 새 탭 페이지"
+  },
+  "pageTitle": {
+    "message": "새 탭"
+  },
+  "searchPlaceholder": {
+    "message": "검색..."
+  },
+  "searchButton": {
+    "message": "검색"
+  },
+  "bookmarksSection": {
+    "message": "북마크"
+  },
+  "themeAuto": {
+    "message": "자동"
+  },
+  "themeLight": {
+    "message": "라이트"
+  },
+  "themeDark": {
+    "message": "다크"
+  },
+  "themeToggleAria": {
+    "message": "테마 변경"
+  },
+  "settingsTitle": {
+    "message": "설정"
+  },
+  "tabBookmarks": {
+    "message": "북마크"
+  },
+  "tabBackgrounds": {
+    "message": "배경"
+  },
+  "tabSearchEngines": {
+    "message": "검색 엔진"
+  },
+  "generalSection": {
+    "message": "일반"
+  },
+  "languageLabel": {
+    "message": "언어"
+  },
+  "langAuto": {
+    "message": "자동(브라우저 언어)"
+  },
+  "themeLabel": {
+    "message": "테마"
+  },
+  "addButton": {
+    "message": "＋ 추가"
+  },
+  "addButtonShort": {
+    "message": "추가"
+  },
+  "saveButton": {
+    "message": "저장"
+  },
+  "cancelButton": {
+    "message": "취소"
+  },
+  "importButton": {
+    "message": "가져오기(JSON)"
+  },
+  "exportButton": {
+    "message": "내보내기(JSON)"
+  },
+  "resetButton": {
+    "message": "설정 초기화"
+  },
+  "resetConfirm": {
+    "message": "모든 북마크, 배경, 검색 엔진을 삭제하고 기본값으로 복원할까요?"
+  },
+  "resetDone": {
+    "message": "설정이 초기화되었습니다."
+  },
+  "closeButton": {
+    "message": "닫기"
+  },
+  "bookmarkTitlePlaceholder": {
+    "message": "제목"
+  },
+  "bookmarkUrlPlaceholder": {
+    "message": "URL"
+  },
+  "iconUrlPlaceholder": {
+    "message": "아이콘 URL(선택)"
+  },
+  "refreshIcon": {
+    "message": "URL에서 아이콘 새로 고침"
+  },
+  "bgTitlePlaceholder": {
+    "message": "배경 이름"
+  },
+  "bgUrlPlaceholder": {
+    "message": "이미지 URL(비우면 기본)"
+  },
+  "bgTypeUrl": {
+    "message": "링크"
+  },
+  "bgTypeFile": {
+    "message": "기기"
+  },
+  "bgTypeColor": {
+    "message": "색상"
+  },
+  "bgTypeGradient": {
+    "message": "그라데이션"
+  },
+  "bgPositionLabel": {
+    "message": "위치"
+  },
+  "bgPositionCover": {
+    "message": "채우기"
+  },
+  "bgPositionContain": {
+    "message": "맞추기"
+  },
+  "bgPositionTile": {
+    "message": "타일"
+  },
+  "bgPositionCenter": {
+    "message": "1:1 가운데"
+  },
+  "gradientAngle": {
+    "message": "그라데이션 각도"
+  },
+  "fileBackground": {
+    "message": "기기의 이미지"
+  },
+  "errNoFile": {
+    "message": "이미지 파일을 선택하세요."
+  },
+  "errFileTooBig": {
+    "message": "이미지를 저장할 수 없습니다: 브라우저 저장 공간 할당량을 초과했습니다."
+  },
+  "engineNamePlaceholder": {
+    "message": "이름"
+  },
+  "engineUrlPlaceholder": {
+    "message": "%s가 포함된 URL(예: https://www.google.com/search?q=%s)"
+  },
+  "edit": {
+    "message": "편집"
+  },
+  "editShort": {
+    "message": "편집"
+  },
+  "delete": {
+    "message": "삭제"
+  },
+  "select": {
+    "message": "선택"
+  },
+  "openInNewTab": {
+    "message": "새 탭에서 열기"
+  },
+  "copyLink": {
+    "message": "링크 복사"
+  },
+  "settings": {
+    "message": "설정"
+  },
+  "nextBackground": {
+    "message": "다음 배경"
+  },
+  "backgroundSettings": {
+    "message": "배경 설정"
+  },
+  "pasteAndSearch": {
+    "message": "붙여넣고 검색"
+  },
+  "paste": {
+    "message": "붙여넣기"
+  },
+  "copy": {
+    "message": "복사"
+  },
+  "cut": {
+    "message": "잘라내기"
+  },
+  "clear": {
+    "message": "지우기"
+  },
+  "searchEngineSettings": {
+    "message": "검색 엔진 설정"
+  },
+  "createBookmark": {
+    "message": "북마크 만들기"
+  },
+  "pasteAndCreate": {
+    "message": "붙여넣고 만들기"
+  },
+  "sortAsc": {
+    "message": "A-Z 정렬"
+  },
+  "sortDesc": {
+    "message": "Z-A 정렬"
+  },
+  "emptyList": {
+    "message": "목록이 비어 있습니다."
+  },
+  "noImage": {
+    "message": "없음"
+  },
+  "importSuccess": {
+    "message": "설정을 가져왔습니다"
+  },
+  "importSkipped": {
+    "message": "설정을 가져왔습니다. 잘못된 항목을 건너뛰었습니다: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importError": {
+    "message": "가져오기 오류: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "errTitleAndUrl": {
+    "message": "제목과 URL을 입력하세요."
+  },
+  "errInvalidUrl": {
+    "message": "올바른 URL을 입력하세요."
+  },
+  "errBookmarkUrl": {
+    "message": "북마크 URL을 입력하세요."
+  },
+  "errTitle": {
+    "message": "제목을 입력하세요."
+  },
+  "errNameAndUrl": {
+    "message": "이름과 %s가 포함된 URL을 입력하세요."
+  },
+  "errEngineUrl": {
+    "message": "%s가 포함된 URL을 입력하세요."
+  },
+  "copyFailed": {
+    "message": "텍스트를 복사하지 못했습니다."
+  },
+  "cutFailed": {
+    "message": "텍스트를 잘라내지 못했습니다."
+  },
+  "defaultBackground": {
+    "message": "기본"
+  },
+  "defaultScreen": {
+    "message": "홈"
+  },
+  "screenName": {
+    "message": "화면 $n$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyScreen": {
+    "message": "이 화면에는 아직 북마크가 없습니다."
+  },
+  "emptyScreenAdd": {
+    "message": "북마크 추가"
+  },
+  "tabScreens": {
+    "message": "화면"
+  },
+  "screenLabel": {
+    "message": "화면"
+  },
+  "addScreen": {
+    "message": "＋ 화면 추가"
+  },
+  "screenTitlePlaceholder": {
+    "message": "화면 이름"
+  },
+  "deleteScreenTitle": {
+    "message": "화면을 삭제할까요?"
+  },
+  "moveToHome": {
+    "message": "홈으로 이동"
+  },
+  "deleteWithScreen": {
+    "message": "화면과 함께 삭제"
+  },
+  "moveToScreenTitle": {
+    "message": "화면으로 이동"
+  },
+  "moveToScreen": {
+    "message": "화면으로 이동…"
+  },
+  "bookmarksCount": {
+    "message": "북마크 $n$개",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveLeft": {
+    "message": "왼쪽으로 이동"
+  },
+  "moveRight": {
+    "message": "오른쪽으로 이동"
+  },
+  "mainScreenCannotDelete": {
+    "message": "홈 화면은 삭제할 수 없습니다. 이름을 바꾸거나 다른 화면을 삭제하세요."
+  }
+}

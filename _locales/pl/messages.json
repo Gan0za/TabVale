@@ -1,0 +1,319 @@
+{
+  "appName": {
+    "message": "Custom New Tab"
+  },
+  "appDescription": {
+    "message": "Strona nowej karty z wyszukiwaniem, zakładkami i zmianą tła"
+  },
+  "pageTitle": {
+    "message": "Nowa karta"
+  },
+  "searchPlaceholder": {
+    "message": "Szukaj..."
+  },
+  "searchButton": {
+    "message": "Szukaj"
+  },
+  "bookmarksSection": {
+    "message": "Zakładki"
+  },
+  "themeAuto": {
+    "message": "Automatyczny"
+  },
+  "themeLight": {
+    "message": "Jasny"
+  },
+  "themeDark": {
+    "message": "Ciemny"
+  },
+  "themeToggleAria": {
+    "message": "Zmień motyw"
+  },
+  "settingsTitle": {
+    "message": "Ustawienia"
+  },
+  "tabBookmarks": {
+    "message": "Zakładki"
+  },
+  "tabBackgrounds": {
+    "message": "Tła"
+  },
+  "tabSearchEngines": {
+    "message": "Wyszukiwarki"
+  },
+  "generalSection": {
+    "message": "Ogólne"
+  },
+  "languageLabel": {
+    "message": "Język"
+  },
+  "langAuto": {
+    "message": "Automatyczny (język przeglądarki)"
+  },
+  "themeLabel": {
+    "message": "Motyw"
+  },
+  "addButton": {
+    "message": "＋ Dodaj"
+  },
+  "addButtonShort": {
+    "message": "Dodaj"
+  },
+  "saveButton": {
+    "message": "Zapisz"
+  },
+  "cancelButton": {
+    "message": "Anuluj"
+  },
+  "importButton": {
+    "message": "Importuj (JSON)"
+  },
+  "exportButton": {
+    "message": "Eksportuj (JSON)"
+  },
+  "resetButton": {
+    "message": "Przywróć ustawienia"
+  },
+  "resetConfirm": {
+    "message": "Usunąć wszystkie zakładki, tła i wyszukiwarki oraz przywrócić wartości domyślne?"
+  },
+  "resetDone": {
+    "message": "Ustawienia zostały przywrócone."
+  },
+  "closeButton": {
+    "message": "Zamknij"
+  },
+  "bookmarkTitlePlaceholder": {
+    "message": "Tytuł"
+  },
+  "bookmarkUrlPlaceholder": {
+    "message": "URL"
+  },
+  "iconUrlPlaceholder": {
+    "message": "URL ikony (opcjonalnie)"
+  },
+  "refreshIcon": {
+    "message": "Odśwież ikonę z URL"
+  },
+  "bgTitlePlaceholder": {
+    "message": "Nazwa tła"
+  },
+  "bgUrlPlaceholder": {
+    "message": "URL obrazu (puste — domyślne)"
+  },
+  "bgTypeUrl": {
+    "message": "Link"
+  },
+  "bgTypeFile": {
+    "message": "Urządzenie"
+  },
+  "bgTypeColor": {
+    "message": "Kolor"
+  },
+  "bgTypeGradient": {
+    "message": "Gradient"
+  },
+  "bgPositionLabel": {
+    "message": "Położenie"
+  },
+  "bgPositionCover": {
+    "message": "Wypełnij"
+  },
+  "bgPositionContain": {
+    "message": "Dopasuj"
+  },
+  "bgPositionTile": {
+    "message": "Kafelki"
+  },
+  "bgPositionCenter": {
+    "message": "1:1 wyśrodkowane"
+  },
+  "gradientAngle": {
+    "message": "Kąt gradientu"
+  },
+  "fileBackground": {
+    "message": "Obraz z urządzenia"
+  },
+  "errNoFile": {
+    "message": "Wybierz plik obrazu."
+  },
+  "errFileTooBig": {
+    "message": "Nie udało się zapisać obrazu: przekroczono limit pamięci przeglądarki."
+  },
+  "engineNamePlaceholder": {
+    "message": "Nazwa"
+  },
+  "engineUrlPlaceholder": {
+    "message": "URL z %s (np. https://www.google.com/search?q=%s)"
+  },
+  "edit": {
+    "message": "Edytuj"
+  },
+  "editShort": {
+    "message": "Edytuj"
+  },
+  "delete": {
+    "message": "Usuń"
+  },
+  "select": {
+    "message": "Wybierz"
+  },
+  "openInNewTab": {
+    "message": "Otwórz w nowej karcie"
+  },
+  "copyLink": {
+    "message": "Kopiuj link"
+  },
+  "settings": {
+    "message": "Ustawienia"
+  },
+  "nextBackground": {
+    "message": "Następne tło"
+  },
+  "backgroundSettings": {
+    "message": "Ustawienia teł"
+  },
+  "pasteAndSearch": {
+    "message": "Wklej i szukaj"
+  },
+  "paste": {
+    "message": "Wklej"
+  },
+  "copy": {
+    "message": "Kopiuj"
+  },
+  "cut": {
+    "message": "Wytnij"
+  },
+  "clear": {
+    "message": "Wyczyść"
+  },
+  "searchEngineSettings": {
+    "message": "Ustawienia wyszukiwarek"
+  },
+  "createBookmark": {
+    "message": "Utwórz zakładkę"
+  },
+  "pasteAndCreate": {
+    "message": "Wklej i utwórz"
+  },
+  "sortAsc": {
+    "message": "Sortuj A-Z"
+  },
+  "sortDesc": {
+    "message": "Sortuj Z-A"
+  },
+  "emptyList": {
+    "message": "Lista jest pusta."
+  },
+  "noImage": {
+    "message": "Brak"
+  },
+  "importSuccess": {
+    "message": "Ustawienia zaimportowane"
+  },
+  "importSkipped": {
+    "message": "Ustawienia zaimportowane. Pominięto nieprawidłowe elementy: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importError": {
+    "message": "Błąd importu: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "errTitleAndUrl": {
+    "message": "Podaj tytuł i URL."
+  },
+  "errInvalidUrl": {
+    "message": "Podaj prawidłowy URL."
+  },
+  "errBookmarkUrl": {
+    "message": "Podaj URL zakładki."
+  },
+  "errTitle": {
+    "message": "Podaj tytuł."
+  },
+  "errNameAndUrl": {
+    "message": "Podaj nazwę i URL z %s."
+  },
+  "errEngineUrl": {
+    "message": "Podaj URL z %s."
+  },
+  "copyFailed": {
+    "message": "Nie udało się skopiować tekstu."
+  },
+  "cutFailed": {
+    "message": "Nie udało się wyciąć tekstu."
+  },
+  "defaultBackground": {
+    "message": "Domyślne"
+  },
+  "defaultScreen": {
+    "message": "Główna"
+  },
+  "screenName": {
+    "message": "Ekran $n$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyScreen": {
+    "message": "Na tym ekranie nie ma jeszcze zakładek."
+  },
+  "emptyScreenAdd": {
+    "message": "Dodaj zakładkę"
+  },
+  "tabScreens": {
+    "message": "Ekrany"
+  },
+  "screenLabel": {
+    "message": "Ekran"
+  },
+  "addScreen": {
+    "message": "＋ Dodaj ekran"
+  },
+  "screenTitlePlaceholder": {
+    "message": "Nazwa ekranu"
+  },
+  "deleteScreenTitle": {
+    "message": "Usunąć ekran?"
+  },
+  "moveToHome": {
+    "message": "Przenieś do Głównej"
+  },
+  "deleteWithScreen": {
+    "message": "Usuń razem z ekranem"
+  },
+  "moveToScreenTitle": {
+    "message": "Przenieś na ekran"
+  },
+  "moveToScreen": {
+    "message": "Przenieś na ekran…"
+  },
+  "bookmarksCount": {
+    "message": "$n$ zakładek",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveLeft": {
+    "message": "Przenieś w lewo"
+  },
+  "moveRight": {
+    "message": "Przenieś w prawo"
+  },
+  "mainScreenCannotDelete": {
+    "message": "Nie można usunąć ekranu Główna. Zmień jego nazwę lub usuń inny ekran."
+  }
+}

@@ -17,7 +17,7 @@ fundo.
 - Favoritos com ícones e ordenação por arrastar e soltar; movimentação entre
   telas.
 - Planos de fundo: URL, arquivo local, cor ou gradiente.
-- Temas (automático/claro/escuro) e idiomas (inglês/russo).
+- Temas (automático/claro/escuro) e 13 idiomas da interface.
 - Importação e exportação de configurações em JSON.
 
 ## Instalação

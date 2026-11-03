@@ -18,7 +18,7 @@ Hintergründe.
 - Lesezeichen mit Symbolen und Drag-and-drop-Sortierung; Verschieben zwischen
   Bildschirmen.
 - Hintergründe: URL, lokale Datei, Farbe oder Verlauf.
-- Designs (automatisch/hell/dunkel) und Sprachen (Englisch/Russisch).
+- Designs (automatisch/hell/dunkel) und 13 Oberflächensprachen.
 - Import und Export der Einstellungen als JSON.
 
 ## Installation

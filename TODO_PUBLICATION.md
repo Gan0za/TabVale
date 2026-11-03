@@ -28,7 +28,7 @@
     single purpose, обоснование отсутствия remote code.
 
 - ✅ **1.4 Локализация интерфейса с выбором языка** (d6a435a)
-  - Все формулировки UI в _locales (ru/en с паритетом, включая экраны);
+  - 13 языков в `_locales` (en, ru, de, fr, es, pt_BR, it, pl, tr, uk, zh_CN, ja, ko), паритет ключей и плейсхолдеров;
   - загрузчик applyLocale + t() с подстановкой переменных;
   - выбор языка: FAB 🌐 + раздел «Общие» (там же тема и импорт/экспорт);
   - 'auto' — язык браузера при первом запуске, дальше явно;
@@ -46,16 +46,19 @@
 
 - ✅ **3.1 LICENSE (MIT)** (eb5bea1)
 - ✅ **3.2 PRIVACY.md** (eb5bea1) — данные хранятся в chrome.storage.sync/local, наружу не передаются; описаны clipboardRead, unlimitedStorage и optional host permissions.
-- ✅ **3.3 Скрипт упаковки** (0583784) — `bash package.sh` → `dist/self_tabs_v{version}.zip` с рантайм-файлами (manifest, background.js, newtab/, assets/icons/icon*.png, _locales/) без tests/, tools/, .gitignore, favicon.svg.
+- ✅ **3.3 Скрипт упаковки** — `bash package.sh` (Git Bash) и `powershell -ExecutionPolicy Bypass -File .\package.ps1` (Windows) → `dist/self_tabs_v{version}.zip` с рантайм-файлами (manifest, background.js, newtab/, assets/icons/icon*.png, _locales/) без tests/, tools/, .gitignore, favicon.svg.
 - ✅ **3.4 Скриншоты для листинга** — 12 кадров 1280×800 в `docs/screenshots/`: главная, экраны, фоны, поисковики, контекстное меню, удаление экрана — каждый в тёмной и светлой теме.
 
 ## Блок 4 — GitHub и листинг
 
 - 🔧 **4.1 README**: английский полный + 12 коротких переводов и 12 скриншотов;
   осталось добавить ссылку на магазин после публикации.
-- ⬜ **4.2 Тег релиза v1.1.0**: в manifest.json сейчас `1.0.0`; нужен бамп
-  версии, тег и пересборка `package.sh`.
+- 🔧 **4.2 Тег релиза v1.1.0**: в manifest.json `1.1.0`, пакет собран;
+  осталось поставить тег и загрузить в CWS.
 - ✅ **4.3 favicon.svg не включается в zip** — package.sh берёт только PNG
+- 🔧 **4.4 Карточка CWS**: `docs/CWS_LISTING.md` (EN, short/full description, Data usage, single purpose); 5 скриншотов в `docs/screenshots/cws/`
+- 🔧 **4.5 Публичная политика**: `docs/privacy.html` готов; нужен публичный URL через GitHub Pages
+- ⬜ **4.6 GitHub-репозиторий и remote**: сейчас remote отсутствует; нужен для homepage_url, issue-ссылки и push
 
 ## Статус цикла
 
@@ -65,6 +68,6 @@
 | Блок 1: безопасность | ✅ |
 | Блок 2: манифест | ✅ (homepage_url отложен до создания репозитория) |
 | Блок 3: релиз-инфраструктура | ✅ |
-| Блок 4: GitHub/листинг | 🔧 README и скриншоты готовы; тег и магазин ⬜ |
-| Мерж экранов в master | ✅ (45bb374, фиксы f29433c/7b65b3c) |
+| Блок 4: GitHub/листинг | 🔧 README, скриншоты, CWS-тексты и privacy.html готовы; репозиторий, тег и загрузка ⬜ |
+| Мерж экранов в master | ✅ (d898f98; история переписана 03.11) |
 | Релиз CWS | ⬜ |

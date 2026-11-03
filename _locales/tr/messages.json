@@ -1,0 +1,319 @@
+{
+  "appName": {
+    "message": "Custom New Tab"
+  },
+  "appDescription": {
+    "message": "Arama, yer imleri ve arka plan değiştirme özellikli yeni sekme sayfası"
+  },
+  "pageTitle": {
+    "message": "Yeni Sekme"
+  },
+  "searchPlaceholder": {
+    "message": "Ara..."
+  },
+  "searchButton": {
+    "message": "Ara"
+  },
+  "bookmarksSection": {
+    "message": "Yer imleri"
+  },
+  "themeAuto": {
+    "message": "Otomatik"
+  },
+  "themeLight": {
+    "message": "Açık"
+  },
+  "themeDark": {
+    "message": "Koyu"
+  },
+  "themeToggleAria": {
+    "message": "Temayı değiştir"
+  },
+  "settingsTitle": {
+    "message": "Ayarlar"
+  },
+  "tabBookmarks": {
+    "message": "Yer imleri"
+  },
+  "tabBackgrounds": {
+    "message": "Arka planlar"
+  },
+  "tabSearchEngines": {
+    "message": "Arama motorları"
+  },
+  "generalSection": {
+    "message": "Genel"
+  },
+  "languageLabel": {
+    "message": "Dil"
+  },
+  "langAuto": {
+    "message": "Otomatik (tarayıcı dili)"
+  },
+  "themeLabel": {
+    "message": "Tema"
+  },
+  "addButton": {
+    "message": "＋ Ekle"
+  },
+  "addButtonShort": {
+    "message": "Ekle"
+  },
+  "saveButton": {
+    "message": "Kaydet"
+  },
+  "cancelButton": {
+    "message": "İptal"
+  },
+  "importButton": {
+    "message": "İçe aktar (JSON)"
+  },
+  "exportButton": {
+    "message": "Dışa aktar (JSON)"
+  },
+  "resetButton": {
+    "message": "Ayarları sıfırla"
+  },
+  "resetConfirm": {
+    "message": "Tüm yer imleri, arka planlar ve arama motorları silinsin ve varsayılanlar geri yüklensin mi?"
+  },
+  "resetDone": {
+    "message": "Ayarlar sıfırlandı."
+  },
+  "closeButton": {
+    "message": "Kapat"
+  },
+  "bookmarkTitlePlaceholder": {
+    "message": "Başlık"
+  },
+  "bookmarkUrlPlaceholder": {
+    "message": "URL"
+  },
+  "iconUrlPlaceholder": {
+    "message": "Simge URL'si (isteğe bağlı)"
+  },
+  "refreshIcon": {
+    "message": "Simgeyi URL'den yenile"
+  },
+  "bgTitlePlaceholder": {
+    "message": "Arka plan adı"
+  },
+  "bgUrlPlaceholder": {
+    "message": "Görsel URL'si (boş — varsayılan)"
+  },
+  "bgTypeUrl": {
+    "message": "Bağlantı"
+  },
+  "bgTypeFile": {
+    "message": "Cihaz"
+  },
+  "bgTypeColor": {
+    "message": "Renk"
+  },
+  "bgTypeGradient": {
+    "message": "Gradyan"
+  },
+  "bgPositionLabel": {
+    "message": "Konum"
+  },
+  "bgPositionCover": {
+    "message": "Doldur"
+  },
+  "bgPositionContain": {
+    "message": "Sığdır"
+  },
+  "bgPositionTile": {
+    "message": "Döşe"
+  },
+  "bgPositionCenter": {
+    "message": "1:1 ortala"
+  },
+  "gradientAngle": {
+    "message": "Gradyan açısı"
+  },
+  "fileBackground": {
+    "message": "Cihazdan görsel"
+  },
+  "errNoFile": {
+    "message": "Bir görsel dosyası seçin."
+  },
+  "errFileTooBig": {
+    "message": "Görsel kaydedilemedi: tarayıcı depolama kotası aşıldı."
+  },
+  "engineNamePlaceholder": {
+    "message": "Ad"
+  },
+  "engineUrlPlaceholder": {
+    "message": "%s içeren URL (ör. https://www.google.com/search?q=%s)"
+  },
+  "edit": {
+    "message": "Düzenle"
+  },
+  "editShort": {
+    "message": "Düzenle"
+  },
+  "delete": {
+    "message": "Sil"
+  },
+  "select": {
+    "message": "Seç"
+  },
+  "openInNewTab": {
+    "message": "Yeni sekmede aç"
+  },
+  "copyLink": {
+    "message": "Bağlantıyı kopyala"
+  },
+  "settings": {
+    "message": "Ayarlar"
+  },
+  "nextBackground": {
+    "message": "Sonraki arka plan"
+  },
+  "backgroundSettings": {
+    "message": "Arka plan ayarları"
+  },
+  "pasteAndSearch": {
+    "message": "Yapıştır ve ara"
+  },
+  "paste": {
+    "message": "Yapıştır"
+  },
+  "copy": {
+    "message": "Kopyala"
+  },
+  "cut": {
+    "message": "Kes"
+  },
+  "clear": {
+    "message": "Temizle"
+  },
+  "searchEngineSettings": {
+    "message": "Arama motoru ayarları"
+  },
+  "createBookmark": {
+    "message": "Yer imi oluştur"
+  },
+  "pasteAndCreate": {
+    "message": "Yapıştır ve oluştur"
+  },
+  "sortAsc": {
+    "message": "A-Z sırala"
+  },
+  "sortDesc": {
+    "message": "Z-A sırala"
+  },
+  "emptyList": {
+    "message": "Liste boş."
+  },
+  "noImage": {
+    "message": "Yok"
+  },
+  "importSuccess": {
+    "message": "Ayarlar içe aktarıldı"
+  },
+  "importSkipped": {
+    "message": "Ayarlar içe aktarıldı. Geçersiz öğeler atlandı: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importError": {
+    "message": "İçe aktarma hatası: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "errTitleAndUrl": {
+    "message": "Bir başlık ve URL girin."
+  },
+  "errInvalidUrl": {
+    "message": "Geçerli bir URL girin."
+  },
+  "errBookmarkUrl": {
+    "message": "Yer imi URL'sini girin."
+  },
+  "errTitle": {
+    "message": "Bir başlık girin."
+  },
+  "errNameAndUrl": {
+    "message": "%s içeren bir ad ve URL girin."
+  },
+  "errEngineUrl": {
+    "message": "%s içeren bir URL girin."
+  },
+  "copyFailed": {
+    "message": "Metin kopyalanamadı."
+  },
+  "cutFailed": {
+    "message": "Metin kesilemedi."
+  },
+  "defaultBackground": {
+    "message": "Varsayılan"
+  },
+  "defaultScreen": {
+    "message": "Ana Sayfa"
+  },
+  "screenName": {
+    "message": "Ekran $n$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyScreen": {
+    "message": "Bu ekranda henüz yer imi yok."
+  },
+  "emptyScreenAdd": {
+    "message": "Yer imi ekle"
+  },
+  "tabScreens": {
+    "message": "Ekranlar"
+  },
+  "screenLabel": {
+    "message": "Ekran"
+  },
+  "addScreen": {
+    "message": "＋ Ekran ekle"
+  },
+  "screenTitlePlaceholder": {
+    "message": "Ekran adı"
+  },
+  "deleteScreenTitle": {
+    "message": "Ekran silinsin mi?"
+  },
+  "moveToHome": {
+    "message": "Ana Sayfa'ya taşı"
+  },
+  "deleteWithScreen": {
+    "message": "Ekranla birlikte sil"
+  },
+  "moveToScreenTitle": {
+    "message": "Ekrana taşı"
+  },
+  "moveToScreen": {
+    "message": "Ekrana taşı…"
+  },
+  "bookmarksCount": {
+    "message": "$n$ yer imi",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveLeft": {
+    "message": "Sola taşı"
+  },
+  "moveRight": {
+    "message": "Sağa taşı"
+  },
+  "mainScreenCannotDelete": {
+    "message": "Ana Sayfa ekranı silinemez. Yeniden adlandırın veya başka bir ekranı silin."
+  }
+}

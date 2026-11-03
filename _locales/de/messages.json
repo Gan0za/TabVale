@@ -1,0 +1,319 @@
+{
+  "appName": {
+    "message": "Custom New Tab"
+  },
+  "appDescription": {
+    "message": "Neue Tab-Seite mit Suche, Lesezeichen und Hintergrundwechsel"
+  },
+  "pageTitle": {
+    "message": "Neuer Tab"
+  },
+  "searchPlaceholder": {
+    "message": "Suchen..."
+  },
+  "searchButton": {
+    "message": "Suchen"
+  },
+  "bookmarksSection": {
+    "message": "Lesezeichen"
+  },
+  "themeAuto": {
+    "message": "Automatisch"
+  },
+  "themeLight": {
+    "message": "Hell"
+  },
+  "themeDark": {
+    "message": "Dunkel"
+  },
+  "themeToggleAria": {
+    "message": "Design wechseln"
+  },
+  "settingsTitle": {
+    "message": "Einstellungen"
+  },
+  "tabBookmarks": {
+    "message": "Lesezeichen"
+  },
+  "tabBackgrounds": {
+    "message": "Hintergründe"
+  },
+  "tabSearchEngines": {
+    "message": "Suchmaschinen"
+  },
+  "generalSection": {
+    "message": "Allgemein"
+  },
+  "languageLabel": {
+    "message": "Sprache"
+  },
+  "langAuto": {
+    "message": "Automatisch (Browsersprache)"
+  },
+  "themeLabel": {
+    "message": "Design"
+  },
+  "addButton": {
+    "message": "＋ Hinzufügen"
+  },
+  "addButtonShort": {
+    "message": "Hinzufügen"
+  },
+  "saveButton": {
+    "message": "Speichern"
+  },
+  "cancelButton": {
+    "message": "Abbrechen"
+  },
+  "importButton": {
+    "message": "Importieren (JSON)"
+  },
+  "exportButton": {
+    "message": "Exportieren (JSON)"
+  },
+  "resetButton": {
+    "message": "Einstellungen zurücksetzen"
+  },
+  "resetConfirm": {
+    "message": "Alle Lesezeichen, Hintergründe und Suchmaschinen löschen und Standardwerte wiederherstellen?"
+  },
+  "resetDone": {
+    "message": "Die Einstellungen wurden zurückgesetzt."
+  },
+  "closeButton": {
+    "message": "Schließen"
+  },
+  "bookmarkTitlePlaceholder": {
+    "message": "Titel"
+  },
+  "bookmarkUrlPlaceholder": {
+    "message": "URL"
+  },
+  "iconUrlPlaceholder": {
+    "message": "Symbol-URL (optional)"
+  },
+  "refreshIcon": {
+    "message": "Symbol aus URL aktualisieren"
+  },
+  "bgTitlePlaceholder": {
+    "message": "Name des Hintergrunds"
+  },
+  "bgUrlPlaceholder": {
+    "message": "Bild-URL (leer — Standard)"
+  },
+  "bgTypeUrl": {
+    "message": "Link"
+  },
+  "bgTypeFile": {
+    "message": "Gerät"
+  },
+  "bgTypeColor": {
+    "message": "Farbe"
+  },
+  "bgTypeGradient": {
+    "message": "Verlauf"
+  },
+  "bgPositionLabel": {
+    "message": "Platzierung"
+  },
+  "bgPositionCover": {
+    "message": "Ausfüllen"
+  },
+  "bgPositionContain": {
+    "message": "Einpassen"
+  },
+  "bgPositionTile": {
+    "message": "Kacheln"
+  },
+  "bgPositionCenter": {
+    "message": "1:1 zentriert"
+  },
+  "gradientAngle": {
+    "message": "Verlaufswinkel"
+  },
+  "fileBackground": {
+    "message": "Bild vom Gerät"
+  },
+  "errNoFile": {
+    "message": "Wählen Sie eine Bilddatei."
+  },
+  "errFileTooBig": {
+    "message": "Das Bild konnte nicht gespeichert werden: Speicherkontingent des Browsers überschritten."
+  },
+  "engineNamePlaceholder": {
+    "message": "Name"
+  },
+  "engineUrlPlaceholder": {
+    "message": "URL mit %s (z. B. https://www.google.com/search?q=%s)"
+  },
+  "edit": {
+    "message": "Bearbeiten"
+  },
+  "editShort": {
+    "message": "Bearb."
+  },
+  "delete": {
+    "message": "Löschen"
+  },
+  "select": {
+    "message": "Auswählen"
+  },
+  "openInNewTab": {
+    "message": "In neuem Tab öffnen"
+  },
+  "copyLink": {
+    "message": "Link kopieren"
+  },
+  "settings": {
+    "message": "Einstellungen"
+  },
+  "nextBackground": {
+    "message": "Nächster Hintergrund"
+  },
+  "backgroundSettings": {
+    "message": "Hintergrund-Einstellungen"
+  },
+  "pasteAndSearch": {
+    "message": "Einfügen und suchen"
+  },
+  "paste": {
+    "message": "Einfügen"
+  },
+  "copy": {
+    "message": "Kopieren"
+  },
+  "cut": {
+    "message": "Ausschneiden"
+  },
+  "clear": {
+    "message": "Leeren"
+  },
+  "searchEngineSettings": {
+    "message": "Suchmaschinen-Einstellungen"
+  },
+  "createBookmark": {
+    "message": "Lesezeichen erstellen"
+  },
+  "pasteAndCreate": {
+    "message": "Einfügen und erstellen"
+  },
+  "sortAsc": {
+    "message": "A-Z sortieren"
+  },
+  "sortDesc": {
+    "message": "Z-A sortieren"
+  },
+  "emptyList": {
+    "message": "Die Liste ist leer."
+  },
+  "noImage": {
+    "message": "Keine"
+  },
+  "importSuccess": {
+    "message": "Einstellungen importiert"
+  },
+  "importSkipped": {
+    "message": "Einstellungen importiert. Ungültige Elemente übersprungen: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importError": {
+    "message": "Importfehler: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "errTitleAndUrl": {
+    "message": "Geben Sie einen Titel und eine URL ein."
+  },
+  "errInvalidUrl": {
+    "message": "Geben Sie eine gültige URL ein."
+  },
+  "errBookmarkUrl": {
+    "message": "Geben Sie die Lesezeichen-URL ein."
+  },
+  "errTitle": {
+    "message": "Geben Sie einen Titel ein."
+  },
+  "errNameAndUrl": {
+    "message": "Geben Sie einen Namen und eine URL mit %s ein."
+  },
+  "errEngineUrl": {
+    "message": "Geben Sie eine URL mit %s ein."
+  },
+  "copyFailed": {
+    "message": "Text konnte nicht kopiert werden."
+  },
+  "cutFailed": {
+    "message": "Text konnte nicht ausgeschnitten werden."
+  },
+  "defaultBackground": {
+    "message": "Standard"
+  },
+  "defaultScreen": {
+    "message": "Startseite"
+  },
+  "screenName": {
+    "message": "Bildschirm $n$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyScreen": {
+    "message": "Auf diesem Bildschirm gibt es noch keine Lesezeichen."
+  },
+  "emptyScreenAdd": {
+    "message": "Lesezeichen hinzufügen"
+  },
+  "tabScreens": {
+    "message": "Bildschirme"
+  },
+  "screenLabel": {
+    "message": "Bildschirm"
+  },
+  "addScreen": {
+    "message": "＋ Bildschirm hinzufügen"
+  },
+  "screenTitlePlaceholder": {
+    "message": "Name des Bildschirms"
+  },
+  "deleteScreenTitle": {
+    "message": "Bildschirm löschen?"
+  },
+  "moveToHome": {
+    "message": "Zur Startseite verschieben"
+  },
+  "deleteWithScreen": {
+    "message": "Mit Bildschirm löschen"
+  },
+  "moveToScreenTitle": {
+    "message": "Auf Bildschirm verschieben"
+  },
+  "moveToScreen": {
+    "message": "Auf Bildschirm verschieben…"
+  },
+  "bookmarksCount": {
+    "message": "$n$ Lesezeichen",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveLeft": {
+    "message": "Nach links verschieben"
+  },
+  "moveRight": {
+    "message": "Nach rechts verschieben"
+  },
+  "mainScreenCannotDelete": {
+    "message": "Die Startseite kann nicht gelöscht werden. Benennen Sie sie um oder löschen Sie einen anderen Bildschirm."
+  }
+}

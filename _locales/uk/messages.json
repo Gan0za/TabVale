@@ -1,0 +1,319 @@
+{
+  "appName": {
+    "message": "Custom New Tab"
+  },
+  "appDescription": {
+    "message": "Сторінка нової вкладки з пошуком, закладками та зміною фону"
+  },
+  "pageTitle": {
+    "message": "Нова вкладка"
+  },
+  "searchPlaceholder": {
+    "message": "Пошук..."
+  },
+  "searchButton": {
+    "message": "Знайти"
+  },
+  "bookmarksSection": {
+    "message": "Закладки"
+  },
+  "themeAuto": {
+    "message": "Авто"
+  },
+  "themeLight": {
+    "message": "Світла"
+  },
+  "themeDark": {
+    "message": "Темна"
+  },
+  "themeToggleAria": {
+    "message": "Змінити тему"
+  },
+  "settingsTitle": {
+    "message": "Налаштування"
+  },
+  "tabBookmarks": {
+    "message": "Закладки"
+  },
+  "tabBackgrounds": {
+    "message": "Фони"
+  },
+  "tabSearchEngines": {
+    "message": "Пошукові системи"
+  },
+  "generalSection": {
+    "message": "Загальні"
+  },
+  "languageLabel": {
+    "message": "Мова"
+  },
+  "langAuto": {
+    "message": "Авто (мова браузера)"
+  },
+  "themeLabel": {
+    "message": "Тема"
+  },
+  "addButton": {
+    "message": "＋ Додати"
+  },
+  "addButtonShort": {
+    "message": "Додати"
+  },
+  "saveButton": {
+    "message": "Зберегти"
+  },
+  "cancelButton": {
+    "message": "Скасувати"
+  },
+  "importButton": {
+    "message": "Імпорт (JSON)"
+  },
+  "exportButton": {
+    "message": "Експорт (JSON)"
+  },
+  "resetButton": {
+    "message": "Скинути налаштування"
+  },
+  "resetConfirm": {
+    "message": "Видалити всі закладки, фони й пошукові системи та відновити стандартні значення?"
+  },
+  "resetDone": {
+    "message": "Налаштування скинуто."
+  },
+  "closeButton": {
+    "message": "Закрити"
+  },
+  "bookmarkTitlePlaceholder": {
+    "message": "Назва"
+  },
+  "bookmarkUrlPlaceholder": {
+    "message": "URL"
+  },
+  "iconUrlPlaceholder": {
+    "message": "URL іконки (необов’язково)"
+  },
+  "refreshIcon": {
+    "message": "Оновити іконку з URL"
+  },
+  "bgTitlePlaceholder": {
+    "message": "Назва фону"
+  },
+  "bgUrlPlaceholder": {
+    "message": "URL зображення (порожньо — стандартний)"
+  },
+  "bgTypeUrl": {
+    "message": "Посилання"
+  },
+  "bgTypeFile": {
+    "message": "Пристрій"
+  },
+  "bgTypeColor": {
+    "message": "Колір"
+  },
+  "bgTypeGradient": {
+    "message": "Градієнт"
+  },
+  "bgPositionLabel": {
+    "message": "Положення"
+  },
+  "bgPositionCover": {
+    "message": "Заповнити"
+  },
+  "bgPositionContain": {
+    "message": "Вписати"
+  },
+  "bgPositionTile": {
+    "message": "Мозаїка"
+  },
+  "bgPositionCenter": {
+    "message": "1:1 по центру"
+  },
+  "gradientAngle": {
+    "message": "Кут градієнта"
+  },
+  "fileBackground": {
+    "message": "Зображення з пристрою"
+  },
+  "errNoFile": {
+    "message": "Виберіть файл зображення."
+  },
+  "errFileTooBig": {
+    "message": "Не вдалося зберегти зображення: перевищено квоту сховища браузера."
+  },
+  "engineNamePlaceholder": {
+    "message": "Назва"
+  },
+  "engineUrlPlaceholder": {
+    "message": "URL з %s (напр. https://www.google.com/search?q=%s)"
+  },
+  "edit": {
+    "message": "Редагувати"
+  },
+  "editShort": {
+    "message": "Ред."
+  },
+  "delete": {
+    "message": "Видалити"
+  },
+  "select": {
+    "message": "Вибрати"
+  },
+  "openInNewTab": {
+    "message": "Відкрити в новій вкладці"
+  },
+  "copyLink": {
+    "message": "Копіювати посилання"
+  },
+  "settings": {
+    "message": "Налаштування"
+  },
+  "nextBackground": {
+    "message": "Наступний фон"
+  },
+  "backgroundSettings": {
+    "message": "Налаштування фонів"
+  },
+  "pasteAndSearch": {
+    "message": "Вставити й шукати"
+  },
+  "paste": {
+    "message": "Вставити"
+  },
+  "copy": {
+    "message": "Копіювати"
+  },
+  "cut": {
+    "message": "Вирізати"
+  },
+  "clear": {
+    "message": "Очистити"
+  },
+  "searchEngineSettings": {
+    "message": "Налаштування пошукових систем"
+  },
+  "createBookmark": {
+    "message": "Створити закладку"
+  },
+  "pasteAndCreate": {
+    "message": "Вставити й створити"
+  },
+  "sortAsc": {
+    "message": "Сортувати А-Я"
+  },
+  "sortDesc": {
+    "message": "Сортувати Я-А"
+  },
+  "emptyList": {
+    "message": "Список порожній."
+  },
+  "noImage": {
+    "message": "Немає"
+  },
+  "importSuccess": {
+    "message": "Налаштування імпортовано"
+  },
+  "importSkipped": {
+    "message": "Налаштування імпортовано. Пропущено некоректні елементи: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importError": {
+    "message": "Помилка імпорту: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "errTitleAndUrl": {
+    "message": "Введіть назву та URL."
+  },
+  "errInvalidUrl": {
+    "message": "Введіть коректний URL."
+  },
+  "errBookmarkUrl": {
+    "message": "Введіть URL закладки."
+  },
+  "errTitle": {
+    "message": "Введіть назву."
+  },
+  "errNameAndUrl": {
+    "message": "Введіть назву та URL з %s."
+  },
+  "errEngineUrl": {
+    "message": "Введіть URL з %s."
+  },
+  "copyFailed": {
+    "message": "Не вдалося скопіювати текст."
+  },
+  "cutFailed": {
+    "message": "Не вдалося вирізати текст."
+  },
+  "defaultBackground": {
+    "message": "Стандартний"
+  },
+  "defaultScreen": {
+    "message": "Головна"
+  },
+  "screenName": {
+    "message": "Екран $n$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyScreen": {
+    "message": "На цьому екрані ще немає закладок."
+  },
+  "emptyScreenAdd": {
+    "message": "Додати закладку"
+  },
+  "tabScreens": {
+    "message": "Екрани"
+  },
+  "screenLabel": {
+    "message": "Екран"
+  },
+  "addScreen": {
+    "message": "＋ Додати екран"
+  },
+  "screenTitlePlaceholder": {
+    "message": "Назва екрана"
+  },
+  "deleteScreenTitle": {
+    "message": "Видалити екран?"
+  },
+  "moveToHome": {
+    "message": "Перенести на Головну"
+  },
+  "deleteWithScreen": {
+    "message": "Видалити разом з екраном"
+  },
+  "moveToScreenTitle": {
+    "message": "Перенести на екран"
+  },
+  "moveToScreen": {
+    "message": "Перенести на екран…"
+  },
+  "bookmarksCount": {
+    "message": "$n$ закладок",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveLeft": {
+    "message": "Перемістити вліво"
+  },
+  "moveRight": {
+    "message": "Перемістити вправо"
+  },
+  "mainScreenCannotDelete": {
+    "message": "Екран «Головна» видалити не можна. Перейменуйте його або видаліть інший екран."
+  }
+}
