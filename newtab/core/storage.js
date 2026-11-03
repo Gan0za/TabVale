@@ -271,7 +271,12 @@ function defaultScreenTitle(index) {
 function normalizeScreens(rawScreens, legacyBookmarks) {
     const rawList = Array.isArray(rawScreens) && rawScreens.length
         ? rawScreens
-        : [{ id: DEFAULT_SCREEN_ID, title: defaultScreenTitle(0), bookmarks: legacyBookmarks || DEFAULT_BOOKMARKS }];
+        : [{
+            id: DEFAULT_SCREEN_ID,
+            title: defaultScreenTitle(0),
+            titleKey: 'defaultScreen',
+            bookmarks: legacyBookmarks || DEFAULT_BOOKMARKS,
+        }];
 
     const usedIds = new Set();
     return rawList.map((raw, index) => {
@@ -282,15 +287,34 @@ function normalizeScreens(rawScreens, legacyBookmarks) {
         while (usedIds.has(id)) id = makeScreenId();
         usedIds.add(id);
 
+        // titleKey хранит происхождение названия: «Главная»/«Экран N» —
+        // служебные и должны переводиться при смене языка, а не застывать
+        // строкой, созданной до загрузки словаря.
+        let titleKey = item.titleKey === 'defaultScreen' || item.titleKey === 'screenName'
+            ? item.titleKey
+            : null;
+        let titleVars = item.titleVars && typeof item.titleVars === 'object' ? item.titleVars : null;
+
         let title = typeof item.title === 'string' ? item.title.trim() : '';
-        if (!title) title = defaultScreenTitle(index);
+        if (!title) {
+            if (!titleKey) {
+                titleKey = index === 0 ? 'defaultScreen' : 'screenName';
+                titleVars = index === 0 ? null : { n: index + 1 };
+            }
+            title = titleKey === 'defaultScreen' ? defaultScreenTitle(0) : defaultScreenTitle(index);
+        }
 
         const sourceBookmarks = Array.isArray(item.bookmarks)
             ? item.bookmarks
             : (index === 0 ? legacyBookmarks : []);
         const bookmarks = sanitizeList(sourceBookmarks).items;
 
-        return { id, title, bookmarks };
+        const screen = { id, title, bookmarks };
+        if (titleKey) {
+            screen.titleKey = titleKey;
+            if (titleVars) screen.titleVars = titleVars;
+        }
+        return screen;
     });
 }
 

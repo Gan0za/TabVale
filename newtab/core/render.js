@@ -434,6 +434,19 @@ function renderSearchEngineManagerItem(engine, index, selectedIndex) {
     });
 }
 
+function screenDisplayTitle(screen) {
+    if (!screen) return '';
+    if (screen.titleKey === 'defaultScreen') {
+        const label = t('defaultScreen');
+        return label === 'defaultScreen' ? (screen.title || 'Главная') : label;
+    }
+    if (screen.titleKey === 'screenName') {
+        const label = t('screenName', screen.titleVars || { n: 1 });
+        return label === 'screenName' ? (screen.title || '') : label;
+    }
+    return screen.title || '';
+}
+
 function renderScreenManagerItem(screen, index, currentId) {
     return buildManagerListItem({
         buttons: [
@@ -445,7 +458,7 @@ function renderScreenManagerItem(screen, index, currentId) {
         selected: screen.id === currentId,
         imageUrl: null,
         emptyImageText: '▦',
-        title: screen.title,
+        title: screenDisplayTitle(screen),
         subtitle: t('bookmarksCount', { n: screen.bookmarks.length }),
         index,
         rowType: 'screen'
