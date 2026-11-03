@@ -16,7 +16,7 @@ konfigurowalnym pulpitem: wyszukiwanie, wiele ekranów zakładek i tła.
   obszarze i `Alt+←/→`.
 - Zakładki z ikonami i sortowaniem przeciąganiem; przenoszenie między ekranami.
 - Tła: URL, plik lokalny, kolor lub gradient.
-- Motywy (automatyczny/jasny/ciemny) i języki (angielski/rosyjski).
+- Motywy (automatyczny/jasny/ciemny) i 13 języków interfejsu.
 - Import i eksport ustawień w JSON.
 
 ## Instalacja

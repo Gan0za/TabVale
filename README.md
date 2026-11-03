@@ -21,7 +21,7 @@ backgrounds.
 - **Backgrounds**: image URL, local file, solid color or gradient; image
   placement (cover, contain, tile, center).
 - **Themes**: auto, light, dark.
-- **Languages**: English and Russian; the auto mode follows the browser.
+- **Languages**: English, Russian, German, French, Spanish, Portuguese (Brazil), Italian, Polish, Turkish, Ukrainian, Chinese, Japanese and Korean; the auto mode follows the browser.
 - **Context menus** for bookmark tiles, the page background, the search field,
   the empty bookmarks area and settings rows.
 - **JSON import and export** of settings.
@@ -84,12 +84,16 @@ self_tabs/
 │       ├── language.js        # Language switching
 │       ├── popovers.js        # Popover closing
 │       └── ui-actions.js      # Shared actions and refreshUI
-├── _locales/                  # ru/en
+├── _locales/                  # 13 languages
 ├── assets/icons/              # Extension icons 16/48/128
-├── docs/screenshots/          # Listing screenshots
+├── docs/                      # CWS listing, privacy page, screenshots
+│   ├── screenshots/
+│   ├── CWS_LISTING.md
+│   └── privacy.html
 ├── tests/                     # Node tests (vm sandbox)
 ├── tools/screenshot-sandbox/  # Screenshot generator
-├── package.sh                 # Builds dist/self_tabs_v{version}.zip
+├── package.sh                 # Builds dist/self_tabs_v{version}.zip (bash)
+├── package.ps1                # Windows build (PowerShell)
 ├── PRIVACY.md                 # Privacy policy
 ├── CWS_REVIEW_NOTES.md        # Chrome Web Store review texts
 ├── TODO_PUBLICATION.md        # Publication checklist
@@ -114,6 +118,24 @@ bash package.sh
 The script creates `dist/self_tabs_v{version}.zip` with the runtime files:
 `manifest.json`, `background.js`, `newtab/`, `_locales/` and the PNG icons.
 The version is read from `manifest.json`.
+
+### Windows
+
+PowerShell 5.1 or newer:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\package.ps1
+```
+
+The script uses Windows `tar.exe` when available and falls back to
+`Compress-Archive`. It creates the same `dist/self_tabs_v{version}.zip` and
+checks that development files are not included.
+
+If you use Git Bash, the Unix script works too:
+
+```bash
+bash package.sh
+```
 
 ## Tests
 

@@ -1,0 +1,319 @@
+{
+  "appName": {
+    "message": "Custom New Tab"
+  },
+  "appDescription": {
+    "message": "Pagina di nuova scheda con ricerca, segnalibri e cambio sfondo"
+  },
+  "pageTitle": {
+    "message": "Nuova scheda"
+  },
+  "searchPlaceholder": {
+    "message": "Cerca..."
+  },
+  "searchButton": {
+    "message": "Cerca"
+  },
+  "bookmarksSection": {
+    "message": "Segnalibri"
+  },
+  "themeAuto": {
+    "message": "Automatico"
+  },
+  "themeLight": {
+    "message": "Chiaro"
+  },
+  "themeDark": {
+    "message": "Scuro"
+  },
+  "themeToggleAria": {
+    "message": "Cambia tema"
+  },
+  "settingsTitle": {
+    "message": "Impostazioni"
+  },
+  "tabBookmarks": {
+    "message": "Segnalibri"
+  },
+  "tabBackgrounds": {
+    "message": "Sfondi"
+  },
+  "tabSearchEngines": {
+    "message": "Motori di ricerca"
+  },
+  "generalSection": {
+    "message": "Generale"
+  },
+  "languageLabel": {
+    "message": "Lingua"
+  },
+  "langAuto": {
+    "message": "Automatico (lingua del browser)"
+  },
+  "themeLabel": {
+    "message": "Tema"
+  },
+  "addButton": {
+    "message": "＋ Aggiungi"
+  },
+  "addButtonShort": {
+    "message": "Aggiungi"
+  },
+  "saveButton": {
+    "message": "Salva"
+  },
+  "cancelButton": {
+    "message": "Annulla"
+  },
+  "importButton": {
+    "message": "Importa (JSON)"
+  },
+  "exportButton": {
+    "message": "Esporta (JSON)"
+  },
+  "resetButton": {
+    "message": "Ripristina impostazioni"
+  },
+  "resetConfirm": {
+    "message": "Eliminare tutti i segnalibri, gli sfondi e i motori di ricerca e ripristinare i valori predefiniti?"
+  },
+  "resetDone": {
+    "message": "Le impostazioni sono state ripristinate."
+  },
+  "closeButton": {
+    "message": "Chiudi"
+  },
+  "bookmarkTitlePlaceholder": {
+    "message": "Titolo"
+  },
+  "bookmarkUrlPlaceholder": {
+    "message": "URL"
+  },
+  "iconUrlPlaceholder": {
+    "message": "URL dell'icona (opzionale)"
+  },
+  "refreshIcon": {
+    "message": "Aggiorna l'icona dall'URL"
+  },
+  "bgTitlePlaceholder": {
+    "message": "Nome dello sfondo"
+  },
+  "bgUrlPlaceholder": {
+    "message": "URL dell'immagine (vuoto — predefinito)"
+  },
+  "bgTypeUrl": {
+    "message": "Link"
+  },
+  "bgTypeFile": {
+    "message": "Dispositivo"
+  },
+  "bgTypeColor": {
+    "message": "Colore"
+  },
+  "bgTypeGradient": {
+    "message": "Sfumatura"
+  },
+  "bgPositionLabel": {
+    "message": "Posizione"
+  },
+  "bgPositionCover": {
+    "message": "Riempi"
+  },
+  "bgPositionContain": {
+    "message": "Adatta"
+  },
+  "bgPositionTile": {
+    "message": "Piastrella"
+  },
+  "bgPositionCenter": {
+    "message": "1:1 centrato"
+  },
+  "gradientAngle": {
+    "message": "Angolo della sfumatura"
+  },
+  "fileBackground": {
+    "message": "Immagine dal dispositivo"
+  },
+  "errNoFile": {
+    "message": "Scegli un file immagine."
+  },
+  "errFileTooBig": {
+    "message": "Impossibile salvare l'immagine: quota di archiviazione del browser superata."
+  },
+  "engineNamePlaceholder": {
+    "message": "Nome"
+  },
+  "engineUrlPlaceholder": {
+    "message": "URL con %s (es. https://www.google.com/search?q=%s)"
+  },
+  "edit": {
+    "message": "Modifica"
+  },
+  "editShort": {
+    "message": "Modifica"
+  },
+  "delete": {
+    "message": "Elimina"
+  },
+  "select": {
+    "message": "Seleziona"
+  },
+  "openInNewTab": {
+    "message": "Apri in una nuova scheda"
+  },
+  "copyLink": {
+    "message": "Copia link"
+  },
+  "settings": {
+    "message": "Impostazioni"
+  },
+  "nextBackground": {
+    "message": "Sfondo successivo"
+  },
+  "backgroundSettings": {
+    "message": "Impostazioni sfondi"
+  },
+  "pasteAndSearch": {
+    "message": "Incolla e cerca"
+  },
+  "paste": {
+    "message": "Incolla"
+  },
+  "copy": {
+    "message": "Copia"
+  },
+  "cut": {
+    "message": "Taglia"
+  },
+  "clear": {
+    "message": "Cancella"
+  },
+  "searchEngineSettings": {
+    "message": "Impostazioni motori di ricerca"
+  },
+  "createBookmark": {
+    "message": "Crea segnalibro"
+  },
+  "pasteAndCreate": {
+    "message": "Incolla e crea"
+  },
+  "sortAsc": {
+    "message": "Ordina A-Z"
+  },
+  "sortDesc": {
+    "message": "Ordina Z-A"
+  },
+  "emptyList": {
+    "message": "La lista è vuota."
+  },
+  "noImage": {
+    "message": "Nessuno"
+  },
+  "importSuccess": {
+    "message": "Impostazioni importate"
+  },
+  "importSkipped": {
+    "message": "Impostazioni importate. Elementi non validi ignorati: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importError": {
+    "message": "Errore di importazione: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "errTitleAndUrl": {
+    "message": "Inserisci un titolo e un URL."
+  },
+  "errInvalidUrl": {
+    "message": "Inserisci un URL valido."
+  },
+  "errBookmarkUrl": {
+    "message": "Inserisci l'URL del segnalibro."
+  },
+  "errTitle": {
+    "message": "Inserisci un titolo."
+  },
+  "errNameAndUrl": {
+    "message": "Inserisci un nome e un URL con %s."
+  },
+  "errEngineUrl": {
+    "message": "Inserisci un URL con %s."
+  },
+  "copyFailed": {
+    "message": "Impossibile copiare il testo."
+  },
+  "cutFailed": {
+    "message": "Impossibile tagliare il testo."
+  },
+  "defaultBackground": {
+    "message": "Predefinito"
+  },
+  "defaultScreen": {
+    "message": "Home"
+  },
+  "screenName": {
+    "message": "Schermata $n$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyScreen": {
+    "message": "Non ci sono ancora segnalibri in questa schermata."
+  },
+  "emptyScreenAdd": {
+    "message": "Aggiungi segnalibro"
+  },
+  "tabScreens": {
+    "message": "Schermate"
+  },
+  "screenLabel": {
+    "message": "Schermata"
+  },
+  "addScreen": {
+    "message": "＋ Aggiungi schermata"
+  },
+  "screenTitlePlaceholder": {
+    "message": "Nome della schermata"
+  },
+  "deleteScreenTitle": {
+    "message": "Eliminare la schermata?"
+  },
+  "moveToHome": {
+    "message": "Sposta in Home"
+  },
+  "deleteWithScreen": {
+    "message": "Elimina con la schermata"
+  },
+  "moveToScreenTitle": {
+    "message": "Sposta nella schermata"
+  },
+  "moveToScreen": {
+    "message": "Sposta nella schermata…"
+  },
+  "bookmarksCount": {
+    "message": "$n$ segnalibri",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveLeft": {
+    "message": "Sposta a sinistra"
+  },
+  "moveRight": {
+    "message": "Sposta a destra"
+  },
+  "mainScreenCannotDelete": {
+    "message": "La schermata Home non può essere eliminata. Rinominarla o eliminare un'altra schermata."
+  }
+}

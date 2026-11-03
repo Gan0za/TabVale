@@ -1,0 +1,319 @@
+{
+  "appName": {
+    "message": "Custom New Tab"
+  },
+  "appDescription": {
+    "message": "Página de nova aba com pesquisa, favoritos e troca de plano de fundo"
+  },
+  "pageTitle": {
+    "message": "Nova aba"
+  },
+  "searchPlaceholder": {
+    "message": "Pesquisar..."
+  },
+  "searchButton": {
+    "message": "Pesquisar"
+  },
+  "bookmarksSection": {
+    "message": "Favoritos"
+  },
+  "themeAuto": {
+    "message": "Automático"
+  },
+  "themeLight": {
+    "message": "Claro"
+  },
+  "themeDark": {
+    "message": "Escuro"
+  },
+  "themeToggleAria": {
+    "message": "Alterar tema"
+  },
+  "settingsTitle": {
+    "message": "Configurações"
+  },
+  "tabBookmarks": {
+    "message": "Favoritos"
+  },
+  "tabBackgrounds": {
+    "message": "Planos de fundo"
+  },
+  "tabSearchEngines": {
+    "message": "Mecanismos de busca"
+  },
+  "generalSection": {
+    "message": "Geral"
+  },
+  "languageLabel": {
+    "message": "Idioma"
+  },
+  "langAuto": {
+    "message": "Automático (idioma do navegador)"
+  },
+  "themeLabel": {
+    "message": "Tema"
+  },
+  "addButton": {
+    "message": "＋ Adicionar"
+  },
+  "addButtonShort": {
+    "message": "Adicionar"
+  },
+  "saveButton": {
+    "message": "Salvar"
+  },
+  "cancelButton": {
+    "message": "Cancelar"
+  },
+  "importButton": {
+    "message": "Importar (JSON)"
+  },
+  "exportButton": {
+    "message": "Exportar (JSON)"
+  },
+  "resetButton": {
+    "message": "Redefinir configurações"
+  },
+  "resetConfirm": {
+    "message": "Excluir todos os favoritos, planos de fundo e mecanismos de busca e restaurar os padrões?"
+  },
+  "resetDone": {
+    "message": "As configurações foram redefinidas."
+  },
+  "closeButton": {
+    "message": "Fechar"
+  },
+  "bookmarkTitlePlaceholder": {
+    "message": "Título"
+  },
+  "bookmarkUrlPlaceholder": {
+    "message": "URL"
+  },
+  "iconUrlPlaceholder": {
+    "message": "URL do ícone (opcional)"
+  },
+  "refreshIcon": {
+    "message": "Atualizar ícone pela URL"
+  },
+  "bgTitlePlaceholder": {
+    "message": "Nome do plano de fundo"
+  },
+  "bgUrlPlaceholder": {
+    "message": "URL da imagem (vazio — padrão)"
+  },
+  "bgTypeUrl": {
+    "message": "Link"
+  },
+  "bgTypeFile": {
+    "message": "Dispositivo"
+  },
+  "bgTypeColor": {
+    "message": "Cor"
+  },
+  "bgTypeGradient": {
+    "message": "Gradiente"
+  },
+  "bgPositionLabel": {
+    "message": "Posição"
+  },
+  "bgPositionCover": {
+    "message": "Preencher"
+  },
+  "bgPositionContain": {
+    "message": "Ajustar"
+  },
+  "bgPositionTile": {
+    "message": "Ladrilho"
+  },
+  "bgPositionCenter": {
+    "message": "1:1 centralizado"
+  },
+  "gradientAngle": {
+    "message": "Ângulo do gradiente"
+  },
+  "fileBackground": {
+    "message": "Imagem do dispositivo"
+  },
+  "errNoFile": {
+    "message": "Escolha um arquivo de imagem."
+  },
+  "errFileTooBig": {
+    "message": "Não foi possível salvar a imagem: cota de armazenamento do navegador excedida."
+  },
+  "engineNamePlaceholder": {
+    "message": "Nome"
+  },
+  "engineUrlPlaceholder": {
+    "message": "URL com %s (ex.: https://www.google.com/search?q=%s)"
+  },
+  "edit": {
+    "message": "Editar"
+  },
+  "editShort": {
+    "message": "Editar"
+  },
+  "delete": {
+    "message": "Excluir"
+  },
+  "select": {
+    "message": "Selecionar"
+  },
+  "openInNewTab": {
+    "message": "Abrir em nova aba"
+  },
+  "copyLink": {
+    "message": "Copiar link"
+  },
+  "settings": {
+    "message": "Configurações"
+  },
+  "nextBackground": {
+    "message": "Próximo plano de fundo"
+  },
+  "backgroundSettings": {
+    "message": "Configurações de planos de fundo"
+  },
+  "pasteAndSearch": {
+    "message": "Colar e pesquisar"
+  },
+  "paste": {
+    "message": "Colar"
+  },
+  "copy": {
+    "message": "Copiar"
+  },
+  "cut": {
+    "message": "Recortar"
+  },
+  "clear": {
+    "message": "Limpar"
+  },
+  "searchEngineSettings": {
+    "message": "Configurações dos mecanismos de busca"
+  },
+  "createBookmark": {
+    "message": "Criar favorito"
+  },
+  "pasteAndCreate": {
+    "message": "Colar e criar"
+  },
+  "sortAsc": {
+    "message": "Ordenar A-Z"
+  },
+  "sortDesc": {
+    "message": "Ordenar Z-A"
+  },
+  "emptyList": {
+    "message": "A lista está vazia."
+  },
+  "noImage": {
+    "message": "Nenhum"
+  },
+  "importSuccess": {
+    "message": "Configurações importadas"
+  },
+  "importSkipped": {
+    "message": "Configurações importadas. Itens inválidos ignorados: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importError": {
+    "message": "Erro de importação: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "errTitleAndUrl": {
+    "message": "Informe um título e uma URL."
+  },
+  "errInvalidUrl": {
+    "message": "Informe uma URL válida."
+  },
+  "errBookmarkUrl": {
+    "message": "Informe a URL do favorito."
+  },
+  "errTitle": {
+    "message": "Informe um título."
+  },
+  "errNameAndUrl": {
+    "message": "Informe um nome e uma URL com %s."
+  },
+  "errEngineUrl": {
+    "message": "Informe uma URL com %s."
+  },
+  "copyFailed": {
+    "message": "Não foi possível copiar o texto."
+  },
+  "cutFailed": {
+    "message": "Não foi possível recortar o texto."
+  },
+  "defaultBackground": {
+    "message": "Padrão"
+  },
+  "defaultScreen": {
+    "message": "Início"
+  },
+  "screenName": {
+    "message": "Tela $n$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyScreen": {
+    "message": "Ainda não há favoritos nesta tela."
+  },
+  "emptyScreenAdd": {
+    "message": "Adicionar favorito"
+  },
+  "tabScreens": {
+    "message": "Telas"
+  },
+  "screenLabel": {
+    "message": "Tela"
+  },
+  "addScreen": {
+    "message": "＋ Adicionar tela"
+  },
+  "screenTitlePlaceholder": {
+    "message": "Nome da tela"
+  },
+  "deleteScreenTitle": {
+    "message": "Excluir tela?"
+  },
+  "moveToHome": {
+    "message": "Mover para Início"
+  },
+  "deleteWithScreen": {
+    "message": "Excluir com a tela"
+  },
+  "moveToScreenTitle": {
+    "message": "Mover para tela"
+  },
+  "moveToScreen": {
+    "message": "Mover para tela…"
+  },
+  "bookmarksCount": {
+    "message": "$n$ favoritos",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveLeft": {
+    "message": "Mover para a esquerda"
+  },
+  "moveRight": {
+    "message": "Mover para a direita"
+  },
+  "mainScreenCannotDelete": {
+    "message": "A tela Início não pode ser excluída. Renomeie-a ou exclua outra tela."
+  }
+}

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Custom New Tab — Privacy Policy</title>
+  <style>
+    body { max-width: 760px; margin: 40px auto; padding: 0 20px; font: 16px/1.6 system-ui, sans-serif; color: #222; }
+    h1, h2 { line-height: 1.25; }
+    table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; vertical-align: top; }
+    code { background: #f3f3f3; padding: 2px 4px; border-radius: 4px; }
+    .muted { color: #666; }
+  </style>
+</head>
+<body>
+  <h1>Custom New Tab — Privacy Policy</h1>
+  <p class="muted">Last updated: 2026-11-03</p>
+
+  <p>
+    Custom New Tab does not collect, process or transmit personal data.
+    Settings and user content stay in the browser through
+    <code>chrome.storage.sync</code> and <code>chrome.storage.local</code>.
+    If the user is signed in to the browser, sync data is synchronized by the
+    browser between that user's devices. Nothing is sent to our servers.
+  </p>
+
+  <h2>Data stored by the extension</h2>
+  <table>
+    <thead><tr><th>Data</th><th>Storage</th><th>Transmission</th></tr></thead>
+    <tbody>
+      <tr><td>Bookmarks (title, URL, icon)</td><td>chrome.storage.sync</td><td>None; browser sync only between the user's devices</td></tr>
+      <tr><td>Screens (title, order, bookmark membership)</td><td>chrome.storage.sync</td><td>None</td></tr>
+      <tr><td>Active screen</td><td>chrome.storage.local</td><td>None; device-specific</td></tr>
+      <tr><td>Backgrounds: URL, color or gradient</td><td>chrome.storage.sync</td><td>None</td></tr>
+      <tr><td>Backgrounds: local image files</td><td>chrome.storage.local</td><td>None</td></tr>
+      <tr><td>Search engines (name, URL, logo)</td><td>chrome.storage.sync</td><td>None</td></tr>
+      <tr><td>Theme and selected language</td><td>chrome.storage.sync</td><td>None</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Permissions</h2>
+  <ul>
+    <li><strong>storage</strong> — save bookmarks, screens, backgrounds and settings.</li>
+    <li><strong>unlimitedStorage</strong> — keep local background image files in <code>chrome.storage.local</code>.</li>
+    <li><strong>contextMenus</strong> — add items to the extension icon menu.</li>
+    <li><strong>clipboardRead</strong> — paste actions in the custom context menu. The clipboard is read once when that menu is opened on the extension's own new tab page, after an explicit user action. There is no background clipboard access.</li>
+    <li><strong>optional host permissions</strong> — requested per site only when adding a bookmark, to read the page <code>&lt;title&gt;</code> as a suggested name. The user can deny the request; the extension then uses the hostname.</li>
+  </ul>
+
+  <h2>Network activity</h2>
+  <p>
+    The extension has no server and does not send data anywhere. Site icons and
+    background images are loaded by the browser from addresses the user
+    entered. When adding a bookmark, the extension may ask the browser for
+    access to that specific site to read its title; without permission the
+    request is not made.
+  </p>
+
+  <h2>Export and deletion</h2>
+  <ul>
+    <li><strong>Export</strong> — the settings modal can save a JSON file with the user's data, including background files.</li>
+    <li><strong>Deletion</strong> — uninstalling the extension removes data from <code>chrome.storage.sync</code> and <code>chrome.storage.local</code>.</li>
+  </ul>
+
+  <h2>Contact</h2>
+  <p>
+    Privacy questions: open an issue in the project repository
+    (link will be added after the repository is published).
+  </p>
+</body>
+</html>

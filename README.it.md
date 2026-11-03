@@ -17,7 +17,7 @@ segnalibri e sfondi.
 - Segnalibri con icone e ordinamento tramite trascinamento; spostamento tra
   schermate.
 - Sfondi: URL, file locale, colore o gradiente.
-- Temi (automatico/chiaro/scuro) e lingue (inglese/russo).
+- Temi (automatico/chiaro/scuro) e 13 lingue dell'interfaccia.
 - Importazione ed esportazione delle impostazioni in JSON.
 
 ## Installazione

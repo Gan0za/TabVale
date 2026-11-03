@@ -1,0 +1,319 @@
+{
+  "appName": {
+    "message": "Custom New Tab"
+  },
+  "appDescription": {
+    "message": "新标签页：搜索、书签和背景切换"
+  },
+  "pageTitle": {
+    "message": "新标签页"
+  },
+  "searchPlaceholder": {
+    "message": "搜索..."
+  },
+  "searchButton": {
+    "message": "搜索"
+  },
+  "bookmarksSection": {
+    "message": "书签"
+  },
+  "themeAuto": {
+    "message": "自动"
+  },
+  "themeLight": {
+    "message": "浅色"
+  },
+  "themeDark": {
+    "message": "深色"
+  },
+  "themeToggleAria": {
+    "message": "切换主题"
+  },
+  "settingsTitle": {
+    "message": "设置"
+  },
+  "tabBookmarks": {
+    "message": "书签"
+  },
+  "tabBackgrounds": {
+    "message": "背景"
+  },
+  "tabSearchEngines": {
+    "message": "搜索引擎"
+  },
+  "generalSection": {
+    "message": "常规"
+  },
+  "languageLabel": {
+    "message": "语言"
+  },
+  "langAuto": {
+    "message": "自动（浏览器语言）"
+  },
+  "themeLabel": {
+    "message": "主题"
+  },
+  "addButton": {
+    "message": "＋ 添加"
+  },
+  "addButtonShort": {
+    "message": "添加"
+  },
+  "saveButton": {
+    "message": "保存"
+  },
+  "cancelButton": {
+    "message": "取消"
+  },
+  "importButton": {
+    "message": "导入（JSON）"
+  },
+  "exportButton": {
+    "message": "导出（JSON）"
+  },
+  "resetButton": {
+    "message": "重置设置"
+  },
+  "resetConfirm": {
+    "message": "删除所有书签、背景和搜索引擎并恢复默认值？"
+  },
+  "resetDone": {
+    "message": "设置已重置。"
+  },
+  "closeButton": {
+    "message": "关闭"
+  },
+  "bookmarkTitlePlaceholder": {
+    "message": "标题"
+  },
+  "bookmarkUrlPlaceholder": {
+    "message": "URL"
+  },
+  "iconUrlPlaceholder": {
+    "message": "图标 URL（可选）"
+  },
+  "refreshIcon": {
+    "message": "从 URL 刷新图标"
+  },
+  "bgTitlePlaceholder": {
+    "message": "背景名称"
+  },
+  "bgUrlPlaceholder": {
+    "message": "图片 URL（留空使用默认）"
+  },
+  "bgTypeUrl": {
+    "message": "链接"
+  },
+  "bgTypeFile": {
+    "message": "设备"
+  },
+  "bgTypeColor": {
+    "message": "颜色"
+  },
+  "bgTypeGradient": {
+    "message": "渐变"
+  },
+  "bgPositionLabel": {
+    "message": "位置"
+  },
+  "bgPositionCover": {
+    "message": "拉伸"
+  },
+  "bgPositionContain": {
+    "message": "适应"
+  },
+  "bgPositionTile": {
+    "message": "平铺"
+  },
+  "bgPositionCenter": {
+    "message": "1:1 居中"
+  },
+  "gradientAngle": {
+    "message": "渐变角度"
+  },
+  "fileBackground": {
+    "message": "来自设备的图片"
+  },
+  "errNoFile": {
+    "message": "请选择图片文件。"
+  },
+  "errFileTooBig": {
+    "message": "无法保存图片：浏览器存储配额已超出。"
+  },
+  "engineNamePlaceholder": {
+    "message": "名称"
+  },
+  "engineUrlPlaceholder": {
+    "message": "含 %s 的 URL（例如 https://www.google.com/search?q=%s）"
+  },
+  "edit": {
+    "message": "编辑"
+  },
+  "editShort": {
+    "message": "编辑"
+  },
+  "delete": {
+    "message": "删除"
+  },
+  "select": {
+    "message": "选择"
+  },
+  "openInNewTab": {
+    "message": "在新标签页中打开"
+  },
+  "copyLink": {
+    "message": "复制链接"
+  },
+  "settings": {
+    "message": "设置"
+  },
+  "nextBackground": {
+    "message": "下一个背景"
+  },
+  "backgroundSettings": {
+    "message": "背景设置"
+  },
+  "pasteAndSearch": {
+    "message": "粘贴并搜索"
+  },
+  "paste": {
+    "message": "粘贴"
+  },
+  "copy": {
+    "message": "复制"
+  },
+  "cut": {
+    "message": "剪切"
+  },
+  "clear": {
+    "message": "清除"
+  },
+  "searchEngineSettings": {
+    "message": "搜索引擎设置"
+  },
+  "createBookmark": {
+    "message": "创建书签"
+  },
+  "pasteAndCreate": {
+    "message": "粘贴并创建"
+  },
+  "sortAsc": {
+    "message": "按 A-Z 排序"
+  },
+  "sortDesc": {
+    "message": "按 Z-A 排序"
+  },
+  "emptyList": {
+    "message": "列表为空。"
+  },
+  "noImage": {
+    "message": "无"
+  },
+  "importSuccess": {
+    "message": "设置已导入"
+  },
+  "importSkipped": {
+    "message": "设置已导入。已跳过无效项目：$count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importError": {
+    "message": "导入错误：$error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "errTitleAndUrl": {
+    "message": "请输入标题和 URL。"
+  },
+  "errInvalidUrl": {
+    "message": "请输入有效的 URL。"
+  },
+  "errBookmarkUrl": {
+    "message": "请输入书签 URL。"
+  },
+  "errTitle": {
+    "message": "请输入标题。"
+  },
+  "errNameAndUrl": {
+    "message": "请输入名称和含 %s 的 URL。"
+  },
+  "errEngineUrl": {
+    "message": "请输入含 %s 的 URL。"
+  },
+  "copyFailed": {
+    "message": "复制文本失败。"
+  },
+  "cutFailed": {
+    "message": "剪切文本失败。"
+  },
+  "defaultBackground": {
+    "message": "默认"
+  },
+  "defaultScreen": {
+    "message": "主页"
+  },
+  "screenName": {
+    "message": "屏幕 $n$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyScreen": {
+    "message": "此屏幕还没有书签。"
+  },
+  "emptyScreenAdd": {
+    "message": "添加书签"
+  },
+  "tabScreens": {
+    "message": "屏幕"
+  },
+  "screenLabel": {
+    "message": "屏幕"
+  },
+  "addScreen": {
+    "message": "＋ 添加屏幕"
+  },
+  "screenTitlePlaceholder": {
+    "message": "屏幕名称"
+  },
+  "deleteScreenTitle": {
+    "message": "删除屏幕？"
+  },
+  "moveToHome": {
+    "message": "移到主页"
+  },
+  "deleteWithScreen": {
+    "message": "连同屏幕一起删除"
+  },
+  "moveToScreenTitle": {
+    "message": "移到屏幕"
+  },
+  "moveToScreen": {
+    "message": "移到屏幕…"
+  },
+  "bookmarksCount": {
+    "message": "$n$ 个书签",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveLeft": {
+    "message": "左移"
+  },
+  "moveRight": {
+    "message": "右移"
+  },
+  "mainScreenCannotDelete": {
+    "message": "主页屏幕无法删除。请重命名它或删除其他屏幕。"
+  }
+}

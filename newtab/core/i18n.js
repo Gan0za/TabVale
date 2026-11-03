@@ -13,8 +13,19 @@
 // эмодзи-флаги (вместо флага видны буквы RU/GB).
 const LANGUAGES = [
     { code: 'auto', flag: null, name: 'Auto' },
-    { code: 'ru', flag: 'newtab/flags/ru.svg', name: 'Русский' },
     { code: 'en', flag: 'newtab/flags/gb.svg', name: 'English' },
+    { code: 'ru', flag: 'newtab/flags/ru.svg', name: 'Русский' },
+    { code: 'de', flag: 'newtab/flags/de.svg', name: 'Deutsch' },
+    { code: 'fr', flag: 'newtab/flags/fr.svg', name: 'Français' },
+    { code: 'es', flag: 'newtab/flags/es.svg', name: 'Español' },
+    { code: 'pt_BR', flag: 'newtab/flags/pt-br.svg', name: 'Português (Brasil)' },
+    { code: 'it', flag: 'newtab/flags/it.svg', name: 'Italiano' },
+    { code: 'pl', flag: 'newtab/flags/pl.svg', name: 'Polski' },
+    { code: 'tr', flag: 'newtab/flags/tr.svg', name: 'Türkçe' },
+    { code: 'uk', flag: 'newtab/flags/ua.svg', name: 'Українська' },
+    { code: 'zh_CN', flag: 'newtab/flags/zh-cn.svg', name: '中文' },
+    { code: 'ja', flag: 'newtab/flags/ja.svg', name: '日本語' },
+    { code: 'ko', flag: 'newtab/flags/ko.svg', name: '한국어' },
 ];
 
 // Текущий режим темы — нужен, чтобы после смены языка обновить подпись
@@ -61,10 +72,20 @@ function themeLabel(mode) {
  * 'auto' — берём язык браузера (первые 2 символа: 'ru-RU' -> 'ru').
  * Если языка нет в _locales — откатываемся на русский.
  */
+function normalizeLocaleCode(value) {
+    const raw = String(value || '').replace('_', '-').toLowerCase();
+    if (!raw) return '';
+    if (raw === 'pt' || raw.startsWith('pt-')) return 'pt_BR';
+    if (raw === 'zh' || raw.startsWith('zh-')) return 'zh_CN';
+    return raw.split('-')[0];
+}
+
 function resolveLocale(langSetting) {
-    const browserLang = (navigator.language || 'ru').slice(0, 2);
-    const lang = langSetting && langSetting !== 'auto' ? langSetting : browserLang;
-    return LANGUAGES.some((l) => l.code === lang) ? lang : 'ru';
+    const raw = langSetting && langSetting !== 'auto'
+        ? langSetting
+        : (navigator.language || 'en');
+    const lang = normalizeLocaleCode(raw);
+    return LANGUAGES.some((l) => l.code === lang && l.code !== 'auto') ? lang : 'en';
 }
 
 /**

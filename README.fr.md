@@ -16,7 +16,7 @@ arrière-plans.
   vide et `Alt+←/→`.
 - Favoris avec icônes et tri par glisser-déposer ; déplacement entre écrans.
 - Arrière-plans : URL, fichier local, couleur ou dégradé.
-- Thèmes (auto/clair/sombre) et langues (anglais/russe).
+- Thèmes (auto/clair/sombre) et 13 langues d'interface.
 - Import et export des réglages en JSON.
 
 ## Installation

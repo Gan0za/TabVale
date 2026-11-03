@@ -16,7 +16,7 @@ panoya dönüştüren uzantı: arama, birden çok yer imi ekranı ve arka planla
   ile geçiş.
 - Simgeler ve sürükle-bırak sıralama ile yer imleri; ekranlar arasında taşıma.
 - Arka planlar: URL, yerel dosya, renk veya gradyan.
-- Temalar (otomatik/açık/koyu) ve diller (İngilizce/Rusça).
+- Temalar (otomatik/açık/koyu) ve 13 arayüz dili.
 - JSON olarak ayar içe/dışa aktarma.
 
 ## Kurulum

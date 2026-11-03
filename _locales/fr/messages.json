@@ -1,0 +1,319 @@
+{
+  "appName": {
+    "message": "Custom New Tab"
+  },
+  "appDescription": {
+    "message": "Page de nouvel onglet avec recherche, favoris et changement d'arrière-plan"
+  },
+  "pageTitle": {
+    "message": "Nouvel onglet"
+  },
+  "searchPlaceholder": {
+    "message": "Rechercher..."
+  },
+  "searchButton": {
+    "message": "Rechercher"
+  },
+  "bookmarksSection": {
+    "message": "Favoris"
+  },
+  "themeAuto": {
+    "message": "Automatique"
+  },
+  "themeLight": {
+    "message": "Clair"
+  },
+  "themeDark": {
+    "message": "Sombre"
+  },
+  "themeToggleAria": {
+    "message": "Changer de thème"
+  },
+  "settingsTitle": {
+    "message": "Paramètres"
+  },
+  "tabBookmarks": {
+    "message": "Favoris"
+  },
+  "tabBackgrounds": {
+    "message": "Arrière-plans"
+  },
+  "tabSearchEngines": {
+    "message": "Moteurs de recherche"
+  },
+  "generalSection": {
+    "message": "Général"
+  },
+  "languageLabel": {
+    "message": "Langue"
+  },
+  "langAuto": {
+    "message": "Automatique (langue du navigateur)"
+  },
+  "themeLabel": {
+    "message": "Thème"
+  },
+  "addButton": {
+    "message": "＋ Ajouter"
+  },
+  "addButtonShort": {
+    "message": "Ajouter"
+  },
+  "saveButton": {
+    "message": "Enregistrer"
+  },
+  "cancelButton": {
+    "message": "Annuler"
+  },
+  "importButton": {
+    "message": "Importer (JSON)"
+  },
+  "exportButton": {
+    "message": "Exporter (JSON)"
+  },
+  "resetButton": {
+    "message": "Réinitialiser les paramètres"
+  },
+  "resetConfirm": {
+    "message": "Supprimer tous les favoris, arrière-plans et moteurs de recherche et restaurer les valeurs par défaut ?"
+  },
+  "resetDone": {
+    "message": "Les paramètres ont été réinitialisés."
+  },
+  "closeButton": {
+    "message": "Fermer"
+  },
+  "bookmarkTitlePlaceholder": {
+    "message": "Titre"
+  },
+  "bookmarkUrlPlaceholder": {
+    "message": "URL"
+  },
+  "iconUrlPlaceholder": {
+    "message": "URL de l'icône (facultatif)"
+  },
+  "refreshIcon": {
+    "message": "Actualiser l'icône depuis l'URL"
+  },
+  "bgTitlePlaceholder": {
+    "message": "Nom de l'arrière-plan"
+  },
+  "bgUrlPlaceholder": {
+    "message": "URL de l'image (vide — par défaut)"
+  },
+  "bgTypeUrl": {
+    "message": "Lien"
+  },
+  "bgTypeFile": {
+    "message": "Appareil"
+  },
+  "bgTypeColor": {
+    "message": "Couleur"
+  },
+  "bgTypeGradient": {
+    "message": "Dégradé"
+  },
+  "bgPositionLabel": {
+    "message": "Placement"
+  },
+  "bgPositionCover": {
+    "message": "Remplir"
+  },
+  "bgPositionContain": {
+    "message": "Ajuster"
+  },
+  "bgPositionTile": {
+    "message": "Mosaïque"
+  },
+  "bgPositionCenter": {
+    "message": "1:1 centré"
+  },
+  "gradientAngle": {
+    "message": "Angle du dégradé"
+  },
+  "fileBackground": {
+    "message": "Image de l'appareil"
+  },
+  "errNoFile": {
+    "message": "Choisissez un fichier image."
+  },
+  "errFileTooBig": {
+    "message": "Impossible d'enregistrer l'image : quota de stockage du navigateur dépassé."
+  },
+  "engineNamePlaceholder": {
+    "message": "Nom"
+  },
+  "engineUrlPlaceholder": {
+    "message": "URL avec %s (par ex. https://www.google.com/search?q=%s)"
+  },
+  "edit": {
+    "message": "Modifier"
+  },
+  "editShort": {
+    "message": "Modif."
+  },
+  "delete": {
+    "message": "Supprimer"
+  },
+  "select": {
+    "message": "Sélectionner"
+  },
+  "openInNewTab": {
+    "message": "Ouvrir dans un nouvel onglet"
+  },
+  "copyLink": {
+    "message": "Copier le lien"
+  },
+  "settings": {
+    "message": "Paramètres"
+  },
+  "nextBackground": {
+    "message": "Arrière-plan suivant"
+  },
+  "backgroundSettings": {
+    "message": "Paramètres d'arrière-plan"
+  },
+  "pasteAndSearch": {
+    "message": "Coller et rechercher"
+  },
+  "paste": {
+    "message": "Coller"
+  },
+  "copy": {
+    "message": "Copier"
+  },
+  "cut": {
+    "message": "Couper"
+  },
+  "clear": {
+    "message": "Effacer"
+  },
+  "searchEngineSettings": {
+    "message": "Paramètres des moteurs de recherche"
+  },
+  "createBookmark": {
+    "message": "Créer un favori"
+  },
+  "pasteAndCreate": {
+    "message": "Coller et créer"
+  },
+  "sortAsc": {
+    "message": "Trier A-Z"
+  },
+  "sortDesc": {
+    "message": "Trier Z-A"
+  },
+  "emptyList": {
+    "message": "La liste est vide."
+  },
+  "noImage": {
+    "message": "Aucun"
+  },
+  "importSuccess": {
+    "message": "Paramètres importés"
+  },
+  "importSkipped": {
+    "message": "Paramètres importés. Éléments invalides ignorés : $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importError": {
+    "message": "Erreur d'importation : $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "errTitleAndUrl": {
+    "message": "Saisissez un titre et une URL."
+  },
+  "errInvalidUrl": {
+    "message": "Saisissez une URL valide."
+  },
+  "errBookmarkUrl": {
+    "message": "Saisissez l’URL du favori."
+  },
+  "errTitle": {
+    "message": "Saisissez un titre."
+  },
+  "errNameAndUrl": {
+    "message": "Saisissez un nom et une URL avec %s."
+  },
+  "errEngineUrl": {
+    "message": "Saisissez une URL avec %s."
+  },
+  "copyFailed": {
+    "message": "Impossible de copier le texte."
+  },
+  "cutFailed": {
+    "message": "Impossible de couper le texte."
+  },
+  "defaultBackground": {
+    "message": "Par défaut"
+  },
+  "defaultScreen": {
+    "message": "Accueil"
+  },
+  "screenName": {
+    "message": "Écran $n$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyScreen": {
+    "message": "Aucun favori sur cet écran pour le moment."
+  },
+  "emptyScreenAdd": {
+    "message": "Ajouter un favori"
+  },
+  "tabScreens": {
+    "message": "Écrans"
+  },
+  "screenLabel": {
+    "message": "Écran"
+  },
+  "addScreen": {
+    "message": "＋ Ajouter un écran"
+  },
+  "screenTitlePlaceholder": {
+    "message": "Nom de l'écran"
+  },
+  "deleteScreenTitle": {
+    "message": "Supprimer l'écran ?"
+  },
+  "moveToHome": {
+    "message": "Déplacer vers l'accueil"
+  },
+  "deleteWithScreen": {
+    "message": "Supprimer avec l'écran"
+  },
+  "moveToScreenTitle": {
+    "message": "Déplacer vers l'écran"
+  },
+  "moveToScreen": {
+    "message": "Déplacer vers l'écran…"
+  },
+  "bookmarksCount": {
+    "message": "$n$ favoris",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveLeft": {
+    "message": "Déplacer à gauche"
+  },
+  "moveRight": {
+    "message": "Déplacer à droite"
+  },
+  "mainScreenCannotDelete": {
+    "message": "L'écran d'accueil ne peut pas être supprimé. Renommez-le ou supprimez un autre écran."
+  }
+}
