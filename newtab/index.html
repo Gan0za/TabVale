@@ -29,6 +29,8 @@
             <h2 data-i18n="bookmarksSection">Закладки</h2>
             <div id="bookmarks-container"></div>
         </section>
+
+        <nav id="screen-dots" class="screen-dots hidden" aria-label="Экраны"></nav>
     </div>
 
     <!-- Переключатель темы (авто / светлая / тёмная), выбор языка и настройки -->
@@ -57,6 +59,7 @@
             <button class="settings-tab active" data-tab="bookmarks" data-i18n="tabBookmarks">Закладки</button>
             <button class="settings-tab" data-tab="backgrounds" data-i18n="tabBackgrounds">Фоны</button>
             <button class="settings-tab" data-tab="search-engines" data-i18n="tabSearchEngines">Поисковые системы</button>
+            <button class="settings-tab" data-tab="screens" data-i18n="tabScreens">Экраны</button>
         </div>
         <div class="settings-content">
             <!-- Общие настройки: язык, тема, импорт/экспорт -->
@@ -99,6 +102,10 @@
                 </div>
             </div>
             <div class="settings-pane active" data-pane="bookmarks">
+                <div class="general-row">
+                    <span data-i18n="screenLabel">Экран</span>
+                    <select id="bookmark-screen-select"></select>
+                </div>
                 <div id="bookmark-manager-list" class="modal-list"></div>
                 <button id="show-bookmark-form" class="btn" data-i18n="addButton">＋ Добавить</button>
                 <div id="bookmark-form" class="add-form">
@@ -193,11 +200,42 @@
                     </div>
                 </div>
             </div>
+            <div class="settings-pane" data-pane="screens">
+                <div id="screens-manager-list" class="modal-list"></div>
+                <button id="show-screen-form" class="btn" data-i18n="addScreen">＋ Добавить экран</button>
+                <div id="screen-form" class="add-form">
+                    <div class="add-form-inner">
+                        <input type="text" id="screen-title-input" data-i18n-placeholder="screenTitlePlaceholder" placeholder="Название экрана">
+                        <div class="form-actions">
+                            <button id="save-screen" class="btn btn-primary" data-i18n="saveButton">Сохранить</button>
+                            <button id="cancel-screen" class="btn" data-i18n="cancelButton">Отмена</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="modal-actions">
             <button id="close-settings" class="btn" data-i18n="closeButton">Закрыть</button>
         </div>
         <input id="import-settings-file" type="file" accept="application/json" style="display:none" />
+    </div>
+
+    <div id="screen-delete-modal" class="modal modal-small hidden">
+        <h3 data-i18n="deleteScreenTitle">Удалить экран?</h3>
+        <p id="screen-delete-text"></p>
+        <div class="modal-actions">
+            <button id="screen-delete-move" class="btn btn-primary" data-i18n="moveToHome">Перенести на Главную</button>
+            <button id="screen-delete-all" class="btn btn-danger" data-i18n="deleteWithScreen">Удалить вместе с экраном</button>
+            <button id="screen-delete-cancel" class="btn" data-i18n="cancelButton">Отмена</button>
+        </div>
+    </div>
+
+    <div id="screen-picker-modal" class="modal modal-small hidden">
+        <h3 data-i18n="moveToScreenTitle">Переместить на экран</h3>
+        <div id="screen-picker-list" class="modal-list"></div>
+        <div class="modal-actions">
+            <button id="screen-picker-cancel" class="btn" data-i18n="cancelButton">Отмена</button>
+        </div>
     </div>
 
     <script src="core/config.js"></script>
@@ -216,6 +254,7 @@
     <script src="features/bookmarks.js"></script>
     <script src="features/backgrounds.js"></script>
     <script src="features/search-engines.js"></script>
+    <script src="features/screens.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

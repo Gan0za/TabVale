@@ -15,6 +15,7 @@
 
 function resetBookmarkForm() {
     editingBookmarkIndex = null;
+    editingBookmarkScreenId = null;
     bookmarkUrlInput.value = '';
     collapseDetails(bookmarkDetails);
     bookmarkTitleInput.value = '';
@@ -174,7 +175,10 @@ function openSettingsModal(tab = 'bookmarks') {
     settingsModal.classList.remove('hidden');
     overlay.classList.remove('hidden');
 
-    const focusMap = { bookmarks: bookmarkUrlInput, backgrounds: backgroundTitleInput, 'search-engines': newSearchEngineUrl };
+    if (tab === 'bookmarks' && !screenById(managedScreenId)) {
+        managedScreenId = currentState.currentScreenId;
+    }
+    const focusMap = { bookmarks: bookmarkUrlInput, backgrounds: backgroundTitleInput, 'search-engines': newSearchEngineUrl, screens: showScreenFormButton };
     focusMap[tab]?.focus();
 }
 
@@ -195,9 +199,18 @@ function refreshUI() {
     // Активный сенсорный перенос держит узел плитки: перерисовка
     // отвязала бы его от DOM, и плитка зависла бы fixed под пальцем
     endTouchDrag(false);
+    const screen = activeScreen();
+    if (screen) {
+        currentState.currentScreenId = screen.id;
+        currentState.bookmarks = screen.bookmarks;
+    }
+    renderScreens();
+    renderScreensManager();
+    renderBookmarkScreenSelect();
     renderSearchEngineDropdown(currentState.searchEngines, currentState.currentSearchEngineIndex);
     renderBookmarks(bookmarksContainer, currentState.bookmarks);
-    renderManagerList(bookmarkManagerList, currentState.bookmarks, renderBookmarkManagerItem);
+    const managed = managedScreen();
+    renderManagerList(bookmarkManagerList, managed ? managed.bookmarks : currentState.bookmarks, renderBookmarkManagerItem);
     renderManagerList(backgroundManagerList, currentState.backgrounds, (bg, idx) => renderBackgroundManagerItem(bg, idx, currentState.currentBackgroundIndex));
     renderManagerList(searchEnginesList, currentState.searchEngines, (eng, idx) => renderSearchEngineManagerItem(eng, idx, currentState.currentSearchEngineIndex));
     setBackground(currentState.backgrounds, currentState.currentBackgroundIndex);
@@ -246,11 +259,14 @@ uiRefresher = refreshUI;
  * Заполняет поля формы данными выбранного элемента списка.
  * index — номер элемента в currentState; form — 'bookmark' | 'background' | 'searchEngine'.
  */
-function startEditing(index, form) {
+function startEditing(index, form, screenId = null) {
     const fillers = {
         bookmark: () => {
             editingBookmarkIndex = index;
-            const b = currentState.bookmarks[index];
+            editingBookmarkScreenId = screenId;
+            if (screenId) managedScreenId = screenId;
+            const source = screenById(screenId) || managedScreen();
+            const b = (source ? source.bookmarks : currentState.bookmarks)[index];
             bookmarkTitleInput.value = b.title || '';
             bookmarkUrlInput.value = b.url || '';
             bookmarkIconInput.value = b.icon || '';

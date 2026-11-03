@@ -189,8 +189,8 @@ fireDocument('contextmenu', { clientX: 100, clientY: 100, target: tileB, prevent
 assert.ok(!contextMenu.classList.contains('hidden'), 'меню плитки открыто');
 assert.deepEqual(
     menuActions(),
-    ['editBookmark', 'deleteBookmark', 'openInNewTab', 'copyLink', 'openSettings'],
-    'состав меню плитки не изменился');
+    ['editBookmark', 'deleteBookmark', 'moveBookmark', 'openInNewTab', 'copyLink', 'openSettings'],
+    'состав меню плитки: добавлен перенос на экран');
 clickAction('openInNewTab');
 assert.deepEqual(opened, [['https://b.com', '_blank', 'noopener,noreferrer']],
     'openInNewTab передаёт noopener,noreferrer — сайт не получает window.opener');

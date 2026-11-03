@@ -32,6 +32,7 @@ export const SCRIPT_FILES = [
     'newtab/features/bookmarks.js',
     'newtab/features/backgrounds.js',
     'newtab/features/search-engines.js',
+    'newtab/features/screens.js',
     'newtab/app.js',
 ];
 
