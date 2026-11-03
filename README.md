@@ -131,7 +131,8 @@ The script uses Windows `tar.exe` when available and falls back to
 `Compress-Archive`. It creates the same `dist/self_tabs_v{version}.zip` and
 checks that development files are not included.
 
-If you use Git Bash, the Unix script works too:
+If you use Git Bash, the Unix script works too (it uses Windows
+`tar.exe`/bsdtar; GNU tar is rejected):
 
 ```bash
 bash package.sh
