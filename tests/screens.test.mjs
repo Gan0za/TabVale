@@ -85,12 +85,13 @@ vm.runInContext(source + `
 ;({ normalizeScreens, setActiveScreen, activeScreen, currentState, saveState, getState, renderScreens })
 `, ctx);
 
-const api = vm.runInContext('({ normalizeScreens, setActiveScreen, activeScreen, currentState, saveState, getState, renderScreens, moveScreenInList })', ctx);
+const api = vm.runInContext('({ normalizeScreens, setActiveScreen, activeScreen, currentState, saveState, getState, renderScreens, moveScreenInList, canDeleteScreen })', ctx);
 
 // 1. Legacy bookmarks -> один экран main
 const migrated = api.normalizeScreens(undefined, [{ title: 'A', url: 'https://a.com' }]);
 assert.equal(migrated.length, 1, 'legacy превращается в один экран');
 assert.equal(migrated[0].id, 'main', 'id главного экрана стабилен');
+assert.equal(migrated[0].titleKey, 'defaultScreen', 'название главного экрана переводится лениво');
 assert.equal(migrated[0].bookmarks.length, 1, 'закладка перенесена');
 assert.equal(migrated[0].bookmarks[0].title, 'A');
 
@@ -144,5 +145,10 @@ assert.equal(api.moveScreenInList(order, 'b', -1), true);
 assert.deepEqual(order.map((s) => s.id), ['b', 'a', 'c'], 'экран сдвинут влево');
 assert.equal(api.moveScreenInList(order, 'b', -1), false, 'левый край защищён');
 assert.equal(api.moveScreenInList(order, 'c', 1), false, 'правый край защищён');
+
+// 8. Удаление: главный и последний экран защищены
+assert.equal(api.canDeleteScreen([{ id: 'main' }, { id: 'work' }], 'main'), false, 'Главную удалить нельзя');
+assert.equal(api.canDeleteScreen([{ id: 'main' }, { id: 'work' }], 'work'), true, 'обычный экран удаляется');
+assert.equal(api.canDeleteScreen([{ id: 'main' }], 'main'), false, 'последний экран защищён');
 
 console.log('screens.test.mjs: все проверки пройдены');

@@ -114,5 +114,6 @@
   "moveToScreen": { "message": "Move to screen…" },
   "bookmarksCount": { "message": "$n$ bookmarks", "placeholders": { "n": { "content": "$1" } } },
   "moveLeft": { "message": "Move left" },
-  "moveRight": { "message": "Move right" }
+  "moveRight": { "message": "Move right" },
+  "mainScreenCannotDelete": { "message": "The Home screen cannot be deleted. Rename it or delete another screen." }
 }
