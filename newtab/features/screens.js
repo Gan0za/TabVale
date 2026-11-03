@@ -286,7 +286,10 @@ function closeScreenDeleteDialog() {
 
 function deleteScreen(mode) {
     const index = currentState.screens.findIndex((s) => s.id === screenToDeleteId);
-    if (index < 0 || currentState.screens.length <= 1) { closeScreenDeleteDialog(); return; }
+    if (index < 0 || !canDeleteScreen(currentState.screens, screenToDeleteId)) {
+        closeScreenDeleteDialog();
+        return;
+    }
     const screen = currentState.screens[index];
 
     if (mode === 'move') {
