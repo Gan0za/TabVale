@@ -13,35 +13,63 @@
 **Короткая версия (если просят кратко):**
 
 ```
-This extension provides a new tab page with user-managed bookmarks and
-backgrounds. The clipboardRead permission is used exclusively for the
-"Paste" buttons inside the settings forms: when the user clicks "Paste",
-the clipboard text (a URL) is inserted into the form field to create a
-bookmark or background entry. Reading happens only in direct response to
-a user click on the Paste button, on the extension's own page. There is
-no background or automatic clipboard access of any kind.
+This extension provides a new tab page with user-managed bookmarks, screens
+and backgrounds. clipboardRead is used only by the custom context menu on the
+search field and the empty bookmarks area. When the user opens that menu, the
+extension reads the clipboard once to decide which paste actions to show;
+choosing one inserts the text into the search field or creates a bookmark.
+Reading happens only in direct response to the user opening the menu on the
+extension's own page. There is no background or automatic clipboard access.
 ```
 
 **Полная версия (если ревью вернёт с запросом деталей):**
 
 ```
 Purpose: Custom New Tab is a new tab page where users organize their own
-bookmarks and background images.
+bookmarks across several screens, choose search engines and set backgrounds.
 
-Usage of clipboardRead: The settings modal contains forms for adding a
-bookmark (title + URL) and a background (title + image URL). Next to the
-URL fields there is a "Paste" button. When the user clicks this button,
-the extension reads the current clipboard text once and inserts it into
-the URL field. This saves the user from manually copying and typing URLs.
+Usage of clipboardRead: The extension has a custom context menu on the search
+field and on the empty bookmarks area. When the menu is opened, the extension
+reads the clipboard once to decide which paste actions to show: "Paste and
+search", "Paste" (into the search field) and "Paste and create" (create a
+bookmark from a web address). The clipboard text is used only for that
+insertion.
 
-Trigger: clipboard access happens only inside the click handler of the
-Paste button, only on the extension's own new tab page, and only after
-an explicit user action. The extension never reads the clipboard in the
-background, on page load, or without a preceding click.
+Trigger: clipboard access happens only while opening the custom context menu
+on the extension's own new tab page, after an explicit right-click or
+long-press by the user. The extension never reads the clipboard in the
+background, on page load, or without a preceding user action.
 
-Data handling: the clipboard content is placed into the form field and
-stored (if the user confirms) in chrome.storage.sync. It is not sent to
-any server — the extension has no network transmission of user data at all.
+Data handling: the clipboard text is inserted into the search field or used
+to create a bookmark, and stored only if the user confirms. It is not sent to
+any server — the extension has no network transmission of user data.
+```
+
+---
+
+## Permission justification: `unlimitedStorage`
+
+> Форма CWS → Permissions → unlimitedStorage
+
+```
+The extension lets users choose a background image from their device. Image
+data is stored locally in chrome.storage.local. Without unlimitedStorage a
+large image could exceed the default local quota, and the user's chosen
+background would not be saved. The data never leaves the device.
+```
+
+---
+
+## Permission justification: optional host permissions
+
+> Форма CWS → Permissions → optional host permissions
+
+```
+Host permissions are optional and requested at runtime only when the user
+adds a bookmark: the extension tries to read the page <title> to suggest a
+bookmark name. The browser shows a permission prompt for that site; the user
+can deny it. If denied, the extension falls back to the hostname and does not
+access the site. No host access is requested at install time.
 ```
 
 ---
@@ -51,10 +79,10 @@ any server — the extension has no network transmission of user data at all.
 > Форма CWS → "Describe the single purpose of your extension"
 
 ```
-Custom New Tab replaces the browser's new tab page with a
-user-customizable dashboard: web search, bookmark tiles, and background
-images. All user data (bookmarks, backgrounds, search engines, theme)
-is stored locally via chrome.storage.sync and is never transmitted
+Custom New Tab replaces the browser's new tab page with a user-customizable
+dashboard: web search, bookmark tiles on multiple screens, and background
+images. All user data (bookmarks, screens, backgrounds, search engines,
+theme) is stored locally via chrome.storage and is never transmitted
 anywhere.
 ```
 
@@ -66,5 +94,5 @@ anywhere.
 
 Обоснование на случай вопросов: расширение загружает только изображения
 (иконки сайтов, фоны) через `<img src>` — это не удалённый код в
-терминологии политики CWS. Весь исполняемый код (app.js, background.js)
-входит в пакет.
+терминологии политики CWS. Весь исполняемый код входит в пакет:
+`background.js`, `newtab/app.js`, `newtab/core/*.js`, `newtab/features/*.js`.
