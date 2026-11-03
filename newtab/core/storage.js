@@ -241,6 +241,59 @@ function makeFileId() {
     return 'bg' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
+// --- Экраны: несколько независимых наборов закладок ---
+
+const DEFAULT_SCREEN_ID = 'main';
+
+function makeScreenId() {
+    return 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+/**
+ * Название экрана по умолчанию. Первый — «Главная», остальные — «Экран N».
+ * t() возвращает ключ, если перевода ещё нет — тогда используем русский
+ * литерал, чтобы миграция не показывала пользователю сырой ключ.
+ */
+function defaultScreenTitle(index) {
+    if (index === 0) {
+        const label = typeof t === 'function' ? t('defaultScreen') : 'defaultScreen';
+        return label !== 'defaultScreen' ? label : 'Главная';
+    }
+    const label = typeof t === 'function' ? t('screenName', { n: index + 1 }) : 'screenName';
+    return label !== 'screenName' ? label : `Экран ${index + 1}`;
+}
+
+/**
+ * Приводит список экранов к нормализованному виду. Если экранов нет,
+ * оборачивает legacy-массив закладок в один экран «Главная» — миграция
+ * старого формата без отдельного шага.
+ */
+function normalizeScreens(rawScreens, legacyBookmarks) {
+    const rawList = Array.isArray(rawScreens) && rawScreens.length
+        ? rawScreens
+        : [{ id: DEFAULT_SCREEN_ID, title: defaultScreenTitle(0), bookmarks: legacyBookmarks || DEFAULT_BOOKMARKS }];
+
+    const usedIds = new Set();
+    return rawList.map((raw, index) => {
+        const item = raw && typeof raw === 'object' ? raw : {};
+        let id = typeof item.id === 'string' && item.id.trim()
+            ? item.id.trim()
+            : (index === 0 ? DEFAULT_SCREEN_ID : makeScreenId());
+        while (usedIds.has(id)) id = makeScreenId();
+        usedIds.add(id);
+
+        let title = typeof item.title === 'string' ? item.title.trim() : '';
+        if (!title) title = defaultScreenTitle(index);
+
+        const sourceBookmarks = Array.isArray(item.bookmarks)
+            ? item.bookmarks
+            : (index === 0 ? legacyBookmarks : []);
+        const bookmarks = sanitizeList(sourceBookmarks).items;
+
+        return { id, title, bookmarks };
+    });
+}
+
 /**
  * Читает данные из chrome.storage.sync.
  *
@@ -273,6 +326,33 @@ function storageSet(items, callback) {
         if (error) {
             console.warn('Не удалось сохранить настройки:', error.message);
         }
+        callback?.(error);
+    });
+}
+
+/** Удаляет ключи из chrome.storage.sync с проверкой lastError. */
+function storageRemove(keys, callback) {
+    if (!chrome.storage?.sync?.remove) { callback?.(); return; }
+    chrome.storage.sync.remove(keys, () => {
+        void chrome.runtime?.lastError;
+        callback?.();
+    });
+}
+
+/** Читает chrome.storage.local (файлы фонов, активный экран). */
+function storageLocalGet(keys, callback) {
+    if (!chrome.storage?.local) { callback?.({}); return; }
+    chrome.storage.local.get(keys, (result) => {
+        void chrome.runtime?.lastError;
+        callback(result || {});
+    });
+}
+
+/** Пишет chrome.storage.local с проверкой lastError. */
+function storageLocalSet(items, callback) {
+    if (!chrome.storage?.local) { callback?.(); return; }
+    chrome.storage.local.set(items, () => {
+        void chrome.runtime?.lastError;
         callback?.();
     });
 }
@@ -281,10 +361,26 @@ function storageSet(items, callback) {
  * Сохраняет переданные поля в chrome.storage.sync.
  * Пример: saveState({ bookmarks: [...] }) — обновить только закладки.
  */
-function saveState({ searchEngines, bookmarks, backgrounds, currentBackgroundIndex, currentSearchEngineIndex }) {
+function saveState({ searchEngines, bookmarks, backgrounds, screens, currentBackgroundIndex, currentSearchEngineIndex }) {
     const payload = {};
     if (searchEngines) payload.searchEngines = searchEngines;
-    if (bookmarks) payload.bookmarks = bookmarks;
+    if (screens) {
+        payload.screens = screens;
+    } else if (bookmarks) {
+        // Старые вызовы saveState({ bookmarks }) обновляют активный экран:
+        // так не приходится переписывать все точки сохранения сразу.
+        const hasScreens = typeof currentState !== 'undefined'
+            && Array.isArray(currentState.screens)
+            && currentState.screens.length;
+        if (hasScreens) {
+            const active = currentState.screens.find((s) => s.id === currentState.currentScreenId)
+                || currentState.screens[0];
+            active.bookmarks = bookmarks;
+            payload.screens = currentState.screens;
+        } else {
+            payload.bookmarks = bookmarks;
+        }
+    }
     if (backgrounds) payload.backgrounds = backgrounds;
     if (currentBackgroundIndex !== undefined) payload.currentBackgroundIndex = currentBackgroundIndex;
     if (currentSearchEngineIndex !== undefined) payload.currentSearchEngineIndex = currentSearchEngineIndex;
@@ -296,10 +392,23 @@ function saveState({ searchEngines, bookmarks, backgrounds, currentBackgroundInd
  * Если какого-то поля нет (первый запуск) — подставляет значения по умолчанию.
  */
 function getState(callback) {
-    storageGet(['searchEngines', 'bookmarks', 'backgrounds', 'currentBackgroundIndex', 'currentSearchEngineIndex'], (result) => {
+    storageGet(['screens', 'bookmarks', 'searchEngines', 'backgrounds', 'currentBackgroundIndex', 'currentSearchEngineIndex'], (result) => {
+        const screens = normalizeScreens(result.screens, result.bookmarks);
+        const active = screens[0];
+
+        // Первый запуск после обновления: сохраняем новый формат и убираем
+        // legacy-ключ bookmarks, чтобы не дублировать закладки в квоте.
+        if (!Array.isArray(result.screens)) {
+            storageSet({ screens }, (error) => {
+                if (!error) storageRemove('bookmarks');
+            });
+        }
+
         callback({
+            screens,
+            currentScreenId: active.id,
+            bookmarks: active.bookmarks,
             searchEngines: result.searchEngines || DEFAULT_SEARCH_ENGINES,
-            bookmarks: result.bookmarks || DEFAULT_BOOKMARKS,
             backgrounds: result.backgrounds || DEFAULT_BACKGROUNDS,
             currentBackgroundIndex: result.currentBackgroundIndex ?? 0,
             currentSearchEngineIndex: result.currentSearchEngineIndex ?? 0

@@ -59,13 +59,15 @@ function initBookmarks() {
 
             const bookmarkData = { title, url: normalizedUrl, icon: icon || `https://${urlObj.hostname}/favicon.ico` };
 
+            const target = screenById(editingBookmarkScreenId) || managedScreen();
+            const targetBookmarks = target ? target.bookmarks : currentState.bookmarks;
             if (editingBookmarkIndex !== null) {
-                currentState.bookmarks[editingBookmarkIndex] = bookmarkData;
+                targetBookmarks[editingBookmarkIndex] = bookmarkData;
             } else {
-                currentState.bookmarks.push(bookmarkData);
+                targetBookmarks.push(bookmarkData);
             }
 
-            saveState({ bookmarks: currentState.bookmarks });
+            saveState({ screens: currentState.screens });
             refreshUI();
             hideAddForm('bookmark'); // прячем форму после сохранения
         });
@@ -74,14 +76,15 @@ function initBookmarks() {
         bookmarkManagerList.addEventListener('click', (e) => {
             const editBtn = e.target.closest('.bookmark-manage-edit');
             if (editBtn) {
-                startEditing(Number(editBtn.dataset.index), 'bookmark');
+                startEditing(Number(editBtn.dataset.index), 'bookmark', managedScreen()?.id);
                 return;
             }
 
             const deleteBtn = e.target.closest('.bookmark-manage-delete');
             if (deleteBtn) {
-                currentState.bookmarks.splice(Number(deleteBtn.dataset.index), 1);
-                saveState({ bookmarks: currentState.bookmarks });
+                const managed = managedScreen();
+                (managed ? managed.bookmarks : currentState.bookmarks).splice(Number(deleteBtn.dataset.index), 1);
+                saveState({ screens: currentState.screens });
                 refreshUI();
             }
         });
@@ -94,7 +97,7 @@ function initBookmarks() {
             const editBtn = e.target.closest('.edit-bookmark');
             if (editBtn) {
                 e.stopPropagation(); // не даём плитке открыть ссылку
-                startEditing(Number(editBtn.dataset.index), 'bookmark');
+                startEditing(Number(editBtn.dataset.index), 'bookmark', currentState.currentScreenId);
                 return;
             }
 
@@ -102,7 +105,7 @@ function initBookmarks() {
             if (deleteBtn) {
                 e.stopPropagation();
                 currentState.bookmarks.splice(Number(deleteBtn.dataset.index), 1);
-                saveState({ bookmarks: currentState.bookmarks });
+                saveState({ screens: currentState.screens });
                 refreshUI();
             }
         });

@@ -98,5 +98,21 @@
   "errEngineUrl": { "message": "Enter a URL with %s." },
   "copyFailed": { "message": "Failed to copy text." },
   "cutFailed": { "message": "Failed to cut text." },
-  "defaultBackground": { "message": "Default" }
+  "defaultBackground": { "message": "Default" },
+  "defaultScreen": { "message": "Home" },
+  "screenName": { "message": "Screen $n$", "placeholders": { "n": { "content": "$1" } } },
+  "emptyScreen": { "message": "No bookmarks on this screen yet." },
+  "emptyScreenAdd": { "message": "Add bookmark" },
+  "tabScreens": { "message": "Screens" },
+  "screenLabel": { "message": "Screen" },
+  "addScreen": { "message": "＋ Add screen" },
+  "screenTitlePlaceholder": { "message": "Screen name" },
+  "deleteScreenTitle": { "message": "Delete screen?" },
+  "moveToHome": { "message": "Move to Home" },
+  "deleteWithScreen": { "message": "Delete with screen" },
+  "moveToScreenTitle": { "message": "Move to screen" },
+  "moveToScreen": { "message": "Move to screen…" },
+  "bookmarksCount": { "message": "$n$ bookmarks", "placeholders": { "n": { "content": "$1" } } },
+  "moveLeft": { "message": "Move left" },
+  "moveRight": { "message": "Move right" }
 }

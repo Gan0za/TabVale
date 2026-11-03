@@ -181,9 +181,10 @@ byId('reset-settings').click();
 await new Promise((r) => setTimeout(r, 10));
 
 // saveState пишет состояние, storageSet({theme}) — отдельный вызов после
-const saved = syncSets.find((s) => s.bookmarks);
+const saved = syncSets.filter((s) => s.screens).at(-1);
 assert.ok(saved, 'после сброса состояние сохранено');
-assert.equal(saved.bookmarks.length, 2, 'закладки — дефолтный набор');
+assert.equal(saved.screens[0].bookmarks.length, 2, 'закладки — дефолтный набор');
+assert.equal(saved.currentScreenId, undefined, 'активный экран не пишется в sync');
 assert.equal(saved.searchEngines.length, 3, 'поисковики — дефолтный набор');
 assert.equal(saved.backgrounds.length, 1, 'фоны — дефолтный набор');
 assert.equal(saved.currentBackgroundIndex, 0, 'выбран первый дефолтный фон');

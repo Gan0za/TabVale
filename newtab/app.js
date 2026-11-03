@@ -37,10 +37,12 @@ window.addEventListener('DOMContentLoaded', () => {
     // загрузки состояния) динамические списки. Затем обычная загрузка данных.
     getState((state) => {
         currentState = state;
-        storageGet('lang', (result) => {
-            applyLocale(result.lang || 'auto').then(() => {
-                refreshUI();
-                updateLanguageButton(result.lang || 'auto');
+        loadActiveScreen(() => {
+            storageGet('lang', (result) => {
+                applyLocale(result.lang || 'auto').then(() => {
+                    refreshUI();
+                    updateLanguageButton(result.lang || 'auto');
+                });
             });
         });
     });
@@ -52,6 +54,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     initSearch();
+    initScreens();
     initSettings();
     initBookmarks();
     initBackgrounds();
