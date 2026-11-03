@@ -154,6 +154,7 @@ const chromeStub = {
             set(items, cb) {
                 syncSets.push(items);
                 if (items.bookmarks) savedOrder = items.bookmarks.map((b) => b.title);
+                if (items.screens) savedOrder = items.screens[0].bookmarks.map((b) => b.title);
                 cb && cb();
             },
         },

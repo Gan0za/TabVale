@@ -98,5 +98,21 @@
   "errEngineUrl": { "message": "Введите URL с %s." },
   "copyFailed": { "message": "Не удалось скопировать текст." },
   "cutFailed": { "message": "Не удалось вырезать текст." },
-  "defaultBackground": { "message": "По умолчанию" }
+  "defaultBackground": { "message": "По умолчанию" },
+  "defaultScreen": { "message": "Главная" },
+  "screenName": { "message": "Экран $n$", "placeholders": { "n": { "content": "$1" } } },
+  "emptyScreen": { "message": "На этом экране пока нет закладок." },
+  "emptyScreenAdd": { "message": "Добавить закладку" },
+  "tabScreens": { "message": "Экраны" },
+  "screenLabel": { "message": "Экран" },
+  "addScreen": { "message": "＋ Добавить экран" },
+  "screenTitlePlaceholder": { "message": "Название экрана" },
+  "deleteScreenTitle": { "message": "Удалить экран?" },
+  "moveToHome": { "message": "Перенести на Главную" },
+  "deleteWithScreen": { "message": "Удалить вместе с экраном" },
+  "moveToScreenTitle": { "message": "Переместить на экран" },
+  "moveToScreen": { "message": "Переместить на экран…" },
+  "bookmarksCount": { "message": "$n$ закладок", "placeholders": { "n": { "content": "$1" } } },
+  "moveLeft": { "message": "Сдвинуть влево" },
+  "moveRight": { "message": "Сдвинуть вправо" }
 }

@@ -155,7 +155,26 @@ function renderSearchEngineDropdown(engines, selectedIndex) {
  * Отрисовывает плитки закладок на главной странице.
  */
 function renderBookmarks(container, bookmarks) {
+    if (!container) return;
     container.textContent = '';
+
+    if (!bookmarks.length) {
+        const empty = document.createElement('div');
+        empty.className = 'bookmarks-empty';
+
+        const text = document.createElement('p');
+        text.textContent = t('emptyScreen');
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn empty-add-bookmark';
+        button.textContent = t('emptyScreenAdd');
+
+        empty.append(text, button);
+        container.appendChild(empty);
+        return;
+    }
+
     bookmarks.forEach((bookmark, index) => {
         container.appendChild(buildBookmarkTile(bookmark, index));
     });
@@ -244,10 +263,19 @@ function getContextMenuItems(type, data = {}) {
             return [
                 { action: 'editBookmark', label: t('edit') },
                 { action: 'deleteBookmark', label: t('delete') },
+                { action: 'moveBookmark', label: t('moveToScreen') },
                 { action: 'openInNewTab', label: t('openInNewTab') },
                 { action: 'copyLink', label: t('copyLink') },
                 { separator: true },
                 { action: 'openSettings', label: t('settings') },
+            ];
+        case 'screenTab':
+            return [
+                { action: 'screenRename', label: t('edit') },
+                { action: 'screenDelete', label: t('delete') },
+                { separator: true },
+                { action: 'screenMoveLeft', label: t('moveLeft') },
+                { action: 'screenMoveRight', label: t('moveRight') },
             ];
         case 'background':
             // Меню пустого фона: смена фона и переходы в настройки.
@@ -403,6 +431,24 @@ function renderSearchEngineManagerItem(engine, index, selectedIndex) {
         subtitle: engine.url,
         index,
         rowType: 'searchEngine'
+    });
+}
+
+function renderScreenManagerItem(screen, index, currentId) {
+    return buildManagerListItem({
+        buttons: [
+            ['screen-manage-up', '↑'],
+            ['screen-manage-down', '↓'],
+            ['screen-manage-edit', t('editShort')],
+            ['screen-manage-delete', t('delete')],
+        ],
+        selected: screen.id === currentId,
+        imageUrl: null,
+        emptyImageText: '▦',
+        title: screen.title,
+        subtitle: t('bookmarksCount', { n: screen.bookmarks.length }),
+        index,
+        rowType: 'screen'
     });
 }
 
