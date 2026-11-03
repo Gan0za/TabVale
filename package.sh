@@ -24,11 +24,18 @@ cd "$PROJECT_ROOT"
 # Версию берём из манифеста — единого источника правды о версии
 VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('manifest.json','utf8')).version)")
 
-# tar (bsdtar) с флагом -a создаёт zip по расширению .zip; есть в Windows 10+
+# Только bsdtar умеет -a (zip по расширению). GNU tar из Git Bash
+# создаёт невалидный .zip, поэтому его не используем.
 DIST_DIR="dist"
 ZIP_NAME="$DIST_DIR/self_tabs_v${VERSION}.zip"
-TAR="/c/WINDOWS/system32/tar.exe"
-command -v tar >/dev/null && TAR="tar"
+if [ -x "/c/WINDOWS/system32/tar.exe" ]; then
+    TAR="/c/WINDOWS/system32/tar.exe"
+elif command -v bsdtar >/dev/null 2>&1; then
+    TAR="bsdtar"
+else
+    echo "Нужен bsdtar: Windows tar.exe или bsdtar в PATH." >&2
+    exit 1
+fi
 
 mkdir -p "$DIST_DIR"
 
