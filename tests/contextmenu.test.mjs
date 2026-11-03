@@ -62,8 +62,8 @@ const bookmark = getContextMenuItems('bookmark', { index: 0, url: 'https://a.com
 const bookmarkActions = Array.from(bookmark.filter(i => !i.separator).map(i => i.action));
 assert.deepEqual(
     bookmarkActions,
-    ['editBookmark', 'deleteBookmark', 'openInNewTab', 'copyLink', 'openSettings'],
-    'меню плитки: редактировать, удалить, новая вкладка, копировать, настройки'
+    ['editBookmark', 'deleteBookmark', 'moveBookmark', 'openInNewTab', 'copyLink', 'openSettings'],
+    'меню плитки: редактировать, удалить, переместить, новая вкладка, копировать, настройки'
 );
 // Разделитель — перед пунктом "Настройки" (индексы берём в полном списке,
 // куда разделители тоже входят)
@@ -71,6 +71,16 @@ assert.deepEqual(bookmark.filter(i => i.separator).length, 1, 'один разд
 const settingsIdx = bookmark.findIndex(i => i.action === 'openSettings');
 assert.equal(bookmark[settingsIdx - 1].separator, true,
     'разделитель идёт перед пунктом "Настройки"');
+
+// --- Меню точки экрана: переименовать, удалить, сдвинуть ---
+const screenTabActions = Array.from(getContextMenuItems('screenTab', {})
+    .filter((i) => !i.separator)
+    .map((i) => i.action));
+assert.deepEqual(
+    screenTabActions,
+    ['screenRename', 'screenDelete', 'screenMoveLeft', 'screenMoveRight'],
+    'меню точки: переименовать, удалить, сдвинуть влево/вправо'
+);
 
 // --- Меню пустого фона (фонов несколько) ---
 const background = getContextMenuItems('background', { hasBackgrounds: true, canSwitchBackground: true });

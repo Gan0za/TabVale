@@ -64,7 +64,8 @@ function openContextMenu(x, y, items) {
 const ROW_BUTTON_PREFIX = {
     bookmark: 'bookmark-manage',
     background: 'background-manage',
-    searchEngine: 'search-engine'
+    searchEngine: 'search-engine',
+    screen: 'screen-manage'
 };
 
 // Данные элемента, на котором открыли меню. Запоминаются в момент
@@ -81,16 +82,29 @@ let contextMenuToken = 0;
  * переиспользующая уже существующую логику приложения.
  */
 const contextActions = {
-    openSettings: () => openSettingsModal('bookmarks'),
+    openSettings: () => {
+        managedScreenId = currentState.currentScreenId;
+        openSettingsModal('bookmarks');
+    },
     backgroundSettings: () => openSettingsModal('backgrounds'),
     searchEngineSettings: () => openSettingsModal('search-engines'),
 
     editBookmark: (data) => startEditing(data.index, 'bookmark'),
     deleteBookmark: (data) => {
         currentState.bookmarks.splice(data.index, 1);
-        saveState({ bookmarks: currentState.bookmarks });
+        saveState({ screens: currentState.screens });
         refreshUI();
     },
+    moveBookmark: (data) => openScreenPicker(data.index),
+
+    screenRename: (data) => {
+        const index = currentState.screens.findIndex((s) => s.id === data.screenId);
+        openSettingsModal('screens');
+        startEditingScreen(index);
+    },
+    screenDelete: (data) => openScreenDeleteDialog(data.screenId),
+    screenMoveLeft: (data) => moveScreenBy(data.screenId, -1),
+    screenMoveRight: (data) => moveScreenBy(data.screenId, 1),
     // opener гасим: открытый сайт не должен получать ссылку на страницу
     // расширения (обратный табнабинг; у плиточных ссылок для этого
     // стоит rel="noreferrer")
@@ -102,6 +116,7 @@ const contextActions = {
 
     // Создание новой закладки: открываем форму закладок в настройках
     addBookmark: () => {
+        managedScreenId = currentState.currentScreenId;
         openSettingsModal('bookmarks');
         hideAddForm('bookmark');      // сброс полей и флага редактирования
         showAddForm('bookmark');

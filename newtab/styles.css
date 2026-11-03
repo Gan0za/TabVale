@@ -1097,6 +1097,25 @@ h1, h2 {
     border-bottom: none;
 }
 
+.general-row select {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background-color: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.modal-small {
+    width: min(92vw, 420px);
+    height: auto;
+    max-height: 80vh;
+}
+
+.modal-small #screen-delete-text {
+    margin: 0 0 8px;
+}
+
 /* Кнопки импорта/экспорта в одну линию с переносом на узких экранах */
 .general-actions {
     gap: 8px;
@@ -1311,5 +1330,73 @@ h1, h2 {
         height: 94vh;
         padding: 10px;
     }
+}
+
+/* --- Экраны: точки-индикаторы под сеткой закладок --- */
+.screen-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.screen-dots.hidden {
+    display: none;
+}
+
+.screen-dot {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.screen-dot:hover {
+    background: rgba(255, 255, 255, 0.75);
+}
+
+.screen-dot.active {
+    background: #fff;
+    transform: scale(1.2);
+}
+
+.screen-add {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 50%;
+    background: transparent;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+[data-theme="light"] .screen-add {
+    border-color: rgba(0, 0, 0, 0.35);
+    color: #333;
+}
+
+[data-theme="light"] .screen-dot {
+    background: rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="light"] .screen-dot.active {
+    background: #333;
+}
+
+.bookmarks-empty {
+    text-align: center;
+    opacity: 0.85;
+}
+
+.bookmarks-empty p {
+    margin: 0 0 10px;
 }
 

@@ -11,7 +11,10 @@
  * Регистрирует слушатели секции. Вызывается из бутстрапа app.js.
  */
 function initSettings() {
-        settingsButton.addEventListener('click', () => openSettingsModal('bookmarks'));
+        settingsButton.addEventListener('click', () => {
+            managedScreenId = currentState.currentScreenId;
+            openSettingsModal('bookmarks');
+        });
         closeSettingsButton.addEventListener('click', closeSettingsModal);
         overlay.addEventListener('click', closeSettingsModal);
 
@@ -43,7 +46,7 @@ function initSettings() {
                 const fileBackdrops = currentState.backgrounds.filter((b) => b.type === 'file');
                 const keys = fileBackdrops.map((b) => fileKey(b.fileId)).filter(Boolean);
                 if (!fileBackdrops.length) {
-                    downloadJson({ ...currentState, theme: result.theme || 'auto' });
+                    downloadJson(buildExportPayload(currentState.backgrounds, result.theme));
                     return;
                 }
                 chrome.storage.local.get(keys, (files) => {
@@ -51,10 +54,22 @@ function initSettings() {
                     const withData = currentState.backgrounds.map((bg) => (
                         bg.type === 'file' ? { ...bg, data: (files || {})[fileKey(bg.fileId)] || '' } : bg
                     ));
-                    downloadJson({ ...currentState, backgrounds: withData, theme: result.theme || 'auto' });
+                    downloadJson(buildExportPayload(withData, result.theme));
                 });
             });
         });
+
+        function buildExportPayload(backgrounds, theme) {
+            return {
+                version: 2,
+                screens: currentState.screens,
+                searchEngines: currentState.searchEngines,
+                backgrounds,
+                currentBackgroundIndex: currentState.currentBackgroundIndex,
+                currentSearchEngineIndex: currentState.currentSearchEngineIndex,
+                theme: theme || 'auto',
+            };
+        }
 
         /**
          * Скачивает JSON со настройками (общий хвост экспорта).
@@ -80,11 +95,21 @@ function initSettings() {
                 // небезопасными адресами (javascript: и т.п.) и битыми полями
                 // отбрасываются, остальное импортируется. У фонов своя
                 // санитизация: у них типы (url/file/color/gradient)
-                const bookmarks = sanitizeList(payload.bookmarks);
+                const rawBookmarks = Array.isArray(payload.screens)
+                    ? payload.screens.flatMap((s) => Array.isArray(s?.bookmarks) ? s.bookmarks : [])
+                    : (payload.bookmarks || []);
+                const bookmarks = sanitizeList(rawBookmarks);
                 const backgrounds = sanitizeBackgrounds(payload.backgrounds);
                 const searchEngines = sanitizeList(payload.searchEngines, { requirePlaceholder: true });
+                const importedScreens = payload.screens !== undefined || payload.bookmarks !== undefined
+                    ? normalizeScreens(payload.screens, payload.bookmarks)
+                    : null;
 
-                if (payload.bookmarks !== undefined) newState.bookmarks = bookmarks.items;
+                if (importedScreens) {
+                    newState.screens = importedScreens;
+                    newState.currentScreenId = importedScreens[0].id;
+                    newState.bookmarks = importedScreens[0].bookmarks;
+                }
                 if (payload.backgrounds !== undefined) {
                     newState.backgrounds = backgrounds.items;
                     // file-фоны из импорта несут data (data:URL) — раскладываем
@@ -145,6 +170,8 @@ function initSettings() {
             }
 
             currentState = {
+                screens: [{ id: DEFAULT_SCREEN_ID, title: defaultScreenTitle(0), bookmarks: DEFAULT_BOOKMARKS }],
+                currentScreenId: DEFAULT_SCREEN_ID,
                 searchEngines: DEFAULT_SEARCH_ENGINES,
                 bookmarks: DEFAULT_BOOKMARKS,
                 backgrounds: DEFAULT_BACKGROUNDS,

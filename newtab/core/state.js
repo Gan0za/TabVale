@@ -20,6 +20,7 @@ const searchEngineDropdownBtn = document.getElementById('search-engine-button');
 const searchEngineList = document.getElementById('search-engine-list');
 const searchButton = document.getElementById('search-button');
 const bookmarksContainer = document.getElementById('bookmarks-container');
+const screenDots = document.getElementById('screen-dots');
 
 const contextMenu = document.getElementById('custom-context-menu');
 const overlay = document.getElementById('overlay');
@@ -67,10 +68,29 @@ const addSearchEngineButton = document.getElementById('add-search-engine');
 const saveSearchEngineButton = document.getElementById('save-search-engine');
 const refreshSearchEngineIconButton = document.getElementById('refresh-search-engine-icon');
 
+// Экраны
+const screensManagerList = document.getElementById('screens-manager-list');
+const screenTitleInput = document.getElementById('screen-title-input');
+const showScreenFormButton = document.getElementById('show-screen-form');
+const screenForm = document.getElementById('screen-form');
+const saveScreenButton = document.getElementById('save-screen');
+const cancelScreenButton = document.getElementById('cancel-screen');
+const bookmarkScreenSelect = document.getElementById('bookmark-screen-select');
+const screenDeleteModal = document.getElementById('screen-delete-modal');
+const screenDeleteText = document.getElementById('screen-delete-text');
+const screenDeleteMoveButton = document.getElementById('screen-delete-move');
+const screenDeleteAllButton = document.getElementById('screen-delete-all');
+const screenDeleteCancelButton = document.getElementById('screen-delete-cancel');
+const screenPickerModal = document.getElementById('screen-picker-modal');
+const screenPickerList = document.getElementById('screen-picker-list');
+const screenPickerCancelButton = document.getElementById('screen-picker-cancel');
+
 // --- Текущее состояние приложения ---
 let currentState = {
-    searchEngines: DEFAULT_SEARCH_ENGINES,
+    screens: [{ id: DEFAULT_SCREEN_ID, title: defaultScreenTitle(0), bookmarks: DEFAULT_BOOKMARKS }],
+    currentScreenId: DEFAULT_SCREEN_ID,
     bookmarks: DEFAULT_BOOKMARKS,
+    searchEngines: DEFAULT_SEARCH_ENGINES,
     backgrounds: DEFAULT_BACKGROUNDS,
     currentBackgroundIndex: 0,
     currentSearchEngineIndex: 0
@@ -80,3 +100,8 @@ let currentState = {
 let editingBookmarkIndex = null;
 let editingBackgroundIndex = null;
 let editingSearchEngineIndex = null;
+let editingScreenIndex = null;
+let editingBookmarkScreenId = null;
+let managedScreenId = null;
+let screenToDeleteId = null;
+let bookmarkToMoveIndex = null;

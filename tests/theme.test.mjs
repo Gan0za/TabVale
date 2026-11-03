@@ -53,7 +53,7 @@ assert.ok(
 );
 
 // --- Тема участвует в импорте/экспорте ---
-assert.ok(js.includes('...currentState, theme:'), 'экспорт включает текущий режим темы');
+assert.ok(js.includes('version: 2') && js.includes('theme: theme ||'), 'экспорт включает версию и текущий режим темы');
 assert.ok(js.includes("themeModes.includes(payload.theme)"),
     'импорт принимает только корректные режимы темы');
 
