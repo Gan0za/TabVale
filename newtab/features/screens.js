@@ -46,8 +46,8 @@ function renderScreens() {
         dot.type = 'button';
         dot.className = 'screen-dot' + (screen.id === currentState.currentScreenId ? ' active' : '');
         dot.dataset.screenId = screen.id;
-        dot.title = screen.title;
-        dot.setAttribute('aria-label', screen.title);
+        dot.title = screenDisplayTitle(screen);
+        dot.setAttribute('aria-label', screenDisplayTitle(screen));
         dot.setAttribute('aria-current', screen.id === currentState.currentScreenId ? 'true' : 'false');
         let longPressFired = false;
         let longPressTimer = null;
@@ -207,7 +207,7 @@ function renderBookmarkScreenSelect() {
     currentState.screens.forEach((screen) => {
         const option = document.createElement('option');
         option.value = screen.id;
-        option.textContent = screen.title;
+        option.textContent = screenDisplayTitle(screen);
         option.selected = screen.id === selectedId;
         bookmarkScreenSelect.appendChild(option);
     });
@@ -236,7 +236,7 @@ function startEditingScreen(index) {
     const screen = currentState.screens[index];
     if (!screen) return;
     editingScreenIndex = index;
-    screenTitleInput.value = screen.title;
+    screenTitleInput.value = screenDisplayTitle(screen);
     showScreenForm();
     screenTitleInput.focus();
     screenTitleInput.select();
@@ -247,7 +247,10 @@ function saveScreenForm() {
     if (!title) { alert(t('errTitle')); return; }
 
     if (editingScreenIndex !== null) {
-        currentState.screens[editingScreenIndex].title = title;
+        const screen = currentState.screens[editingScreenIndex];
+        screen.title = title;
+        delete screen.titleKey;
+        delete screen.titleVars;
     } else {
         const screen = { id: makeScreenId(), title, bookmarks: [] };
         currentState.screens.push(screen);
@@ -257,12 +260,21 @@ function saveScreenForm() {
     saveScreens();
 }
 
+function canDeleteScreen(screens, screenId) {
+    return screens.length > 1 && screenId !== DEFAULT_SCREEN_ID;
+}
+
 function openScreenDeleteDialog(screenId) {
-    if (currentState.screens.length <= 1) return;
+    if (!canDeleteScreen(currentState.screens, screenId)) {
+        if (screenId === DEFAULT_SCREEN_ID && currentState.screens.length > 1) {
+            alert(t('mainScreenCannotDelete'));
+        }
+        return;
+    }
     const screen = screenById(screenId);
     if (!screen) return;
     screenToDeleteId = screen.id;
-    screenDeleteText.textContent = `${screen.title}: ${t('bookmarksCount', { n: screen.bookmarks.length })}`;
+    screenDeleteText.textContent = `${screenDisplayTitle(screen)}: ${t('bookmarksCount', { n: screen.bookmarks.length })}`;
     screenDeleteModal.classList.remove('hidden');
     overlay.classList.remove('hidden');
 }
@@ -302,7 +314,7 @@ function renderScreenPicker() {
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'btn';
-        button.textContent = `${screen.title} (${screen.bookmarks.length})`;
+        button.textContent = `${screenDisplayTitle(screen)} (${screen.bookmarks.length})`;
         button.addEventListener('click', () => moveBookmarkToScreen(screen.id));
         screenPickerList.appendChild(button);
     });

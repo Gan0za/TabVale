@@ -114,5 +114,6 @@
   "moveToScreen": { "message": "Переместить на экран…" },
   "bookmarksCount": { "message": "$n$ закладок", "placeholders": { "n": { "content": "$1" } } },
   "moveLeft": { "message": "Сдвинуть влево" },
-  "moveRight": { "message": "Сдвинуть вправо" }
+  "moveRight": { "message": "Сдвинуть вправо" },
+  "mainScreenCannotDelete": { "message": "Экран «Главная» удалить нельзя. Переименуйте его или удалите другой экран." }
 }
