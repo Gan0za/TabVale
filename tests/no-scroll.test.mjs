@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const projectRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const projectRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const css = fs.readFileSync(path.join(projectRoot, 'newtab', 'styles.css'), 'utf8');
 
 // body: минимальная высота в экран; flex-колонка не даёт margin панели

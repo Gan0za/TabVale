@@ -17,7 +17,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as js } from './_source.mjs';
 
 // --- Статические проверки: ключевые части нового механизма на месте ---

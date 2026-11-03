@@ -46,7 +46,7 @@
 
 - ✅ **3.1 LICENSE (MIT)** (eb5bea1)
 - ✅ **3.2 PRIVACY.md** (eb5bea1) — данные хранятся в chrome.storage.sync/local, наружу не передаются; описаны clipboardRead, unlimitedStorage и optional host permissions.
-- ✅ **3.3 Скрипт упаковки** (0583784) — `bash package.sh` → `dist/self_tabs_v{version}.zip` с рантайм-файлами (manifest, background.js, newtab/, assets/icons/icon*.png, _locales/) без .gitignore, favicon.svg.
+- ✅ **3.3 Скрипт упаковки** (0583784) — `bash package.sh` → `dist/self_tabs_v{version}.zip` с рантайм-файлами (manifest, background.js, newtab/, assets/icons/icon*.png, _locales/) без tests/, tools/, .gitignore, favicon.svg.
 - ✅ **3.4 Скриншоты для листинга** — 12 кадров 1280×800 в `docs/screenshots/`: главная, экраны, фоны, поисковики, контекстное меню, удаление экрана — каждый в тёмной и светлой теме.
 
 ## Блок 4 — GitHub и листинг

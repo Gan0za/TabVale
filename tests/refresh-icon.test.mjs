@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as source } from './_source.mjs';
 const html = fs.readFileSync(path.join(projectRoot, 'newtab', 'index.html'), 'utf8');
 const ru = JSON.parse(fs.readFileSync(path.join(projectRoot, '_locales', 'ru', 'messages.json'), 'utf8'));

@@ -21,7 +21,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as js } from './_source.mjs';
 const css = fs.readFileSync(path.join(projectRoot, 'newtab', 'styles.css'), 'utf8');
 

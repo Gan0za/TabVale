@@ -16,7 +16,7 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as source } from './_source.mjs';
 const ruMessages = JSON.parse(fs.readFileSync(path.join(projectRoot, '_locales', 'ru', 'messages.json'), 'utf8'));
 
