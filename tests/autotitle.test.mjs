@@ -1,5 +1,5 @@
 // Тест автовыбора заголовка и иконки (newtab/app.js).
-// Запуск: node .opencoder/tests/autotitle.test.mjs
+// Запуск: node tests/autotitle.test.mjs
 //
 // Двухшаговая форма: по URL предлагаются название и иконка. Проверяем
 // чистые функции, на которых строится автозаполнение:
@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as source } from './_source.mjs';
 
 function makeElement(tag) {

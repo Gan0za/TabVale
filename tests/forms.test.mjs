@@ -1,5 +1,5 @@
 // Тест связки HTML-разметки и логики форм добавления.
-// Запуск: node .opencoder/tests/forms.test.mjs
+// Запуск: node tests/forms.test.mjs
 //
 // app.js ожидает, что в index.html существуют кнопки "＋ Добавить",
 // сами формы и кнопки "Отмена" для каждого типа. Если ID разойдутся
@@ -12,7 +12,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(projectRoot, 'newtab', 'index.html'), 'utf8');
 import { SOURCE as js } from './_source.mjs';
 

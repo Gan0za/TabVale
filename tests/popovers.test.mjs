@@ -1,5 +1,5 @@
 // Тест всплывающих селекторов (тема/язык/поисковик) и их стилей.
-// Запуск: node .opencoder/tests/popovers.test.mjs
+// Запуск: node tests/popovers.test.mjs
 //
 // Регрессия: пункты селекторов «Общих» настроек — кнопки, и без сброса
 // браузерных стилей они выпирали из рамок меню; клик по одной кнопке не
@@ -21,7 +21,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as js } from './_source.mjs';
 const css = fs.readFileSync(path.join(projectRoot, 'newtab', 'styles.css'), 'utf8');
 

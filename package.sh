@@ -9,7 +9,7 @@
 #   _locales/
 #
 # Что НЕ попадает и почему:
-#   - .opencoder/, .gitignore, TODO_PUBLICATION.md — рабочие файлы разработки
+#   - tests/, tools/, .gitignore, TODO_PUBLICATION.md — рабочие файлы разработки
 #   - self_tabs_settings.json — личные данные (в .gitignore)
 #   - assets/icons/favicon.svg — манифест использует только PNG, лишний
 #     файл в архиве увеличивает вес и вызывает вопросы у ревью

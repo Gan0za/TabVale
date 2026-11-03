@@ -87,7 +87,8 @@ self_tabs/
 ├── _locales/                  # ru/en
 ├── assets/icons/              # Extension icons 16/48/128
 ├── docs/screenshots/          # Listing screenshots
-├── .opencoder/tests/          # Node tests (vm sandbox)
+├── tests/                     # Node tests (vm sandbox)
+├── tools/screenshot-sandbox/  # Screenshot generator
 ├── package.sh                 # Builds dist/self_tabs_v{version}.zip
 ├── PRIVACY.md                 # Privacy policy
 ├── CWS_REVIEW_NOTES.md        # Chrome Web Store review texts
@@ -119,13 +120,13 @@ The version is read from `manifest.json`.
 Node.js 18+ is required.
 
 ```bash
-for f in .opencoder/tests/*.test.mjs; do node "$f" || exit 1; done
+for f in tests/*.test.mjs; do node "$f" || exit 1; done
 ```
 
 A single test:
 
 ```bash
-node .opencoder/tests/screens.test.mjs
+node tests/screens.test.mjs
 ```
 
 ## Permissions

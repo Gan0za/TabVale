@@ -1,5 +1,5 @@
 // Тест связки переключателя темы: index.html <-> app.js <-> styles.css.
-// Запуск: node .opencoder/tests/theme.test.mjs
+// Запуск: node tests/theme.test.mjs
 //
 // Тема работает так: app.js читает режим ('auto'|'light'|'dark') из
 // chrome.storage.sync, решает, тёмная ли тема сейчас, и ставит атрибут
@@ -12,7 +12,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(projectRoot, 'newtab', 'index.html'), 'utf8');
 import { SOURCE as js } from './_source.mjs';
 const css = fs.readFileSync(path.join(projectRoot, 'newtab', 'styles.css'), 'utf8');

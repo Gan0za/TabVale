@@ -1,5 +1,5 @@
 // Тест основных функций newtab/app.js.
-// Запуск: node .opencoder/tests/app.test.mjs
+// Запуск: node tests/app.test.mjs
 //
 // app.js рассчитан на браузерное окружение (DOM + chrome.storage),
 // поэтому тест подставляет минимальные заглушки и проверяет:
@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as source } from './_source.mjs';
 
 // --- Минимальные заглушки DOM ---

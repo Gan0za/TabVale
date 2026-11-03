@@ -1,5 +1,5 @@
 // Smoke-тест инициализации страницы (newtab/app.js).
-// Запуск: node .opencoder/tests/init.test.mjs
+// Запуск: node tests/init.test.mjs
 //
 // Прогоняет весь обработчик DOMContentLoaded на универсальных заглушках
 // DOM. Ловит ReferenceError вроде "resetBackgroundForm is not defined":
@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as source } from './_source.mjs';
 
 // --- Универсальная заглушка элемента: любые свойства и методы ---

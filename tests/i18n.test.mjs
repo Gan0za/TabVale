@@ -1,5 +1,5 @@
 // Тест локализации интерфейса (newtab/app.js + _locales/).
-// Запуск: node .opencoder/tests/i18n.test.mjs
+// Запуск: node tests/i18n.test.mjs
 //
 // Как устроена локализация: строки интерфейса лежат в _locales/<код>/messages.json,
 // статическая разметка помечена data-i18n (текст), data-i18n-placeholder
@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as source } from './_source.mjs';
 const html = fs.readFileSync(path.join(projectRoot, 'newtab', 'index.html'), 'utf8');
 

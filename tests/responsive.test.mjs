@@ -1,6 +1,6 @@
 // Тест адаптивной вёрстки: media-запросы для планшетов, вертикальных
 // экранов и телефонов.
-// Запуск: node .opencoder/tests/responsive.test.mjs
+// Запуск: node tests/responsive.test.mjs
 //
 // Проверяем, что каждый формат получает свои правила и что все
 // media-запросы собраны в конце styles.css (после базовых).
@@ -11,7 +11,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 const css = fs.readFileSync(path.join(projectRoot, 'newtab', 'styles.css'), 'utf8');
 
 // --- Media-запросы существуют и покрывают форматы ---

@@ -1,6 +1,6 @@
 // Тест модели экранов: миграция legacy bookmarks, алиас активного экрана,
 // переключение и сохранение в chrome.storage.sync.
-// Запуск: node .opencoder/tests/screens.test.mjs
+// Запуск: node tests/screens.test.mjs
 
 import assert from 'node:assert/strict';
 import vm from 'node:vm';

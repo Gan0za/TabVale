@@ -1,5 +1,5 @@
 // Тест смены языка на лету (newtab/app.js).
-// Запуск: node .opencoder/tests/language-switch.test.mjs
+// Запуск: node tests/language-switch.test.mjs
 //
 // Баг: кнопки Select/Edit/Delete в списках настроек перерисовываются
 // только при загрузке страницы — applyLocale не могла вызвать refreshUI
@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as source } from './_source.mjs';
 const ruMessages = JSON.parse(fs.readFileSync(path.join(projectRoot, '_locales', 'ru', 'messages.json'), 'utf8'));
 const enMessages = JSON.parse(fs.readFileSync(path.join(projectRoot, '_locales', 'en', 'messages.json'), 'utf8'));

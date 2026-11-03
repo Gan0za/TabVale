@@ -1,5 +1,5 @@
 // Тест типов фонов: цвет, градиент, файл с устройства (newtab/app.js).
-// Запуск: node .opencoder/tests/background-types.test.mjs
+// Запуск: node tests/background-types.test.mjs
 //
 // Фон — не только картинка по ссылке: добавились типы color (hex-заливка),
 // gradient (from/to/angle) и file (картинка с устройства, данные в
@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as source } from './_source.mjs';
 
 function makeElement(tag) {

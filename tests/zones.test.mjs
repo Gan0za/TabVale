@@ -1,5 +1,5 @@
 // Тест контекстных меню зон main-container (newtab/app.js).
-// Запуск: node .opencoder/tests/zones.test.mjs
+// Запуск: node tests/zones.test.mjs
 //
 // Проверяем чистые функции, управляющие составом меню по зонам:
 //   getContextMenuItems('bookmarksEmpty') — меню пустого места секции закладок
@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as source } from './_source.mjs';
 
 function makeElement(tag) {

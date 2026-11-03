@@ -1,5 +1,5 @@
 // Тест редактирования file-фона (newtab/app.js).
-// Запуск: node .opencoder/tests/file-background-edit.test.mjs
+// Запуск: node tests/file-background-edit.test.mjs
 //
 // Баг: при нажатии "Ред." у file-фона диалог выбора файла пуст (браузер
 // запрещает программно заполнять input[type=file]), и сохранить было
@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as source } from './_source.mjs';
 const ruMessages = JSON.parse(fs.readFileSync(path.join(projectRoot, '_locales', 'ru', 'messages.json'), 'utf8'));
 

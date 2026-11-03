@@ -1,5 +1,5 @@
 // Тест санитизации импортируемых настроек (newtab/app.js).
-// Запуск: node .opencoder/tests/import.test.mjs
+// Запуск: node tests/import.test.mjs
 //
 // Импорт настроек принимает чужие JSON-файлы, поэтому списки закладок,
 // фонов и поисковиков прогоняются через sanitizeList: элементы с
@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as source } from './_source.mjs';
 
 // --- Минимальные заглушки DOM/браузера (app.js рассчитан на браузер) ---

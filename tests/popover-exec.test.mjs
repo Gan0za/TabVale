@@ -1,5 +1,5 @@
 // Исполняющий тест переключателей поповеров и wiring-инициализации.
-// Запуск: node .opencoder/tests/popover-exec.test.mjs
+// Запуск: node tests/popover-exec.test.mjs
 //
 // Регрессии сплита app.js (2026-10-26), которые пропустили текстовые
 // проверки popovers.test.mjs (они читают исходник, но не исполняют его):

@@ -1,5 +1,5 @@
 // Тест кнопки сброса настроек (раздел «Общие»).
-// Запуск: node .opencoder/tests/reset-settings.test.mjs
+// Запуск: node tests/reset-settings.test.mjs
 //
 // Проверяем:
 //   1. Кнопка есть в разметке и в app.js
@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as source } from './_source.mjs';
 const html = fs.readFileSync(path.join(projectRoot, 'newtab', 'index.html'), 'utf8');
 const ruMessages = JSON.parse(fs.readFileSync(path.join(projectRoot, '_locales', 'ru', 'messages.json'), 'utf8'));

@@ -1,5 +1,5 @@
 // Тест фонового скрипта (background.js) — логики контекстного меню.
-// Запуск: node .opencoder/tests/background.test.mjs
+// Запуск: node tests/background.test.mjs
 //
 // background.js использует chrome.* API, которого в Node нет.
 // Поэтому мы подставляем фейковые реализации chrome.contextMenus и
@@ -14,8 +14,8 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Тест лежит в .opencoder/tests/, корень проекта — на два уровня выше
-const projectRoot = path.resolve(__dirname, '..', '..');
+// Тест лежит в tests/, корень проекта — на уровень выше
+const projectRoot = path.resolve(__dirname, '..');
 const source = fs.readFileSync(path.join(projectRoot, 'background.js'), 'utf8');
 
 // --- Заглушки chrome API ---

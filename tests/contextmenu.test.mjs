@@ -1,5 +1,5 @@
 // Тест состава контекстных меню (newtab/app.js, функция getContextMenuItems).
-// Запуск: node .opencoder/tests/contextmenu.test.mjs
+// Запуск: node tests/contextmenu.test.mjs
 //
 // getContextMenuItems — чистая функция: по типу элемента возвращает список
 // пунктов меню. Здесь проверяем, что для каждого типа элемента меню
@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
 import { SOURCE as source } from './_source.mjs';
 
 // Минимальные заглушки DOM/бrowser — app.js рассчитан на браузер

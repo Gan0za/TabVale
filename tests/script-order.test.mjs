@@ -1,5 +1,5 @@
 // Инвариант сплита: единый список скриптов в трёх местах.
-// Запуск: node .opencoder/tests/script-order.test.mjs
+// Запуск: node tests/script-order.test.mjs
 //
 // После разделения app.js на файлы список рантайм-скриптов существует в
 // трёх копиях: порядок <script> в newtab/index.html, SCRIPT_FILES в
