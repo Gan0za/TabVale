@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TabVale — Privacy Policy</title>
+  <meta name="description" content="Privacy policy for the TabVale browser extension: all data stays in the browser, nothing is collected or transmitted.">
+  <link rel="icon" href="icon.png" type="image/png">
+  <style>
+    :root {
+      --bg: #071521;
+      --panel: rgba(255, 255, 255, 0.045);
+      --line: rgba(255, 255, 255, 0.1);
+      --text: #e8f2f8;
+      --muted: #9db4c4;
+      --accent: #4db6e2;
+      --code: rgba(77, 182, 226, 0.14);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(900px 500px at 15% -10%, rgba(77, 182, 226, 0.16), transparent 60%),
+        radial-gradient(700px 420px at 100% 0%, rgba(0, 122, 204, 0.18), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    a { color: var(--accent); }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .top {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      max-width: 860px; margin: 0 auto; padding: 22px 20px 0;
+    }
+    .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font-weight: 650; letter-spacing: .2px; }
+    .brand img { width: 30px; height: 30px; border-radius: 8px; }
+    .top a.back { color: var(--muted); text-decoration: none; font-size: 14px; }
+    .top a.back:hover { color: var(--text); }
+    main {
+      max-width: 860px; margin: 26px auto 40px; padding: 34px 30px;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
+      backdrop-filter: blur(12px);
+    }
+    h1 { margin: 0 0 4px; font-size: clamp(26px, 4vw, 34px); line-height: 1.2; letter-spacing: -.2px; }
+    h2 { margin: 30px 0 10px; font-size: 19px; line-height: 1.3; }
+    p, li { color: #d7e5ee; }
+    ul { padding-left: 22px; }
+    li + li { margin-top: 6px; }
+    .muted { color: var(--muted); font-size: 14px; margin: 0 0 22px; }
+    code { background: var(--code); padding: 1px 5px; border-radius: 5px; font-size: .92em; }
+    .table-wrap { overflow-x: auto; margin: 14px 0; border-radius: 12px; border: 1px solid var(--line); }
+    table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14.5px; }
+    th, td { padding: 10px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+    th { background: rgba(255, 255, 255, 0.05); font-weight: 600; color: var(--text); }
+    tr:last-child td { border-bottom: 0; }
+    footer {
+      max-width: 860px; margin: 0 auto 40px; padding: 0 20px;
+      display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+      color: var(--muted); font-size: 14px;
+    }
+    footer nav { display: flex; gap: 16px; flex-wrap: wrap; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+    @media (max-width: 560px) {
+      main { margin: 18px 12px 30px; padding: 24px 18px; border-radius: 16px; }
+      .top { padding: 18px 14px 0; }
+      footer { padding: 0 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="./"><img src="icon.png" alt="" width="30" height="30">TabVale</a>
+    <a class="back" href="./">← Back to TabVale</a>
+  </header>
+
+  <main>
+    <h1>Privacy Policy</h1>
+    <p class="muted">Last updated: 2026-11-09</p>
+
+    <p>
+      TabVale does not collect, process or transmit personal data.
+      Settings and user content stay in the browser through
+      <code>chrome.storage.sync</code> and <code>chrome.storage.local</code>.
+      If the user is signed in to the browser, sync data is synchronized by the
+      browser between that user's devices. Nothing is sent to our servers.
+    </p>
+
+    <h2>Data stored by the extension</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Data</th><th>Storage</th><th>Transmission</th></tr></thead>
+        <tbody>
+          <tr><td>Bookmarks (title, URL, icon)</td><td>chrome.storage.sync</td><td>None; browser sync only between the user's devices</td></tr>
+          <tr><td>Screens (title, order, bookmark membership)</td><td>chrome.storage.sync</td><td>None</td></tr>
+          <tr><td>Active screen</td><td>chrome.storage.local</td><td>None; device-specific</td></tr>
+          <tr><td>Backgrounds: URL, color or gradient</td><td>chrome.storage.sync</td><td>None</td></tr>
+          <tr><td>Backgrounds: local image files</td><td>chrome.storage.local</td><td>None</td></tr>
+          <tr><td>Search engines (name, URL, logo)</td><td>chrome.storage.sync</td><td>None</td></tr>
+          <tr><td>Theme and selected language</td><td>chrome.storage.sync</td><td>None</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Permissions</h2>
+    <ul>
+      <li><strong>storage</strong> — save bookmarks, screens, backgrounds and settings.</li>
+      <li><strong>unlimitedStorage</strong> — keep local background image files in <code>chrome.storage.local</code>.</li>
+      <li><strong>contextMenus</strong> — add items to the extension icon menu.</li>
+      <li><strong>clipboardRead</strong> — paste actions in the custom context menu. The clipboard is read once when that menu is opened on the extension's own new tab page, after an explicit user action. There is no background clipboard access.</li>
+      <li><strong>optional host permissions</strong> — requested per site only when adding a bookmark, to read the page <code>&lt;title&gt;</code> as a suggested name. The user can deny the request; the extension then uses the hostname.</li>
+    </ul>
+
+    <h2>Network activity</h2>
+    <p>
+      The extension has no server and does not send data anywhere. Site icons and
+      background images are loaded by the browser from addresses the user
+      entered. When adding a bookmark, the extension may ask the browser for
+      access to that specific site to read its title; without permission the
+      request is not made.
+    </p>
+
+    <h2>Export and deletion</h2>
+    <ul>
+      <li><strong>Export</strong> — the settings modal can save a JSON file with the user's data, including background files.</li>
+      <li><strong>Deletion</strong> — uninstalling the extension removes data from <code>chrome.storage.sync</code> and <code>chrome.storage.local</code>.</li>
+    </ul>
+
+    <h2>Contact</h2>
+    <p>
+      Privacy questions: open an issue at
+      <a href="https://github.com/Gan0za/TabVale/issues">github.com/Gan0za/TabVale/issues</a>.
+    </p>
+  </main>
+
+  <footer>
+    <span>© 2026 TabVale</span>
+    <nav>
+      <a href="./">Home</a>
+      <a href="https://github.com/Gan0za/TabVale">GitHub</a>
+      <a href="https://github.com/Gan0za/TabVale/issues">Issues</a>
+    </nav>
+  </footer>
+</body>
+</html>

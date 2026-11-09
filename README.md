@@ -4,6 +4,8 @@ A Chrome and Microsoft Edge extension that replaces the browser's new tab page
 with a customizable dashboard: search, multiple bookmark screens, and
 backgrounds.
 
+**Website:** [gan0za.github.io/TabVale](https://gan0za.github.io/TabVale/)
+
 **Read in:** [English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Français](README.fr.md) · [Español](README.es.md) · [Português (Brasil)](README.pt-BR.md) · [Italiano](README.it.md) · [Polski](README.pl.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) · [中文](README.zh.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
 > English is the source of truth. Short translations are provided for
@@ -86,10 +88,12 @@ tabvale/
 │       └── ui-actions.js      # Shared actions and refreshUI
 ├── _locales/                  # 13 languages
 ├── assets/icons/              # Extension icons 16/48/128
-├── docs/                      # CWS listing, privacy page, screenshots
+├── docs/                      # GitHub Pages site, CWS listing, screenshots
 │   ├── screenshots/
 │   ├── CWS_LISTING.md
 │   ├── index.html
+│   ├── privacy.html
+│   ├── icon.png
 │   └── icon-preview.png
 ├── tests/                     # Node tests (vm sandbox)
 ├── tools/screenshot-sandbox/  # Screenshot generator

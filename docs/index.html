@@ -3,70 +3,316 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TabVale — Privacy Policy</title>
+  <title>TabVale — a new tab with room for every bookmark</title>
+  <meta name="description" content="TabVale replaces the browser's new tab with search, independent bookmark screens and calm backgrounds. All data stays in your browser.">
+  <meta property="og:title" content="TabVale — a new tab with room for every bookmark">
+  <meta property="og:description" content="Search, several bookmark screens and calm backgrounds in one quiet page. No accounts, no tracking, no servers.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://gan0za.github.io/TabVale/">
+  <meta property="og:image" content="https://gan0za.github.io/TabVale/screenshots/01-main-dark.png">
+  <meta name="theme-color" content="#071521">
+  <link rel="icon" href="icon.png" type="image/png">
   <style>
-    body { max-width: 760px; margin: 40px auto; padding: 0 20px; font: 16px/1.6 system-ui, sans-serif; color: #222; }
-    h1, h2 { line-height: 1.25; }
-    table { border-collapse: collapse; width: 100%; margin: 16px 0; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; vertical-align: top; }
-    code { background: #f3f3f3; padding: 2px 4px; border-radius: 4px; }
-    .muted { color: #666; }
+    :root {
+      --bg: #071521;
+      --bg-soft: #0e3348;
+      --panel: rgba(255, 255, 255, 0.045);
+      --line: rgba(255, 255, 255, 0.1);
+      --text: #e8f2f8;
+      --muted: #9db4c4;
+      --accent: #4db6e2;
+      --accent-strong: #007acc;
+      --radius: 18px;
+      --max: 1120px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(1000px 560px at 12% -8%, rgba(77, 182, 226, 0.18), transparent 60%),
+        radial-gradient(800px 460px at 96% 2%, rgba(0, 122, 204, 0.2), transparent 58%),
+        linear-gradient(180deg, var(--bg-soft) 0%, var(--bg) 42%, var(--bg) 100%);
+      color: var(--text);
+      font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: var(--accent); }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+    .skip { position: absolute; left: -999px; top: 8px; background: #fff; color: #000; padding: 8px 12px; border-radius: 8px; }
+    .skip:focus { left: 12px; z-index: 10; }
+
+    header.nav {
+      position: sticky; top: 0; z-index: 5;
+      backdrop-filter: blur(14px);
+      background: rgba(7, 21, 33, 0.72);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; height: 64px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 650; letter-spacing: .2px; }
+    .brand img { width: 30px; height: 30px; border-radius: 8px; }
+    .nav-links { display: flex; align-items: center; gap: 22px; font-size: 14.5px; }
+    .nav-links a { color: var(--muted); text-decoration: none; }
+    .nav-links a:hover { color: var(--text); }
+
+    .hero { display: grid; grid-template-columns: 1.02fr .98fr; gap: 44px; align-items: center; padding: 64px 0 48px; }
+    .eyebrow { margin: 0 0 14px; color: var(--accent); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(34px, 5vw, 58px); line-height: 1.06; letter-spacing: -1.2px; }
+    .lead { margin: 20px 0 0; max-width: 34em; color: #c7d8e3; font-size: 18px; }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 46px; padding: 0 20px; border-radius: 12px;
+      text-decoration: none; font-weight: 600; font-size: 15px;
+      border: 1px solid var(--line); color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      transition: transform .15s ease, background .2s ease, border-color .2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); background: rgba(255, 255, 255, 0.1); }
+    .btn.primary { background: linear-gradient(180deg, #1494d4, var(--accent-strong)); border-color: transparent; color: #fff; }
+    .btn.primary:hover { background: linear-gradient(180deg, #28a6e6, #0a84c9); }
+    .btn.disabled { color: var(--muted); cursor: default; border-style: dashed; background: transparent; }
+    .facts { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 24px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 14px; }
+    .facts li::before { content: "·"; margin-right: 8px; color: var(--accent); }
+
+    .shot {
+      border-radius: var(--radius); border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 10px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(77, 182, 226, 0.08) inset;
+    }
+    .shot img { border-radius: 12px; width: 100%; height: auto; }
+
+    section { padding: 34px 0; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+    h2 { margin: 0; font-size: clamp(24px, 3vw, 34px); line-height: 1.15; letter-spacing: -.5px; }
+    .section-head p { margin: 8px 0 0; color: var(--muted); }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(248px, 1fr)); gap: 14px; }
+    .card {
+      padding: 22px; border-radius: var(--radius);
+      background: var(--panel); border: 1px solid var(--line);
+    }
+    .card svg { width: 24px; height: 24px; color: var(--accent); }
+    .card h3 { margin: 14px 0 6px; font-size: 17px; letter-spacing: -.1px; }
+    .card p { margin: 0; color: #b9ccd8; font-size: 14.5px; }
+
+    .switch { display: inline-flex; padding: 4px; gap: 4px; border: 1px solid var(--line); border-radius: 11px; background: rgba(255, 255, 255, 0.04); }
+    .switch button {
+      min-height: 36px; padding: 0 14px; border: 0; border-radius: 8px;
+      background: transparent; color: var(--muted); font: inherit; font-size: 14px; cursor: pointer;
+    }
+    .switch button.active { background: rgba(77, 182, 226, 0.18); color: var(--text); }
+
+    .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .gallery figure { margin: 0; }
+    .gallery .shot { padding: 8px; }
+    .gallery figcaption { margin-top: 9px; color: var(--muted); font-size: 13.5px; }
+
+    .privacy-band {
+      display: grid; grid-template-columns: 1.15fr .85fr; gap: 26px; align-items: center;
+      margin: 18px 0 26px; padding: 30px; border-radius: 22px;
+      border: 1px solid rgba(77, 182, 226, 0.28);
+      background: linear-gradient(135deg, rgba(77, 182, 226, 0.12), rgba(0, 122, 204, 0.08));
+    }
+    .privacy-band p { margin: 10px 0 0; color: #c7d8e3; }
+    .privacy-band .btn { justify-self: end; }
+
+    footer { border-top: 1px solid var(--line); margin-top: 26px; }
+    .foot { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 26px 0 40px; color: var(--muted); font-size: 14px; }
+    .foot nav { display: flex; gap: 18px; flex-wrap: wrap; }
+    .foot a { color: var(--muted); text-decoration: none; }
+    .foot a:hover { color: var(--text); }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; gap: 28px; padding-top: 42px; }
+      .privacy-band { grid-template-columns: 1fr; }
+      .privacy-band .btn { justify-self: start; }
+    }
+    @media (max-width: 700px) {
+      .gallery { grid-template-columns: 1fr; }
+      .section-head { align-items: start; flex-direction: column; }
+      .wrap { padding: 0 16px; }
+      .nav-links a:not(.keep) { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .btn { transition: none; }
+    }
   </style>
 </head>
 <body>
-  <h1>TabVale — Privacy Policy</h1>
-  <p class="muted">Last updated: 2026-11-09</p>
+  <a class="skip" href="#main">Skip to content</a>
 
-  <p>
-    TabVale does not collect, process or transmit personal data.
-    Settings and user content stay in the browser through
-    <code>chrome.storage.sync</code> and <code>chrome.storage.local</code>.
-    If the user is signed in to the browser, sync data is synchronized by the
-    browser between that user's devices. Nothing is sent to our servers.
-  </p>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="./"><img src="icon.png" alt="" width="30" height="30">TabVale</a>
+      <nav class="nav-links" aria-label="Main">
+        <a href="#features">Features</a>
+        <a href="#screenshots">Screenshots</a>
+        <a href="privacy.html">Privacy</a>
+        <a class="keep" href="https://github.com/Gan0za/TabVale">GitHub</a>
+      </nav>
+    </div>
+  </header>
 
-  <h2>Data stored by the extension</h2>
-  <table>
-    <thead><tr><th>Data</th><th>Storage</th><th>Transmission</th></tr></thead>
-    <tbody>
-      <tr><td>Bookmarks (title, URL, icon)</td><td>chrome.storage.sync</td><td>None; browser sync only between the user's devices</td></tr>
-      <tr><td>Screens (title, order, bookmark membership)</td><td>chrome.storage.sync</td><td>None</td></tr>
-      <tr><td>Active screen</td><td>chrome.storage.local</td><td>None; device-specific</td></tr>
-      <tr><td>Backgrounds: URL, color or gradient</td><td>chrome.storage.sync</td><td>None</td></tr>
-      <tr><td>Backgrounds: local image files</td><td>chrome.storage.local</td><td>None</td></tr>
-      <tr><td>Search engines (name, URL, logo)</td><td>chrome.storage.sync</td><td>None</td></tr>
-      <tr><td>Theme and selected language</td><td>chrome.storage.sync</td><td>None</td></tr>
-    </tbody>
-  </table>
+  <main id="main">
+    <div class="wrap">
+      <section class="hero" aria-labelledby="hero-title">
+        <div>
+          <p class="eyebrow">Chrome &amp; Edge extension</p>
+          <h1 id="hero-title">A new tab with room for every bookmark.</h1>
+          <p class="lead">
+            Search, independent bookmark screens and calm backgrounds — in one
+            quiet page. No accounts, no analytics, no servers: your data stays
+            in the browser.
+          </p>
+          <div class="cta">
+            <a class="btn primary" href="https://github.com/Gan0za/TabVale">View on GitHub</a>
+            <a class="btn" href="https://github.com/Gan0za/TabVale#installation">Install from source</a>
+            <span class="btn disabled" aria-disabled="true">Chrome Web Store — coming soon</span>
+          </div>
+          <ul class="facts">
+            <li>13 languages</li>
+            <li>Light, dark and auto themes</li>
+            <li>Data stays local</li>
+          </ul>
+        </div>
+        <div class="shot">
+          <img src="screenshots/01-main-dark.png" width="1280" height="800"
+               alt="TabVale new tab page in the dark theme with bookmark tiles and a search field">
+        </div>
+      </section>
 
-  <h2>Permissions</h2>
-  <ul>
-    <li><strong>storage</strong> — save bookmarks, screens, backgrounds and settings.</li>
-    <li><strong>unlimitedStorage</strong> — keep local background image files in <code>chrome.storage.local</code>.</li>
-    <li><strong>contextMenus</strong> — add items to the extension icon menu.</li>
-    <li><strong>clipboardRead</strong> — paste actions in the custom context menu. The clipboard is read once when that menu is opened on the extension's own new tab page, after an explicit user action. There is no background clipboard access.</li>
-    <li><strong>optional host permissions</strong> — requested per site only when adding a bookmark, to read the page <code>&lt;title&gt;</code> as a suggested name. The user can deny the request; the extension then uses the hostname.</li>
-  </ul>
+      <section id="features" aria-labelledby="features-title">
+        <div class="section-head">
+          <div>
+            <h2 id="features-title">Everything on one calm page</h2>
+            <p>Built for people who keep a lot of links and want them close.</p>
+          </div>
+        </div>
+        <div class="cards">
+          <article class="card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+            <h3>Search your way</h3>
+            <p>Pick the search engine, edit the list and give each engine its own icon.</p>
+          </article>
+          <article class="card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="8" height="14" rx="2"/><rect x="13" y="5" width="8" height="14" rx="2"/></svg>
+            <h3>Screens for everything</h3>
+            <p>Separate bookmark sets for work, study and hobbies. Switch with dots, a swipe, or <kbd>Alt</kbd> + arrows.</p>
+          </article>
+          <article class="card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 3h12v18l-6-4.5L6 21z"/></svg>
+            <h3>Bookmarks that stay tidy</h3>
+            <p>Drag to reorder, edit in place, delete from the context menu, and get title suggestions.</p>
+          </article>
+          <article class="card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="m4 17 5.5-5.5 4 4L17 12l3 3"/></svg>
+            <h3>Backgrounds your mood</h3>
+            <p>An image URL, a local file, a solid colour or a gradient — with cover, contain, tile or centre placement.</p>
+          </article>
+          <article class="card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>
+            <h3>Light, dark, automatic</h3>
+            <p>Follow the system theme or pin one you like; every screen and panel adapts.</p>
+          </article>
+          <article class="card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.3 3.6 5.2 3.6 8.5S14.4 18.2 12 20.5c-2.4-2.3-3.6-5.2-3.6-8.5S9.6 5.8 12 3.5Z"/></svg>
+            <h3>13 languages</h3>
+            <p>English, Russian, German, French, Spanish, Portuguese, Italian, Polish, Turkish, Ukrainian, Chinese, Japanese and Korean.</p>
+          </article>
+        </div>
+      </section>
 
-  <h2>Network activity</h2>
-  <p>
-    The extension has no server and does not send data anywhere. Site icons and
-    background images are loaded by the browser from addresses the user
-    entered. When adding a bookmark, the extension may ask the browser for
-    access to that specific site to read its title; without permission the
-    request is not made.
-  </p>
+      <section id="screenshots" aria-labelledby="shots-title">
+        <div class="section-head">
+          <div>
+            <h2 id="shots-title">Screenshots</h2>
+            <p>Fictional demo data; every shot is 1280×800.</p>
+          </div>
+          <div class="switch" role="group" aria-label="Theme">
+            <button type="button" data-theme-btn="dark" class="active" aria-pressed="true">Dark</button>
+            <button type="button" data-theme-btn="light" aria-pressed="false">Light</button>
+          </div>
+        </div>
+        <div class="gallery" id="gallery">
+          <figure>
+            <div class="shot"><img src="screenshots/01-main-dark.png" data-dark="screenshots/01-main-dark.png" data-light="screenshots/02-main-light.png" width="1280" height="800" alt="Main new tab page"></div>
+            <figcaption>Main page — search and bookmark tiles</figcaption>
+          </figure>
+          <figure>
+            <div class="shot"><img src="screenshots/03-screens-dark.png" data-dark="screenshots/03-screens-dark.png" data-light="screenshots/04-screens-light.png" width="1280" height="800" alt="Screens settings panel"></div>
+            <figcaption>Screens — separate bookmark sets</figcaption>
+          </figure>
+          <figure>
+            <div class="shot"><img src="screenshots/05-backgrounds-dark.png" data-dark="screenshots/05-backgrounds-dark.png" data-light="screenshots/09-backgrounds-light.png" width="1280" height="800" alt="Background settings"></div>
+            <figcaption>Backgrounds — images, colours and gradients</figcaption>
+          </figure>
+          <figure>
+            <div class="shot"><img src="screenshots/06-search-engines-dark.png" data-dark="screenshots/06-search-engines-dark.png" data-light="screenshots/10-search-engines-light.png" width="1280" height="800" alt="Search engine settings"></div>
+            <figcaption>Search engines — pick and customise</figcaption>
+          </figure>
+          <figure>
+            <div class="shot"><img src="screenshots/07-context-menu-dark.png" data-dark="screenshots/07-context-menu-dark.png" data-light="screenshots/11-context-menu-light.png" width="1280" height="800" alt="Bookmark context menu"></div>
+            <figcaption>Context menu — edit, move, copy, delete</figcaption>
+          </figure>
+          <figure>
+            <div class="shot"><img src="screenshots/08-delete-screen-dark.png" data-dark="screenshots/08-delete-screen-dark.png" data-light="screenshots/12-delete-screen-light.png" width="1280" height="800" alt="Screen deletion dialog"></div>
+            <figcaption>Deleting a screen — move bookmarks or remove them</figcaption>
+          </figure>
+        </div>
+      </section>
 
-  <h2>Export and deletion</h2>
-  <ul>
-    <li><strong>Export</strong> — the settings modal can save a JSON file with the user's data, including background files.</li>
-    <li><strong>Deletion</strong> — uninstalling the extension removes data from <code>chrome.storage.sync</code> and <code>chrome.storage.local</code>.</li>
-  </ul>
+      <section aria-labelledby="privacy-title">
+        <div class="privacy-band">
+          <div>
+            <h2 id="privacy-title">Private by design</h2>
+            <p>Bookmarks, screens, backgrounds and settings live in <code>chrome.storage</code>. Nothing is sent to a server, and there is no telemetry.</p>
+          </div>
+          <a class="btn" href="privacy.html">Read the privacy policy</a>
+        </div>
+      </section>
+    </div>
+  </main>
 
-  <h2>Contact</h2>
-  <p>
-    Privacy questions: open an issue at
-    <a href="https://github.com/Gan0za/TabVale/issues">github.com/Gan0za/TabVale/issues</a>.
-  </p>
+  <footer>
+    <div class="wrap foot">
+      <span>© 2026 TabVale</span>
+      <nav aria-label="Footer">
+        <a href="https://github.com/Gan0za/TabVale">GitHub</a>
+        <a href="https://github.com/Gan0za/TabVale/issues">Issues</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const gallery = document.getElementById('gallery');
+      const buttons = Array.from(document.querySelectorAll('[data-theme-btn]'));
+      const images = Array.from(gallery.querySelectorAll('img'));
+
+      function apply(theme) {
+        images.forEach((img) => {
+          const next = img.getAttribute('data-' + theme);
+          if (next && img.getAttribute('src') !== next) img.setAttribute('src', next);
+        });
+        buttons.forEach((btn) => {
+          const active = btn.getAttribute('data-theme-btn') === theme;
+          btn.classList.toggle('active', active);
+          btn.setAttribute('aria-pressed', String(active));
+        });
+      }
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => apply(btn.getAttribute('data-theme-btn')));
+      });
+
+      apply(window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    }());
+  </script>
 </body>
 </html>
