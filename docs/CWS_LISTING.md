@@ -10,7 +10,7 @@
 | Language | English |
 | Homepage | `https://github.com/Gan0za/TabVale` |
 | Support | `https://github.com/Gan0za/TabVale/issues` |
-| Privacy policy | `https://gan0za.github.io/TabVale/privacy.html` (after enabling GitHub Pages) |
+| Privacy policy | `https://gan0za.github.io/TabVale/` (GitHub Pages serves privacy.html at the site root) |
 
 ## Short description (max 132 characters)
 

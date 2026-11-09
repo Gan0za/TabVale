@@ -89,14 +89,14 @@ tabvale/
 ├── docs/                      # CWS listing, privacy page, screenshots
 │   ├── screenshots/
 │   ├── CWS_LISTING.md
-│   └── privacy.html
+│   ├── index.html
+│   └── icon-preview.png
 ├── tests/                     # Node tests (vm sandbox)
 ├── tools/screenshot-sandbox/  # Screenshot generator
 ├── package.sh                 # Builds dist/tabvale_v{version}.zip (bash)
 ├── package.ps1                # Windows build (PowerShell)
 ├── PRIVACY.md                 # Privacy policy
 ├── CWS_REVIEW_NOTES.md        # Chrome Web Store review texts
-├── TODO_PUBLICATION.md        # Publication checklist
 ├── LICENSE                    # MIT
 ├── README.*.md                # Short translations
 └── README.md
