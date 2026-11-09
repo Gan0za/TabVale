@@ -35,7 +35,7 @@ $archive = [System.IO.Compression.ZipFile]::OpenRead($zip)
 try {
     $names = @($archive.Entries | ForEach-Object { $_.FullName })
     $forbidden = @($names | Where-Object {
-        $_ -match '^(tests/|tools/||dist/)' -or $_ -eq '.gitignore'
+        $_ -match '^(tests/|tools/|dist/)' -or $_ -eq '.gitignore'
     })
     if ($forbidden.Count) {
         throw "Forbidden entries in zip: $($forbidden -join ', ')"
