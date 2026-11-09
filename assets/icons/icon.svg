@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="0" x2="64" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0E3348"/>
+      <stop offset="1" stop-color="#061321"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Плитка: тёмный скруглённый фон, работает и в светлой, и в тёмной теме -->
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+
+  <!-- Два экрана: наклонены друг к другу, верхний зазор образует долину-V -->
+  <rect x="24" y="26" width="44" height="76" rx="12" transform="rotate(-24 46 64)" fill="#67CCEF"/>
+  <rect x="60" y="26" width="44" height="76" rx="12" transform="rotate(24 82 64)" fill="#0B84CC"/>
+
+  <!-- Точка активного экрана -->
+  <circle cx="64" cy="90" r="8" fill="#FFFFFF"/>
+</svg>
