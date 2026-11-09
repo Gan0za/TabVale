@@ -9,7 +9,7 @@ $manifest = Get-Content -Raw -Encoding UTF8 (Join-Path $Root 'manifest.json') | 
 $version = $manifest.version
 $dist = Join-Path $Root 'dist'
 New-Item -ItemType Directory -Force -Path $dist | Out-Null
-$zip = Join-Path $dist "self_tabs_v$version.zip"
+$zip = Join-Path $dist "tabvale_v$version.zip"
 
 if (Test-Path $zip) { Remove-Item $zip -Force }
 

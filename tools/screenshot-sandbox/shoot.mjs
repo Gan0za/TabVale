@@ -133,7 +133,7 @@ function connectCdp(url) {
  * Так снимок не зависит от --screenshot и --virtual-time-budget.
  */
 async function cdpCapture(browser, url, file) {
-    const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'self-tabs-shot-'));
+    const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'tabvale-shot-'));
     const portFile = path.join(profile, 'DevToolsActivePort');
     const child = spawn(browser, [
         '--headless=new',

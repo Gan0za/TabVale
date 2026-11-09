@@ -1,4 +1,4 @@
-# Custom New Tab
+# TabVale
 
 A Chrome and Microsoft Edge extension that replaces the browser's new tab page
 with a customizable dashboard: search, multiple bookmark screens, and
@@ -58,7 +58,7 @@ All screenshots are 1280×800 and use fictional demo data.
 ## Project structure
 
 ```
-self_tabs/
+tabvale/
 ├── manifest.json              # Extension manifest (Manifest V3)
 ├── background.js              # Service worker: extension icon menu
 ├── newtab/
@@ -92,7 +92,7 @@ self_tabs/
 │   └── privacy.html
 ├── tests/                     # Node tests (vm sandbox)
 ├── tools/screenshot-sandbox/  # Screenshot generator
-├── package.sh                 # Builds dist/self_tabs_v{version}.zip (bash)
+├── package.sh                 # Builds dist/tabvale_v{version}.zip (bash)
 ├── package.ps1                # Windows build (PowerShell)
 ├── PRIVACY.md                 # Privacy policy
 ├── CWS_REVIEW_NOTES.md        # Chrome Web Store review texts
@@ -115,7 +115,7 @@ self_tabs/
 bash package.sh
 ```
 
-The script creates `dist/self_tabs_v{version}.zip` with the runtime files:
+The script creates `dist/tabvale_v{version}.zip` with the runtime files:
 `manifest.json`, `background.js`, `newtab/`, `_locales/` and the PNG icons.
 The version is read from `manifest.json`.
 
@@ -128,7 +128,7 @@ powershell -ExecutionPolicy Bypass -File .\package.ps1
 ```
 
 The script uses Windows `tar.exe` when available and falls back to
-`Compress-Archive`. It creates the same `dist/self_tabs_v{version}.zip` and
+`Compress-Archive`. It creates the same `dist/tabvale_v{version}.zip` and
 checks that development files are not included.
 
 If you use Git Bash, the Unix script works too (it uses Windows
