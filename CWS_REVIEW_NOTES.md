@@ -25,7 +25,7 @@ extension's own page. There is no background or automatic clipboard access.
 **Полная версия (если ревью вернёт с запросом деталей):**
 
 ```
-Purpose: Custom New Tab is a new tab page where users organize their own
+Purpose: TabVale is a new tab page where users organize their own
 bookmarks across several screens, choose search engines and set backgrounds.
 
 Usage of clipboardRead: The extension has a custom context menu on the search
@@ -79,7 +79,7 @@ access the site. No host access is requested at install time.
 > Форма CWS → "Describe the single purpose of your extension"
 
 ```
-Custom New Tab replaces the browser's new tab page with a user-customizable
+TabVale replaces the browser's new tab page with a user-customizable
 dashboard: web search, bookmark tiles on multiple screens, and background
 images. All user data (bookmarks, screens, backgrounds, search engines,
 theme) is stored locally via chrome.storage and is never transmitted

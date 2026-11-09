@@ -78,7 +78,7 @@ function initSettings() {
             const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = 'self_tabs_settings.json';
+            a.download = 'tabvale_settings.json';
             a.click();
             URL.revokeObjectURL(a.href);
         }
