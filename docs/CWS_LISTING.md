@@ -4,13 +4,13 @@
 
 | Field | Value |
 |---|---|
-| Name | Custom New Tab |
+| Name | TabVale |
 | Version | 1.1.0 |
 | Category | Productivity |
 | Language | English |
-| Homepage | `https://github.com/<owner>/self_tabs` (after repository creation) |
-| Support | `https://github.com/<owner>/self_tabs/issues` (after repository creation) |
-| Privacy policy | `https://<owner>.github.io/self_tabs/privacy.html` (after GitHub Pages setup) |
+| Homepage | `https://github.com/<owner>/tabvale` (after repository creation) |
+| Support | `https://github.com/<owner>/tabvale/issues` (after repository creation) |
+| Privacy policy | `https://<owner>.github.io/tabvale/privacy.html` (after GitHub Pages setup) |
 
 ## Short description (max 132 characters)
 
@@ -21,7 +21,7 @@ A customizable new tab with search, multiple bookmark screens, and backgrounds. 
 ## Detailed description
 
 ```
-Custom New Tab replaces the browser's new tab page with a customizable dashboard.
+TabVale replaces the browser's new tab page with a customizable dashboard.
 
 Features:
 - Search with a selectable search engine and an editable engine list.
@@ -39,7 +39,7 @@ Privacy:
 - No analytics, tracking, advertising or remote servers.
 - Optional site access is requested only to read a page <title> when adding a bookmark.
 
-Source code and documentation: https://github.com/<owner>/self_tabs
+Source code and documentation: https://github.com/<owner>/tabvale
 ```
 
 ## Screenshots
@@ -79,7 +79,7 @@ Copy the texts from [CWS_REVIEW_NOTES.md](../CWS_REVIEW_NOTES.md):
 ## Single purpose
 
 ```
-Custom New Tab replaces the browser's new tab page with a user-customizable dashboard: web search, bookmark tiles on multiple screens, and background images.
+TabVale replaces the browser's new tab page with a user-customizable dashboard: web search, bookmark tiles on multiple screens, and background images.
 ```
 
 ## Remote code
@@ -90,7 +90,7 @@ Answer: **No**. All executable code is packaged in `background.js`,
 ## Release checklist
 
 - [x] Version 1.1.0 in `manifest.json`
-- [x] `bash package.sh` / `.\package.ps1` builds `dist/self_tabs_v1.1.0.zip`
+- [x] `bash package.sh` / `.\package.ps1` builds `dist/tabvale_v1.1.0.zip`
 - [x] 12 source screenshots, 5 selected for CWS
 - [x] Permission justifications and single purpose text
 - [x] Privacy policy text

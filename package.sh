@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Скрипт упаковки расширения для публикации.
 #
-# Собирает dist/self_tabs_v{VERSION}.zip — ровно тот архив, который
+# Собирает dist/tabvale_v{VERSION}.zip — ровно тот архив, который
 # загружается в Chrome Web Store. В zip попадают ТОЛЬКО рантайм-файлы:
 #
 #   manifest.json, background.js, newtab/, assets/icons/icon*.png,
@@ -10,7 +10,7 @@
 #
 # Что НЕ попадает и почему:
 #   - tests/, tools/, .gitignore, TODO_PUBLICATION.md — рабочие файлы разработки
-#   - self_tabs_settings.json — личные данные (в .gitignore)
+#   - tabvale_settings.json — личные данные (в .gitignore)
 #   - assets/icons/favicon.svg — манифест использует только PNG, лишний
 #     файл в архиве увеличивает вес и вызывает вопросы у ревью
 #
@@ -27,7 +27,7 @@ VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('manifest.j
 # Только bsdtar умеет -a (zip по расширению). GNU tar из Git Bash
 # создаёт невалидный .zip, поэтому его не используем.
 DIST_DIR="dist"
-ZIP_NAME="$DIST_DIR/self_tabs_v${VERSION}.zip"
+ZIP_NAME="$DIST_DIR/tabvale_v${VERSION}.zip"
 if [ -x "/c/WINDOWS/system32/tar.exe" ]; then
     TAR="/c/WINDOWS/system32/tar.exe"
 elif command -v bsdtar >/dev/null 2>&1; then

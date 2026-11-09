@@ -46,7 +46,7 @@
 
 - ✅ **3.1 LICENSE (MIT)** (eb5bea1)
 - ✅ **3.2 PRIVACY.md** (eb5bea1) — данные хранятся в chrome.storage.sync/local, наружу не передаются; описаны clipboardRead, unlimitedStorage и optional host permissions.
-- ✅ **3.3 Скрипт упаковки** — `bash package.sh` (Git Bash) и `powershell -ExecutionPolicy Bypass -File .\package.ps1` (Windows) → `dist/self_tabs_v{version}.zip` с рантайм-файлами (manifest, background.js, newtab/, assets/icons/icon*.png, _locales/) без tests/, tools/, .gitignore, favicon.svg.
+- ✅ **3.3 Скрипт упаковки** — `bash package.sh` (Git Bash) и `powershell -ExecutionPolicy Bypass -File .\package.ps1` (Windows) → `dist/tabvale_v{version}.zip` с рантайм-файлами (manifest, background.js, newtab/, assets/icons/icon*.png, _locales/) без tests/, tools/, .gitignore, favicon.svg.
 - ✅ **3.4 Скриншоты для листинга** — 12 кадров 1280×800 в `docs/screenshots/`: главная, экраны, фоны, поисковики, контекстное меню, удаление экрана — каждый в тёмной и светлой теме.
 
 ## Блок 4 — GitHub и листинг
@@ -58,7 +58,7 @@
 - 🔧 **4.4 Карточка CWS**: `docs/CWS_LISTING.md` (EN, short/full description, Data usage, single purpose); 5 скриншотов в `docs/screenshots/cws/`
 - 🔧 **4.5 Публичная политика**: `docs/privacy.html` готов; нужен публичный URL через GitHub Pages
 - ⬜ **4.6 GitHub-репозиторий и remote**: сейчас remote отсутствует; нужен для homepage_url, issue-ссылки и push
-- ⬜ **4.7 Загрузка в CWS**: загрузить `dist/self_tabs_v1.1.0.zip`, заполнить карточку и отправить на ревью
+- ⬜ **4.7 Загрузка в CWS**: загрузить `dist/tabvale_v1.1.0.zip`, заполнить карточку и отправить на ревью
 
 ## Статус цикла
 

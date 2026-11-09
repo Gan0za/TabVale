@@ -28,6 +28,6 @@
     "128": "assets/icons/icon128.png"
   },
   "action": {
-    "default_title": "Custom New Tab"
+    "default_title": "TabVale"
   }
 }
