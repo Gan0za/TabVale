@@ -5,12 +5,12 @@
 | Field | Value |
 |---|---|
 | Name | TabVale |
-| Version | 1.1.0 |
+| Version | 1.1.1 |
 | Category | Productivity |
 | Language | English |
-| Homepage | `https://github.com/<owner>/tabvale` (after repository creation) |
-| Support | `https://github.com/<owner>/tabvale/issues` (after repository creation) |
-| Privacy policy | `https://<owner>.github.io/tabvale/privacy.html` (after GitHub Pages setup) |
+| Homepage | `https://github.com/Gan0za/TabVale` |
+| Support | `https://github.com/Gan0za/TabVale/issues` |
+| Privacy policy | `https://gan0za.github.io/TabVale/privacy.html` (after enabling GitHub Pages) |
 
 ## Short description (max 132 characters)
 
@@ -39,7 +39,7 @@ Privacy:
 - No analytics, tracking, advertising or remote servers.
 - Optional site access is requested only to read a page <title> when adding a bookmark.
 
-Source code and documentation: https://github.com/<owner>/tabvale
+Source code and documentation: https://github.com/Gan0za/TabVale
 ```
 
 ## Screenshots
@@ -89,8 +89,8 @@ Answer: **No**. All executable code is packaged in `background.js`,
 
 ## Release checklist
 
-- [x] Version 1.1.0 in `manifest.json`
-- [x] `bash package.sh` / `.\package.ps1` builds `dist/tabvale_v1.1.0.zip`
+- [x] Version 1.1.1 in `manifest.json`
+- [x] `bash package.sh` / `.\package.ps1` builds `dist/tabvale_v1.1.1.zip`
 - [x] 12 source screenshots, 5 selected for CWS
 - [x] Permission justifications and single purpose text
 - [x] Privacy policy text
