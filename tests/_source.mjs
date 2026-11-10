@@ -21,6 +21,7 @@ export const SCRIPT_FILES = [
     'newtab/core/plugins.js',
     'newtab/core/plugin-broker.js',
     'newtab/core/plugin-registry.js',
+    'newtab/core/plugin-db.js',
     'newtab/core/i18n.js',
     'newtab/core/render.js',
     'newtab/core/state.js',
@@ -36,6 +37,7 @@ export const SCRIPT_FILES = [
     'newtab/features/backgrounds.js',
     'newtab/features/search-engines.js',
     'newtab/features/screens.js',
+    'newtab/features/plugins.js',
     'newtab/app.js',
 ];
 

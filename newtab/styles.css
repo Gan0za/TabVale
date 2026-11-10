@@ -1400,3 +1400,112 @@ h1, h2 {
     margin: 0 0 10px;
 }
 
+
+/* =============================================================================
+   Плагины: док иконок и выдвижная панель.
+   Панель живёт ниже модалок и оверлея, выше контента; размеры приходят
+   из манифеста через CSS-переменные, выставляет их фича plugins.js.
+   ============================================================================= */
+
+.plugin-dock {
+    position: fixed;
+    top: 50%;
+    right: 18px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 900;
+}
+
+.plugin-dock.hidden { display: none; }
+
+.plugin-dock-button {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    color: var(--text);
+    font: 600 15px/1 system-ui, sans-serif;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform .15s ease, background .2s ease;
+}
+
+.plugin-dock-button:hover { transform: translateY(-1px); background: var(--glass-strong); }
+.plugin-dock-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.plugin-dock-button img { display: block; }
+
+.plugin-panel {
+    position: fixed;
+    top: 96px;
+    right: 18px;
+    width: var(--plugin-panel-width, 360px);
+    height: var(--plugin-panel-height, 480px);
+    max-height: calc(100vh - 140px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--glass-strong);
+    backdrop-filter: var(--blur);
+    box-shadow: var(--shadow);
+    z-index: 950;
+}
+
+.plugin-panel[data-side="left"] { right: auto; left: 18px; }
+
+.plugin-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.plugin-panel-title { font-size: 14px; font-weight: 600; color: var(--text); }
+
+.plugin-panel-close {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-soft);
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.plugin-panel-close:hover { background: rgba(255, 255, 255, 0.1); color: var(--text); }
+.plugin-panel-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.plugin-panel-frame {
+    flex: 1;
+    width: 100%;
+    border: 0;
+    background: transparent;
+}
+
+@media (max-width: 600px) {
+    .plugin-dock { right: 8px; gap: 6px; }
+    .plugin-dock-button { width: 38px; height: 38px; }
+    .plugin-panel {
+        top: auto;
+        bottom: 8px;
+        left: 8px;
+        right: 8px;
+        width: auto;
+        height: min(70vh, 520px);
+    }
+}
