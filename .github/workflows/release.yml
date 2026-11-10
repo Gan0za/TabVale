@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to release, for example v1.1.1
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install packaging tools
+        run: sudo apt-get update && sudo apt-get install -y zip unzip
+
+      - name: Run tests
+        run: |
+          for f in tests/*.test.mjs; do
+            node "$f"
+          done
+
+      - name: Build extension package
+        run: bash package.sh
+
+      - name: Read version
+        id: meta
+        run: echo "version=$(node -p "require('./manifest.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/tabvale_*.zip --clobber
+          else
+            gh release create "$TAG" dist/tabvale_*.zip \
+              --title "TabVale ${{ steps.meta.outputs.version }}" \
+              --generate-notes
+          fi

@@ -25,29 +25,44 @@ cd "$PROJECT_ROOT"
 VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('manifest.json','utf8')).version)")
 
 # Только bsdtar умеет -a (zip по расширению). GNU tar из Git Bash
-# создаёт невалидный .zip, поэтому его не используем.
+# создаёт невалидный .zip, поэтому его не используем. На Linux (CI)
+# используем zip.
 DIST_DIR="dist"
 ZIP_NAME="$DIST_DIR/tabvale_v${VERSION}.zip"
+FILES=(
+    manifest.json
+    background.js
+    newtab
+    assets/icons/icon16.png
+    assets/icons/icon48.png
+    assets/icons/icon128.png
+    _locales
+)
+
 if [ -x "/c/WINDOWS/system32/tar.exe" ]; then
     TAR="/c/WINDOWS/system32/tar.exe"
 elif command -v bsdtar >/dev/null 2>&1; then
     TAR="bsdtar"
+elif command -v zip >/dev/null 2>&1; then
+    TAR=""
 else
-    echo "Нужен bsdtar: Windows tar.exe или bsdtar в PATH." >&2
+    echo "Нужен bsdtar (Windows tar.exe или bsdtar) либо zip в PATH." >&2
     exit 1
 fi
 
 mkdir -p "$DIST_DIR"
+rm -f "$ZIP_NAME"
 
 # Список рантайм-файлов — синхронизирован с manifest.json
-"$TAR" -a -c -f "$ZIP_NAME" \
-    manifest.json \
-    background.js \
-    newtab \
-    assets/icons/icon16.png \
-    assets/icons/icon48.png \
-    assets/icons/icon128.png \
-    _locales
+if [ -n "$TAR" ]; then
+    "$TAR" -a -c -f "$ZIP_NAME" "${FILES[@]}"
+else
+    zip -q -r "$ZIP_NAME" "${FILES[@]}"
+fi
 
 echo "Готово: $ZIP_NAME"
-"$TAR" -tf "$ZIP_NAME"
+if [ -n "$TAR" ]; then
+    "$TAR" -tf "$ZIP_NAME"
+else
+    unzip -l "$ZIP_NAME"
+fi
