@@ -16,6 +16,7 @@
   },
   "surfaces": {
     "tiles": { "span": [1, 1] },
+    "strip": { "positions": ["top", "bottom"], "height": [64, 140] },
     "panel": {
       "sides": ["right", "left"],
       "width": [280, 420],

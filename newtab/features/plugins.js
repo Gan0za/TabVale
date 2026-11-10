@@ -14,19 +14,26 @@ const PLUGIN_PANEL_DEFAULTS = { side: 'right', width: 360, height: 480 };
 const PLUGIN_FETCH_LIMIT = 262144;
 
 let pluginDockElement = null;
-let pluginPanelState = null;
+let pluginPanelInstance = null;
 let installedPluginCache = [];
+let pluginPlacementsCache = [];
+const pluginInstances = new Map();
+let pluginInstanceSeq = 0;
 
 function initPlugins() {
     ensurePluginDock();
     window.addEventListener('message', onPluginMessage);
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && pluginPanelState) closePluginPanel();
+        if (event.key === 'Escape' && pluginPanelInstance) closePluginPanel();
     });
 
     installBuiltinPlugins()
         .then(loadInstalledPlugins)
-        .then(renderPluginDock)
+        .then(loadPluginPlacements)
+        .then(() => {
+            renderPluginDock();
+            renderPluginStrip();
+        })
         .catch((error) => console.warn('Плагины недоступны:', error));
 }
 
@@ -130,6 +137,114 @@ function renderPluginDock() {
     dock.classList.toggle('hidden', installedPluginCache.length === 0);
 }
 
+async function loadPluginPlacements() {
+    const stored = await new Promise((resolve) => storageLocalGet(PLUGIN_PLACEMENTS_KEY, resolve));
+    const hasStored = stored && Object.prototype.hasOwnProperty.call(stored, PLUGIN_PLACEMENTS_KEY);
+    let placements = normalizePluginPlacements(stored?.[PLUGIN_PLACEMENTS_KEY]);
+
+    // Первый запуск: встроенные плагины со strip показываем полосой сверху.
+    // Если пользователь потом уберёт все размещения, ключ уже существует —
+    // повторно не навязываем.
+    if (!hasStored && installedPluginCache.length) {
+        placements = defaultPluginPlacements(installedPluginCache);
+        await new Promise((resolve) => storageLocalSet({ [PLUGIN_PLACEMENTS_KEY]: placements }, resolve));
+    }
+    pluginPlacementsCache = placements;
+}
+
+function ensurePluginStrip(position) {
+    const anchor = document.getElementById('bookmarks-section');
+    if (!anchor || !anchor.parentNode) return null;
+
+    let strip = document.getElementById(`plugin-strip-${position}`);
+    if (!strip) {
+        strip = document.createElement('section');
+        strip.id = `plugin-strip-${position}`;
+        strip.className = 'plugin-strip';
+        strip.dataset.position = position;
+        strip.setAttribute('aria-label', position === 'top' ? 'Плагины сверху' : 'Плагины снизу');
+        if (position === 'top') anchor.parentNode.insertBefore(strip, anchor);
+        else anchor.parentNode.insertBefore(strip, anchor.nextSibling);
+    }
+    return strip;
+}
+
+function createPluginInstance(record, surface, root, frame, placement) {
+    const instance = { id: ++pluginInstanceSeq, record, surface, root, frame, placement };
+    frame.addEventListener('load', () => {
+        pluginInstances.set(instance.id, instance);
+        frame.contentWindow?.postMessage({
+            type: 'tabvale:run',
+            context: {
+                code: record.code,
+                config: {},
+                theme: pluginTheme(),
+                locale: pluginTheme().locale,
+                surface,
+            },
+        }, '*');
+    }, { once: true });
+    return instance;
+}
+
+function renderPluginStrip() {
+    for (const instance of Array.from(pluginInstances.values())) {
+        if (instance.surface !== 'strip') continue;
+        pluginInstances.delete(instance.id);
+        instance.root.remove();
+    }
+
+    for (const position of ['top', 'bottom']) {
+        const strip = ensurePluginStrip(position);
+        if (!strip) continue;
+        strip.textContent = '';
+        strip.classList.add('hidden');
+    }
+
+    const placements = pluginPlacementsCache
+        .filter((placement) => placement.surface === 'strip')
+        .sort((left, right) => left.order - right.order);
+
+    for (const placement of placements) {
+        const record = installedPluginCache.find((item) => item.id === placement.pluginId);
+        if (!record || !record.manifest.surfaces?.strip) continue;
+        const strip = ensurePluginStrip(placement.position === 'bottom' ? 'bottom' : 'top');
+        if (!strip) continue;
+
+        const item = document.createElement('div');
+        item.className = 'plugin-strip-item';
+        item.dataset.pluginId = record.id;
+        item.style.setProperty('--plugin-strip-height', `${placement.height}px`);
+
+        const frame = document.createElement('iframe');
+        frame.className = 'plugin-strip-frame';
+        frame.title = pluginDisplayName(record);
+        frame.src = chrome.runtime.getURL('sandbox/plugin-host.html');
+
+        item.append(frame);
+        strip.append(item);
+        strip.classList.remove('hidden');
+        createPluginInstance(record, 'strip', item, frame, placement);
+    }
+}
+
+function findPluginInstance(source) {
+    for (const instance of pluginInstances.values()) {
+        if (instance.frame.contentWindow === source) return instance;
+    }
+    return null;
+}
+
+function removePluginInstance(instance) {
+    pluginInstances.delete(instance.id);
+    instance.root.remove();
+    if (instance.surface === 'strip') {
+        pluginPlacementsCache = pluginPlacementsCache
+            .filter((placement) => placement.pluginId !== instance.record.id);
+        storageLocalSet({ [PLUGIN_PLACEMENTS_KEY]: pluginPlacementsCache });
+    }
+}
+
 function pluginTheme() {
     const styles = getComputedStyle(document.documentElement);
     const value = (name, fallback) => styles.getPropertyValue(name).trim() || fallback;
@@ -186,42 +301,30 @@ function openPluginPanel(record) {
     root.append(header, frame);
     document.body.append(root);
 
-    pluginPanelState = { record, root, frame, placement };
-
-    frame.addEventListener('load', () => {
-        frame.contentWindow?.postMessage({
-            type: 'tabvale:run',
-            context: {
-                code: record.code,
-                config: {},
-                theme: pluginTheme(),
-                locale: pluginTheme().locale,
-                surface: 'panel',
-            },
-        }, '*');
-    }, { once: true });
+    pluginPanelInstance = createPluginInstance(record, 'panel', root, frame, placement);
 }
 
 function closePluginPanel() {
-    if (!pluginPanelState) return;
-    pluginPanelState.root.remove();
-    pluginPanelState = null;
+    if (!pluginPanelInstance) return;
+    pluginInstances.delete(pluginPanelInstance.id);
+    pluginPanelInstance.root.remove();
+    pluginPanelInstance = null;
 }
 
 async function onPluginMessage(event) {
-    const state = pluginPanelState;
-    if (!state || !state.frame.contentWindow || event.source !== state.frame.contentWindow) return;
+    const instance = findPluginInstance(event.source);
+    if (!instance || !instance.frame.contentWindow) return;
     const data = event.data;
     if (!data || typeof data !== 'object' || data.type !== 'tabvale:rpc') return;
 
-    const reply = (result) => state.frame.contentWindow.postMessage(
+    const reply = (result) => instance.frame.contentWindow.postMessage(
         { type: 'tabvale:rpc-result', id: data.id, result }, '*'
     );
-    const fail = (message) => state.frame.contentWindow.postMessage(
+    const fail = (message) => instance.frame.contentWindow.postMessage(
         { type: 'tabvale:rpc-result', id: data.id, error: String(message) }, '*'
     );
 
-    if (!pluginMethodAllowed(state.record.manifest, data.method)) {
+    if (!pluginMethodAllowed(instance.record.manifest, data.method)) {
         fail('method not allowed');
         return;
     }
@@ -231,28 +334,28 @@ async function onPluginMessage(event) {
         switch (data.method) {
             case 'storage.get': {
                 if (!isPluginStorageKey(params.key)) throw new Error('invalid storage key');
-                const fullKey = pluginStorageKey(state.record.id, params.key);
+                const fullKey = pluginStorageKey(instance.record.id, params.key);
                 const stored = await new Promise((resolve) => storageLocalGet(fullKey, resolve));
                 reply(stored ? stored[fullKey] ?? null : null);
                 break;
             }
             case 'storage.set': {
-                const check = checkPluginStorageWrite(state.record.manifest, params.key, params.value);
+                const check = checkPluginStorageWrite(instance.record.manifest, params.key, params.value);
                 if (!check.ok) throw new Error(check.error);
-                const fullKey = pluginStorageKey(state.record.id, params.key);
+                const fullKey = pluginStorageKey(instance.record.id, params.key);
                 await new Promise((resolve) => storageLocalSet({ [fullKey]: params.value }, resolve));
                 reply(true);
                 break;
             }
             case 'storage.remove': {
                 if (!isPluginStorageKey(params.key)) throw new Error('invalid storage key');
-                const fullKey = pluginStorageKey(state.record.id, params.key);
+                const fullKey = pluginStorageKey(instance.record.id, params.key);
                 await new Promise((resolve) => storageLocalRemove(fullKey, resolve));
                 reply(true);
                 break;
             }
             case 'fetch': {
-                if (!pluginAllowsUrl(state.record.manifest, params.url)) throw new Error('url is not allowed');
+                if (!pluginAllowsUrl(instance.record.manifest, params.url)) throw new Error('url is not allowed');
                 const sanitized = sanitizePluginFetchOptions(params.options);
                 if (!sanitized.ok) throw new Error(sanitized.error);
                 const response = await fetch(params.url, sanitized.options);
@@ -265,25 +368,46 @@ async function onPluginMessage(event) {
                 reply(data.method === 'config.get' ? {} : true);
                 break;
             case 'ui.close':
-                closePluginPanel();
+                if (instance.surface === 'panel') closePluginPanel();
+                else removePluginInstance(instance);
                 reply(true);
                 break;
             case 'ui.resize': {
-                const placement = pluginPanelPlacement(state.record);
-                const next = clampPlacement(state.record.manifest, {
+                if (instance.surface === 'strip') {
+                    const next = clampPlacement(instance.record.manifest, {
+                        surface: 'strip',
+                        position: instance.placement.position,
+                        height: params.height,
+                    });
+                    if (next) {
+                        instance.placement = { ...instance.placement, height: next.height };
+                        instance.root.style.setProperty('--plugin-strip-height', `${next.height}px`);
+                        pluginPlacementsCache = pluginPlacementsCache.map((placement) => (
+                            placement.pluginId === instance.record.id
+                                ? { ...placement, height: next.height }
+                                : placement
+                        ));
+                        storageLocalSet({ [PLUGIN_PLACEMENTS_KEY]: pluginPlacementsCache });
+                    }
+                    reply(instance.placement);
+                    break;
+                }
+                const placement = pluginPanelPlacement(instance.record);
+                const next = clampPlacement(instance.record.manifest, {
                     surface: 'panel',
                     side: placement.side,
                     width: params.width,
                     height: params.height,
                     mode: 'overlay',
                 }) || placement;
-                state.root.style.setProperty('--plugin-panel-width', `${next.width}px`);
-                state.root.style.setProperty('--plugin-panel-height', `${next.height}px`);
+                instance.root.style.setProperty('--plugin-panel-width', `${next.width}px`);
+                instance.root.style.setProperty('--plugin-panel-height', `${next.height}px`);
+                instance.placement = next;
                 reply(next);
                 break;
             }
             case 'ui.notify':
-                console.info(`[plugin ${state.record.id}]`, params.text);
+                console.info(`[plugin ${instance.record.id}]`, params.text);
                 reply(true);
                 break;
             case 'bookmarks.tree':

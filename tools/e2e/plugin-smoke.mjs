@@ -175,6 +175,12 @@ const dock = await evaluate(`(() => {
 })()`);
 console.log('dock:', dock);
 
+const strip = await evaluate(`(() => {
+  const items = [...document.querySelectorAll('.plugin-strip-item')];
+  return { count: items.length, id: items[0]?.dataset.pluginId || '' };
+})()`);
+console.log('strip:', strip);
+
 let panel = null;
 let sandboxText = '';
 if (dock.count) {
@@ -220,6 +226,7 @@ ws.close();
 child.kill();
 
 const passed = dock.count > 0
+    && strip.count > 0
     && panel?.open === true
     && /^\d{1,2}:\d{2}/.test(sandboxText.trim())
     && errors.length === 0;

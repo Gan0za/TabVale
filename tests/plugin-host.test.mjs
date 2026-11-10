@@ -29,12 +29,14 @@ assert.ok(css.includes('.plugin-panel'), 'есть стили панели');
 assert.ok(css.includes('.plugin-panel-frame'), 'панель содержит iframe');
 
 // 3. Хост использует только правила брокера, не доверяет sandbox
-assert.ok(source.includes('event.source !== state.frame.contentWindow'), 'проверяется source-окно');
+assert.ok(source.includes('findPluginInstance(event.source)'), 'проверяется source-окно');
 assert.ok(source.includes('pluginMethodAllowed'), 'метод проверяется по манифесту');
 assert.ok(source.includes('checkPluginStorageWrite'), 'запись проверяется по квоте');
 assert.ok(source.includes('pluginStorageKey'), 'ключи хранилища namespaced');
 assert.ok(source.includes('pluginAllowsUrl'), 'сеть проверяется по allowlist');
 assert.ok(source.includes("sandbox/plugin-host.html"), 'панель грузит sandbox-страницу');
+assert.ok(source.includes('renderPluginStrip'), 'есть рендер полосы плагинов');
+assert.ok(css.includes('.plugin-strip-item'), 'есть стили элемента полосы');
 
 // 4. IndexedDB используется для пакетов, а не chrome.storage
 assert.ok(db.includes('indexedDB.open'), 'пакеты лежат в IndexedDB');
