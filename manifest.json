@@ -20,6 +20,12 @@
   "background": {
     "service_worker": "background.js"
   },
+  "sandbox": {
+    "pages": ["sandbox/plugin-host.html"]
+  },
+  "content_security_policy": {
+    "sandbox": "sandbox allow-scripts; script-src 'self' 'unsafe-eval' 'unsafe-inline'; connect-src 'none'"
+  },
   "chrome_url_overrides": {
     "newtab": "newtab/index.html"
   },

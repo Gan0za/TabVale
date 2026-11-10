@@ -18,6 +18,7 @@ export const projectRoot = path.resolve(__dirname, '..');
 export const SCRIPT_FILES = [
     'newtab/core/config.js',
     'newtab/core/storage.js',
+    'newtab/core/plugins.js',
     'newtab/core/i18n.js',
     'newtab/core/render.js',
     'newtab/core/state.js',

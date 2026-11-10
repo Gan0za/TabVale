@@ -5,8 +5,8 @@
 # Собирает dist/tabvale_v{VERSION}.zip — ровно тот архив, который
 # загружается в Chrome Web Store. В zip попадают ТОЛЬКО рантайм-файлы:
 #
-#   manifest.json, background.js, newtab/, assets/icons/icon*.png,
-#   _locales/
+#   manifest.json, background.js, newtab/, sandbox/,
+#   assets/icons/icon*.png, _locales/
 #
 # Что НЕ попадает и почему:
 #   - tests/, tools/, .gitignore — рабочие файлы разработки
@@ -32,6 +32,7 @@ ZIP_NAME="$DIST_DIR/tabvale_v${VERSION}.zip"
 FILES=(
     manifest.json
     background.js
+    sandbox
     newtab
     assets/icons/icon16.png
     assets/icons/icon48.png
