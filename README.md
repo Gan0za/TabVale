@@ -1,5 +1,7 @@
 # TabVale
 
+[![Build](https://github.com/Gan0za/TabVale/actions/workflows/build.yml/badge.svg)](https://github.com/Gan0za/TabVale/actions/workflows/build.yml)
+
 A Chrome and Microsoft Edge extension that replaces the browser's new tab page
 with a customizable dashboard: search, multiple bookmark screens, and
 backgrounds.
