@@ -424,6 +424,28 @@ function storageLocalRemove(keys, callback) {
     });
 }
 
+// Запись экранов сериализована: два быстрых сохранения не должны
+// перемешивать payload и screensMeta. Пока идёт запись, следующая
+// сохраняется как «последняя ожидающая» — промежуточные состояния
+// не нужны, важно записать актуальное.
+let screenWriteInFlight = false;
+let queuedScreenWrite = null;
+
+function persistScreens(screens, callback) {
+    if (screenWriteInFlight) {
+        queuedScreenWrite = { screens, callback };
+        return;
+    }
+    screenWriteInFlight = true;
+    writeScreensNow(screens, (error) => {
+        screenWriteInFlight = false;
+        const next = queuedScreenWrite;
+        queuedScreenWrite = null;
+        callback?.(error);
+        if (next) persistScreens(next.screens, next.callback);
+    });
+}
+
 /**
  * Записывает экраны в раздельном формате: закладки каждого экрана —
  * отдельным ключом, метаданные — ключом screensMeta.
@@ -433,7 +455,7 @@ function storageLocalRemove(keys, callback) {
  * обратно, чтобы не дёргать данные между хранилищами). При ошибке квоты
  * sync все экраны переносятся в local — данные важнее синхронизации.
  */
-function persistScreens(screens, callback) {
+function writeScreensNow(screens, callback) {
     if (!Array.isArray(screens) || !screens.length) { callback?.(null); return; }
 
     const meta = [];

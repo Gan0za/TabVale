@@ -6,11 +6,12 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import { SOURCE as source } from './_source.mjs';
 
-function makeChrome({ sync = {}, local = {}, failSyncScreens = false } = {}) {
+function makeChrome({ sync = {}, local = {}, failSyncScreens = false, asyncWrites = false } = {}) {
     const syncData = JSON.parse(JSON.stringify(sync));
     const localData = JSON.parse(JSON.stringify(local));
-    const calls = { syncSets: [], localSets: [], syncRemoved: [] };
+    const calls = { syncSets: [], localSets: [], syncRemoved: [], localRemoved: [] };
     let lastError;
+    const answer = (fn) => { if (asyncWrites) setTimeout(fn, 5); else fn(); };
 
     const pick = (store, keys) => {
         const out = {};
@@ -36,7 +37,7 @@ function makeChrome({ sync = {}, local = {}, failSyncScreens = false } = {}) {
                     }
                     calls.syncSets.push(JSON.parse(JSON.stringify(items)));
                     Object.assign(syncData, JSON.parse(JSON.stringify(items)));
-                    cb?.();
+                    answer(() => cb?.());
                 },
                 remove(keys, cb) {
                     for (const key of [].concat(keys)) { delete syncData[key]; }
@@ -49,11 +50,12 @@ function makeChrome({ sync = {}, local = {}, failSyncScreens = false } = {}) {
                 set(items, cb) {
                     calls.localSets.push(JSON.parse(JSON.stringify(items)));
                     Object.assign(localData, JSON.parse(JSON.stringify(items)));
-                    cb?.();
+                    answer(() => cb?.());
                 },
                 remove(keys, cb) {
                     for (const key of [].concat(keys)) { delete localData[key]; }
-                    cb?.();
+                    calls.localRemoved.push(...[].concat(keys));
+                    answer(() => cb?.());
                 },
             },
         },
@@ -152,6 +154,78 @@ const bookmarks = [
     let state = null;
     api.getState((s) => { state = s; });
     assert.equal(state.bookmarks.length, 2, 'данные читаются после фолбэка');
+}
+
+// 5. Удаление экрана чистит ключ в том хранилище, где он лежал
+{
+    const { chrome, calls } = makeChrome();
+    const api = load(chrome);
+    const many = Array.from({ length: 140 }, (_, i) => ({
+        title: `Bookmark number ${i} with a long enough title`,
+        url: `https://example.com/page/${i}`,
+    }));
+    api.persistScreens([
+        { id: 'main', title: 'Main', bookmarks },
+        { id: 'big', title: 'Big', bookmarks: many },
+    ]);
+    calls.localRemoved.length = 0;
+    calls.syncRemoved.length = 0;
+    api.persistScreens([{ id: 'main', title: 'Main', bookmarks }]);
+
+    assert.ok(calls.localRemoved.includes('screen:big'), 'ключ удалённого local-экрана удалён');
+    let state = null;
+    api.getState((s) => { state = s; });
+    assert.equal(state.screens.length, 1, 'удалённый экран не читается');
+}
+
+// 6. Локальный режим залипает: уменьшившийся экран остаётся в local
+{
+    const { chrome, calls } = makeChrome();
+    const api = load(chrome);
+    const many = Array.from({ length: 140 }, (_, i) => ({
+        title: `Bookmark number ${i} with a long enough title`,
+        url: `https://example.com/page/${i}`,
+    }));
+    api.persistScreens([{ id: 'main', title: 'Main', bookmarks: many }]);
+    api.persistScreens([{ id: 'main', title: 'Main', bookmarks }]);
+
+    const meta = calls.syncSets.filter((items) => Array.isArray(items.screensMeta)).at(-1);
+    const local = calls.localSets.filter((items) => items['screen:main']).at(-1);
+    assert.equal(meta.screensMeta[0].storage, 'local', 'режим не понижается обратно в sync');
+    assert.equal(local['screen:main'].bookmarks.length, 2);
+}
+
+// 7. screensMeta остаётся в пределах одного элемента sync
+{
+    const { chrome, calls } = makeChrome();
+    const api = load(chrome);
+    const screens = Array.from({ length: 50 }, (_, i) => ({
+        id: `screen${i}`,
+        title: `Экран номер ${i}`,
+        bookmarks: [{ title: 'A', url: 'https://a.com' }],
+    }));
+    api.persistScreens(screens);
+
+    const meta = calls.syncSets.filter((items) => Array.isArray(items.screensMeta)).at(-1);
+    const size = Buffer.byteLength(JSON.stringify(meta.screensMeta), 'utf8');
+    assert.ok(size < 8192, `screensMeta ${size} байт помещается в лимит 8 КБ`);
+}
+
+// 8. Параллельные сохранения сериализуются, последнее состояние не теряется
+{
+    const { chrome, calls } = makeChrome({ asyncWrites: true });
+    const api = load(chrome);
+    let firstDone = 0;
+    let secondDone = 0;
+
+    api.persistScreens([{ id: 'main', title: 'Main', bookmarks: [{ title: 'First', url: 'https://a.com' }] }], () => { firstDone++; });
+    api.persistScreens([{ id: 'main', title: 'Main', bookmarks: [{ title: 'Second', url: 'https://b.com' }] }], () => { secondDone++; });
+    await new Promise((resolve) => setTimeout(resolve, 60));
+
+    assert.equal(firstDone, 1, 'первая запись завершилась');
+    assert.equal(secondDone, 1, 'вторая запись завершилась');
+    const lastScreen = calls.syncSets.filter((items) => items['screen:main']).at(-1);
+    assert.equal(lastScreen['screen:main'].bookmarks[0].title, 'Second', 'записано последнее состояние');
 }
 
 console.log('storage-v2.test.mjs: все проверки пройдены');
