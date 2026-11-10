@@ -245,8 +245,42 @@ function makeFileId() {
 
 const DEFAULT_SCREEN_ID = 'main';
 
+// Хранилище экранов: метаданные (id, название, режим) лежат одним ключом
+// screensMeta, закладки каждого экрана — отдельным ключом. chrome.storage.sync
+// ограничивает один элемент 8 КБ, поэтому крупный экран автоматически
+// переводится в storage.local (он не синхронизируется между устройствами,
+// зато выдерживает массовый импорт).
+const SCREEN_KEY_PREFIX = 'screen:';
+const SCREEN_SYNC_LIMIT_BYTES = 7000;
+
+// Текущие режимы хранения по id экрана; заполняются при чтении состояния
+// и обновляются при записи. Нужны, чтобы удалять ключи из правильного
+// хранилища и не «понижать» локальный экран обратно в sync.
+let screenStorageModes = {};
+let knownScreenIds = [];
+
 function makeScreenId() {
     return 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function screenStorageKey(id) {
+    return SCREEN_KEY_PREFIX + id;
+}
+
+/**
+ * Длина строки в UTF-8 байтах без TextEncoder: он есть не во всех
+ * песочницах тестов, а квоту нужно считать одинаково везде.
+ */
+function utf8ByteLength(text) {
+    let bytes = 0;
+    for (let i = 0; i < text.length; i++) {
+        const code = text.charCodeAt(i);
+        if (code < 0x80) bytes += 1;
+        else if (code < 0x800) bytes += 2;
+        else if (code >= 0xD800 && code <= 0xDBFF) { bytes += 4; i++; }
+        else bytes += 3;
+    }
+    return bytes;
 }
 
 /**
@@ -381,15 +415,148 @@ function storageLocalSet(items, callback) {
     });
 }
 
+/** Удаляет ключи из chrome.storage.local с проверкой lastError. */
+function storageLocalRemove(keys, callback) {
+    if (!chrome.storage?.local?.remove) { callback?.(); return; }
+    chrome.storage.local.remove(keys, () => {
+        void chrome.runtime?.lastError;
+        callback?.();
+    });
+}
+
+/**
+ * Записывает экраны в раздельном формате: закладки каждого экрана —
+ * отдельным ключом, метаданные — ключом screensMeta.
+ *
+ * Режим хранения выбирается по размеру: всё, что больше лимита одного
+ * элемента sync, уходит в storage.local и остаётся там (не «понижаем»
+ * обратно, чтобы не дёргать данные между хранилищами). При ошибке квоты
+ * sync все экраны переносятся в local — данные важнее синхронизации.
+ */
+function persistScreens(screens, callback) {
+    if (!Array.isArray(screens) || !screens.length) { callback?.(null); return; }
+
+    const meta = [];
+    const syncItems = {};
+    const localItems = {};
+    const ids = [];
+
+    screens.forEach((screen) => {
+        const id = screen.id;
+        const bookmarks = Array.isArray(screen.bookmarks) ? screen.bookmarks : [];
+        const payload = { bookmarks };
+        const previousMode = screenStorageModes[id];
+        const tooLarge = utf8ByteLength(JSON.stringify(payload)) > SCREEN_SYNC_LIMIT_BYTES;
+        const mode = previousMode === 'local' || tooLarge ? 'local' : 'sync';
+
+        const entry = { id, storage: mode };
+        if (screen.title) entry.title = screen.title;
+        if (screen.titleKey) entry.titleKey = screen.titleKey;
+        if (screen.titleVars) entry.titleVars = screen.titleVars;
+        meta.push(entry);
+
+        if (mode === 'local') localItems[screenStorageKey(id)] = payload;
+        else syncItems[screenStorageKey(id)] = payload;
+        ids.push(id);
+    });
+
+    const commitMeta = () => {
+        storageSet({ screensMeta: meta }, (error) => {
+            if (error) { callback?.(error); return; }
+
+            // Ключи удалённых экранов чистим в том хранилище, где они лежали
+            const removed = knownScreenIds.filter((id) => !ids.includes(id));
+            const syncRemovals = removed
+                .filter((id) => screenStorageModes[id] !== 'local')
+                .map(screenStorageKey);
+            const localRemovals = removed
+                .filter((id) => screenStorageModes[id] === 'local')
+                .map(screenStorageKey);
+            if (syncRemovals.length) storageRemove(syncRemovals);
+            if (localRemovals.length) storageLocalRemove(localRemovals);
+            storageRemove('screens');
+
+            screenStorageModes = {};
+            meta.forEach((entry) => { screenStorageModes[entry.id] = entry.storage; });
+            knownScreenIds = ids.slice();
+            callback?.(null);
+        });
+    };
+
+    const writePayloads = () => {
+        storageSet(syncItems, (syncError) => {
+            if (!syncError) {
+                if (!Object.keys(localItems).length) { commitMeta(); return; }
+                storageLocalSet(localItems, commitMeta);
+                return;
+            }
+            // Квота sync: переносим все экраны в local, чтобы не потерять данные
+            meta.forEach((entry) => { entry.storage = 'local'; });
+            const everything = Object.assign({}, syncItems, localItems);
+            storageLocalSet(everything, commitMeta);
+        });
+    };
+
+    if (!Object.keys(syncItems).length && !Object.keys(localItems).length) { commitMeta(); return; }
+    writePayloads();
+}
+
+/**
+ * Читает экраны раздельного формата: сначала метаданные, затем закладки
+ * из sync и local батчами. Возвращает нормализованный список.
+ */
+function readScreensFromMeta(meta, legacyBookmarks, callback) {
+    const syncKeys = [];
+    const localKeys = [];
+    meta.forEach((entry) => {
+        if (entry.storage === 'local') localKeys.push(screenStorageKey(entry.id));
+        else syncKeys.push(screenStorageKey(entry.id));
+    });
+
+    const data = {};
+    const finalize = () => {
+        const raw = meta.map((entry) => ({
+            id: entry.id,
+            title: entry.title,
+            titleKey: entry.titleKey,
+            titleVars: entry.titleVars,
+            bookmarks: (data[screenStorageKey(entry.id)] || {}).bookmarks || [],
+        }));
+        const screens = normalizeScreens(raw, legacyBookmarks);
+
+        screenStorageModes = {};
+        meta.forEach((entry) => {
+            screenStorageModes[entry.id] = entry.storage === 'local' ? 'local' : 'sync';
+        });
+        knownScreenIds = meta.map((entry) => entry.id);
+        callback(screens);
+    };
+
+    storageGet(syncKeys, (syncData) => {
+        Object.assign(data, syncData);
+        if (!localKeys.length) { finalize(); return; }
+        storageLocalGet(localKeys, (localData) => {
+            Object.assign(data, localData);
+            finalize();
+        });
+    });
+}
+
 /**
  * Сохраняет переданные поля в chrome.storage.sync.
  * Пример: saveState({ bookmarks: [...] }) — обновить только закладки.
  */
-function saveState({ searchEngines, bookmarks, backgrounds, screens, currentBackgroundIndex, currentSearchEngineIndex }) {
+function saveState({ searchEngines, bookmarks, backgrounds, screens, currentBackgroundIndex, currentSearchEngineIndex, widgets }) {
     const payload = {};
     if (searchEngines) payload.searchEngines = searchEngines;
+    if (backgrounds) payload.backgrounds = backgrounds;
+    if (currentBackgroundIndex !== undefined) payload.currentBackgroundIndex = currentBackgroundIndex;
+    if (currentSearchEngineIndex !== undefined) payload.currentSearchEngineIndex = currentSearchEngineIndex;
+    if (widgets) payload.widgets = widgets;
+    if (Object.keys(payload).length) storageSet(payload);
+
     if (screens) {
-        payload.screens = screens;
+        persistScreens(screens);
     } else if (bookmarks) {
         // Старые вызовы saveState({ bookmarks }) обновляют активный экран:
         // так не приходится переписывать все точки сохранения сразу.
@@ -400,15 +567,11 @@ function saveState({ searchEngines, bookmarks, backgrounds, screens, currentBack
             const active = currentState.screens.find((s) => s.id === currentState.currentScreenId)
                 || currentState.screens[0];
             active.bookmarks = bookmarks;
-            payload.screens = currentState.screens;
+            persistScreens(currentState.screens);
         } else {
-            payload.bookmarks = bookmarks;
+            storageSet({ bookmarks });
         }
     }
-    if (backgrounds) payload.backgrounds = backgrounds;
-    if (currentBackgroundIndex !== undefined) payload.currentBackgroundIndex = currentBackgroundIndex;
-    if (currentSearchEngineIndex !== undefined) payload.currentSearchEngineIndex = currentSearchEngineIndex;
-    storageSet(payload);
 }
 
 /**
@@ -416,26 +579,32 @@ function saveState({ searchEngines, bookmarks, backgrounds, screens, currentBack
  * Если какого-то поля нет (первый запуск) — подставляет значения по умолчанию.
  */
 function getState(callback) {
-    storageGet(['screens', 'bookmarks', 'searchEngines', 'backgrounds', 'currentBackgroundIndex', 'currentSearchEngineIndex'], (result) => {
-        const screens = normalizeScreens(result.screens, result.bookmarks);
-        const active = screens[0];
-
-        // Первый запуск после обновления: сохраняем новый формат и убираем
-        // legacy-ключ bookmarks, чтобы не дублировать закладки в квоте.
-        if (!Array.isArray(result.screens)) {
-            storageSet({ screens }, (error) => {
-                if (!error) storageRemove('bookmarks');
+    storageGet(['screensMeta', 'screens', 'bookmarks', 'searchEngines', 'backgrounds', 'currentBackgroundIndex', 'currentSearchEngineIndex', 'widgets'], (result) => {
+        const finish = (screens) => {
+            const active = screens[0];
+            callback({
+                screens,
+                currentScreenId: active.id,
+                bookmarks: active.bookmarks,
+                searchEngines: result.searchEngines || DEFAULT_SEARCH_ENGINES,
+                backgrounds: result.backgrounds || DEFAULT_BACKGROUNDS,
+                currentBackgroundIndex: result.currentBackgroundIndex ?? 0,
+                currentSearchEngineIndex: result.currentSearchEngineIndex ?? 0,
+                widgets: Array.isArray(result.widgets) ? result.widgets : [],
             });
+        };
+
+        if (Array.isArray(result.screensMeta) && result.screensMeta.length) {
+            readScreensFromMeta(result.screensMeta, result.bookmarks, finish);
+            return;
         }
 
-        callback({
-            screens,
-            currentScreenId: active.id,
-            bookmarks: active.bookmarks,
-            searchEngines: result.searchEngines || DEFAULT_SEARCH_ENGINES,
-            backgrounds: result.backgrounds || DEFAULT_BACKGROUNDS,
-            currentBackgroundIndex: result.currentBackgroundIndex ?? 0,
-            currentSearchEngineIndex: result.currentSearchEngineIndex ?? 0
+        // Старый формат: один ключ screens или legacy-ключ bookmarks.
+        // После чтения раскладываем его на метаданные и отдельные экраны.
+        const screens = normalizeScreens(result.screens, result.bookmarks);
+        persistScreens(screens, (error) => {
+            if (!error) storageRemove('bookmarks');
         });
+        finish(screens);
     });
 }

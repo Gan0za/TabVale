@@ -117,13 +117,16 @@ assert.equal(api.currentState.currentScreenId, 'work');
 assert.equal(api.currentState.bookmarks[0].title, 'W', 'алиас указывает на закладки активного экрана');
 assert.equal(api.activeScreen().id, 'work');
 
-// 4. saveState({ bookmarks }) пишет screens, а не legacy-ключ
+// 4. saveState({ bookmarks }) пишет экран отдельным ключом + screensMeta
 api.currentState.bookmarks.push({ title: 'W2', url: 'https://w2.com' });
 api.saveState({ bookmarks: api.currentState.bookmarks });
-const lastSet = syncSets.at(-1);
-assert.ok(lastSet.screens, 'в storage уходит screens');
-assert.equal(lastSet.bookmarks, undefined, 'legacy-ключ bookmarks не пишется');
-assert.equal(lastSet.screens.find((s) => s.id === 'work').bookmarks.length, 2);
+const metaSet = syncSets.filter((items) => Array.isArray(items.screensMeta)).at(-1);
+const screenSet = syncSets.filter((items) => items['screen:work']).at(-1);
+assert.ok(metaSet, 'в storage уходит screensMeta');
+assert.ok(screenSet, 'закладки экрана — отдельным ключом');
+assert.equal(screenSet['screen:work'].bookmarks.length, 2);
+assert.equal(metaSet.screensMeta.find((m) => m.id === 'work').storage, 'sync');
+assert.equal(syncSets.some((items) => items.bookmarks), false, 'legacy-ключ bookmarks не пишется');
 
 // 5. getState: legacy bookmarks -> screens, миграция сохраняется
 syncSets.length = 0;
@@ -132,7 +135,8 @@ api.getState((s) => { state = s; });
 assert.ok(Array.isArray(state.screens) && state.screens.length === 1);
 assert.equal(state.screens[0].id, 'main');
 assert.equal(state.bookmarks, state.screens[0].bookmarks, 'bookmarks — алиас активного экрана');
-assert.ok(syncSets.some((items) => items.screens), 'миграция записана в storage');
+assert.ok(syncSets.some((items) => Array.isArray(items.screensMeta)), 'миграция записана в storage');
+assert.ok(syncSets.some((items) => items['screen:main']), 'закладки легли отдельным ключом');
 
 // 6. Точки: две штуки, активная отмечена
 api.renderScreens();

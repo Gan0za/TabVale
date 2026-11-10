@@ -155,6 +155,8 @@ const chromeStub = {
                 syncSets.push(items);
                 if (items.bookmarks) savedOrder = items.bookmarks.map((b) => b.title);
                 if (items.screens) savedOrder = items.screens[0].bookmarks.map((b) => b.title);
+                const screenKey = Object.keys(items).find((key) => key.startsWith('screen:'));
+                if (screenKey) savedOrder = items[screenKey].bookmarks.map((b) => b.title);
                 cb && cb();
             },
         },
@@ -428,7 +430,9 @@ assert.equal(syncSets.length, 0, 'dragend после no-op dragover не пиш�
 grid._listeners.dragstart.forEach((fn) => fn({ target: quietTile, dataTransfer, clientX: 50, clientY: 50 }));
 grid._listeners.dragover.forEach((fn) => fn({ clientX: 400, clientY: 100, preventDefault() {} }));
 grid._listeners.dragend.forEach((fn) => fn({}));
-assert.equal(syncSets.length, 1, 'dragend с перестановкой пишет storage один раз');
+assert.equal(syncSets.length, 2, 'dragend с перестановкой пишет закладки и метаданные');
+assert.ok(syncSets.some((items) => items['screen:main']), 'закладки экрана записаны');
+assert.ok(syncSets.some((items) => Array.isArray(items.screensMeta)), 'метаданные экранов записаны');
 
 // --- 13. Граб-смещение от последней позиции пальца (дрейф в slop) ---
 // Регрессия: граб считался от точки касания (startX) — если за 350 мс
