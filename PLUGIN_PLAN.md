@@ -47,3 +47,13 @@ Smoke использует CDP `Extensions.loadUnpacked`, потому что с
 - Запрещено: merge, push, теги, изменения master, упоминания ИИ в сообщениях коммитов.
 - Каждый запуск: тесты, при изменениях UI — `tools/e2e/plugin-smoke.mjs`; при падении — фикс или откат шага до коммита.
 - Блокировка: откатить частичные правки, записать причину в этот файл и в маркер блокировки, остановиться.
+
+## Утренняя проверка
+
+1. `git -C self_tabs log --oneline -15` и `git status` — ветка `feature/plugins`, дерево чистое.
+2. Отметки в разделе «Этапы» и файл `C:\Users\verev\projects\.aicoder\state\plugin-work-complete.md`.
+3. Если есть `plugin-work-blocked.md` — прочитать причину, она же продублирована здесь.
+4. `for f in tests/*.test.mjs; do node "$f" || exit 1; done`.
+5. `node tools/e2e/plugin-smoke.mjs` — ожидается `SMOKE PASS`.
+6. `bash package.sh` — архив `dist/tabvale_v1.2.0.zip`.
+7. Живой тест: загрузить распакованную папку в Chrome, проверить док, полосу и панель.
