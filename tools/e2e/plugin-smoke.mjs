@@ -183,6 +183,8 @@ console.log('strip:', strip);
 
 let panel = null;
 let sandboxText = '';
+let stripText = '';
+let panelText = '';
 if (dock.count) {
   await evaluate(`document.querySelector('.plugin-dock-button').click()`);
   await sleep(1500);
@@ -194,11 +196,13 @@ if (dock.count) {
   console.log('panel:', panel);
 
   const after = await targets();
-  console.log('after targets:', after.map((t) => `${t.type} ${t.url}`));
-  const sandboxTarget = after.find((t) => t.url.includes('sandbox/plugin-host.html'));
-  if (sandboxTarget) {
+  const sandboxTargets = after.filter((t) => t.url.includes('sandbox/plugin-host.html'));
+  console.log('sandbox targets:', sandboxTargets.map((t) => ({ title: t.title || '' })));
+
+  const frameTexts = [];
+  for (const target of sandboxTargets) {
     try {
-      const frameWs = new WebSocket(sandboxTarget.webSocketDebuggerUrl);
+      const frameWs = new WebSocket(target.webSocketDebuggerUrl);
       await new Promise((res, rej) => { frameWs.addEventListener('open', res, { once: true }); frameWs.addEventListener('error', rej, { once: true }); });
       const frameResult = await new Promise((resolve) => {
         frameWs.addEventListener('message', (event) => {
@@ -211,13 +215,20 @@ if (dock.count) {
           params: { expression: 'document.body.innerText', returnByValue: true },
         }));
       });
-      sandboxText = String(frameResult?.result?.value || '');
-      console.log('sandbox text:', JSON.stringify(sandboxText.slice(0, 100)));
+      frameTexts.push({ title: target.title || '', text: String(frameResult?.result?.value || '') });
       frameWs.close();
     } catch (error) {
       console.log('sandbox read failed:', error.message);
     }
   }
+
+  console.log('sandbox frames:', frameTexts.map((item) => ({ title: item.title, text: item.text.slice(0, 40) })));
+  const stripEntry = frameTexts.find((item) => /\(strip\)/.test(item.title)) || frameTexts[0];
+  const panelEntry = frameTexts.find((item) => /\(panel\)/.test(item.title))
+    || frameTexts.find((item) => item !== stripEntry);
+  stripText = stripEntry?.text || '';
+  panelText = panelEntry?.text || '';
+  sandboxText = stripText || panelText;
 }
 
 console.log('logs:', logs.slice(-8));
@@ -225,10 +236,12 @@ console.log('exceptions:', errors.slice(0, 5));
 ws.close();
 child.kill();
 
+const timePattern = /^\d{1,2}:\d{2}/;
 const passed = dock.count > 0
     && strip.count > 0
     && panel?.open === true
-    && /^\d{1,2}:\d{2}/.test(sandboxText.trim())
+    && timePattern.test(stripText.trim())
+    && timePattern.test(panelText.trim())
     && errors.length === 0;
 console.log(passed ? 'SMOKE PASS' : 'SMOKE FAIL');
 process.exit(passed ? 0 : 1);

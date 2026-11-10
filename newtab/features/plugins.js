@@ -218,7 +218,7 @@ function renderPluginStrip() {
 
         const frame = document.createElement('iframe');
         frame.className = 'plugin-strip-frame';
-        frame.title = pluginDisplayName(record);
+        frame.title = `${pluginDisplayName(record)} (strip)`;
         frame.src = chrome.runtime.getURL('sandbox/plugin-host.html');
 
         item.append(frame);
@@ -294,7 +294,7 @@ function openPluginPanel(record) {
 
     const frame = document.createElement('iframe');
     frame.className = 'plugin-panel-frame';
-    frame.title = pluginDisplayName(record);
+    frame.title = `${pluginDisplayName(record)} (panel)`;
     frame.src = chrome.runtime.getURL('sandbox/plugin-host.html');
 
     header.append(title, close);
@@ -368,8 +368,10 @@ async function onPluginMessage(event) {
                 reply(data.method === 'config.get' ? {} : true);
                 break;
             case 'ui.close':
+                // Закрытие strip-виджета не удаляет размещение: без
+                // менеджера пользователь не смог бы вернуть его обратно.
                 if (instance.surface === 'panel') closePluginPanel();
-                else removePluginInstance(instance);
+                else instance.root.hidden = true;
                 reply(true);
                 break;
             case 'ui.resize': {

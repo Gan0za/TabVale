@@ -34,6 +34,7 @@ assert.ok(source.includes('pluginMethodAllowed'), 'метод проверяет
 assert.ok(source.includes('checkPluginStorageWrite'), 'запись проверяется по квоте');
 assert.ok(source.includes('pluginStorageKey'), 'ключи хранилища namespaced');
 assert.ok(source.includes('pluginAllowsUrl'), 'сеть проверяется по allowlist');
+assert.ok(source.includes('instance.root.hidden = true'), 'закрытие strip скрывает виджет, не удаляя размещение');
 assert.ok(source.includes("sandbox/plugin-host.html"), 'панель грузит sandbox-страницу');
 assert.ok(source.includes('renderPluginStrip'), 'есть рендер полосы плагинов');
 assert.ok(css.includes('.plugin-strip-item'), 'есть стили элемента полосы');
