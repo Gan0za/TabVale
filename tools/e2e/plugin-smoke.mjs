@@ -185,6 +185,9 @@ let panel = null;
 let sandboxText = '';
 let stripText = '';
 let panelText = '';
+let darkSandboxBg = '';
+let lightSandboxBg = '';
+let localizedManagerName = '';
 if (dock.count) {
   await evaluate(`document.querySelector('.plugin-dock-button').click()`);
   await sleep(1500);
@@ -251,6 +254,33 @@ if (dock.count) {
   stripText = stripEntry?.text || '';
   panelText = panelEntry?.text || '';
   sandboxText = stripText || panelText;
+
+  const themeTarget = sandboxTargets[0];
+  const readSandboxBackground = async () => {
+    const frameWs = new WebSocket(themeTarget.webSocketDebuggerUrl);
+    await new Promise((res, rej) => { frameWs.addEventListener('open', res, { once: true }); frameWs.addEventListener('error', rej, { once: true }); });
+    const result = await new Promise((resolve) => {
+      frameWs.addEventListener('message', (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg.id === 1) resolve(msg.result);
+      });
+      frameWs.send(JSON.stringify({
+        id: 1,
+        method: 'Runtime.evaluate',
+        params: { expression: 'getComputedStyle(document.body).backgroundColor', returnByValue: true },
+      }));
+    });
+    frameWs.close();
+    return String(result?.result?.value || '');
+  };
+
+  darkSandboxBg = await readSandboxBackground();
+  await evaluate(`document.documentElement.dataset.theme = 'light'`);
+  await sleep(600);
+  lightSandboxBg = await readSandboxBackground();
+  await evaluate(`document.documentElement.dataset.theme = 'dark'`);
+  await sleep(300);
+  console.log('theme broadcast:', { darkSandboxBg, lightSandboxBg });
 }
 
 const manager = await evaluate(`(() => {
@@ -260,6 +290,16 @@ const manager = await evaluate(`(() => {
   return { rows: document.querySelectorAll('.plugin-manager-item').length };
 })()`);
 console.log('manager:', manager);
+
+localizedManagerName = await evaluate(`(async () => {
+  const previous = document.documentElement.lang;
+  document.documentElement.lang = 'ru';
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  const name = document.querySelector('.plugin-manager-name')?.textContent || '';
+  document.documentElement.lang = previous;
+  return name;
+})()`);
+console.log('localized manager name:', localizedManagerName);
 
 const zone = await evaluate(`(async () => {
   const select = document.querySelector('.plugin-manager-surface');
@@ -385,6 +425,9 @@ const passed = dock.count > 0
     && cleaned.dock === 1
     && off.dock === 0 && off.strip === 0
     && panelOnly.dock === 1 && panelOnly.strip === 0
+    && darkSandboxBg === 'rgb(36, 48, 60)'
+    && lightSandboxBg === 'rgb(242, 245, 248)'
+    && localizedManagerName === 'Часы'
     && errors.length === 0;
 console.log(passed ? 'SMOKE PASS' : 'SMOKE FAIL');
 process.exit(passed ? 0 : 1);
