@@ -62,6 +62,8 @@ assert.ok(source.includes('dbDeletePlugin'), 'менеджер удаляет п
 assert.ok(source.includes('dbPutPlugin'), 'установка пишет пакет в IndexedDB');
 assert.ok(settings.includes('finishExport') && settings.includes('plugins'), 'бэкап включает пакеты плагинов');
 assert.ok(settings.includes('payload.plugins'), 'импорт восстанавливает пакеты плагинов');
+assert.ok(settings.includes('pluginData') && settings.includes('pluginPlacements'), 'бэкап хранит данные и размещения');
+assert.ok(settings.includes("t('pluginInstallConfirm'"), 'импорт плагина спрашивает права');
 assert.ok(source.includes('watchPluginThemeAndLocale'), 'тема и язык транслируются в плагины');
 assert.ok(source.includes("case 'ui.openExternal'"), 'внешние ссылки открываются через хост');
 assert.ok(manifest.optional_permissions?.includes('bookmarks'), 'доступ к закладкам запрашивается опционально');
