@@ -380,6 +380,12 @@ async function setPluginPlacement(record, value) {
 
     pluginPlacementsCache = placements;
     await new Promise((resolve) => storageLocalSet({ [PLUGIN_PLACEMENTS_KEY]: placements }, resolve));
+
+    // Зоны исключающие: уходя из панели в полосу/off, закрываем её.
+    if (value !== 'panel' && pluginPanelInstance?.record.id === record.id) {
+        closePluginPanel();
+    }
+
     renderPluginDock();
     renderPluginStrip();
 }
@@ -481,7 +487,11 @@ function renderPluginManager() {
             open.type = 'button';
             open.className = 'btn plugin-manager-open';
             open.textContent = t('pluginOpen');
-            open.addEventListener('click', () => openPluginPanel(record));
+            open.addEventListener('click', async () => {
+                // «Открыть» — это выбор панели, а не второй поверхности.
+                await setPluginPlacement(record, 'panel');
+                openPluginPanel(record);
+            });
             item.append(open);
         }
 

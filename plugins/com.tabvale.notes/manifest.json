@@ -8,15 +8,74 @@
   "entry": "plugin.js",
   "description": "A small scratchpad that saves as you type.",
   "author": "TabVale",
-  "permissions": { "network": [], "capabilities": [], "storageKB": 64 },
+  "permissions": {
+    "network": [],
+    "capabilities": [],
+    "storageKB": 64
+  },
   "surfaces": {
-    "panel": { "sides": ["right", "left"], "width": [300, 520], "height": [260, 700], "mode": ["overlay"] },
-    "rail": { "positions": ["top"] }
+    "panel": {
+      "sides": [
+        "right",
+        "left"
+      ],
+      "width": [
+        300,
+        520
+      ],
+      "height": [
+        260,
+        700
+      ],
+      "mode": [
+        "overlay"
+      ]
+    },
+    "rail": {
+      "positions": [
+        "top"
+      ]
+    }
   },
   "locales": {
-    "ru": { "name": "Быстрые заметки" },
-    "de": { "name": "Notizen" },
-    "fr": { "name": "Notes rapides" },
-    "es": { "name": "Notas rápidas" }
+    "ru": {
+      "name": "Быстрые заметки"
+    },
+    "en": {
+      "name": "Quick notes"
+    },
+    "de": {
+      "name": "Notizen"
+    },
+    "fr": {
+      "name": "Notes rapides"
+    },
+    "es": {
+      "name": "Notas rápidas"
+    },
+    "pt-BR": {
+      "name": "Notas rápidas"
+    },
+    "it": {
+      "name": "Note rapide"
+    },
+    "pl": {
+      "name": "Szybkie notatki"
+    },
+    "tr": {
+      "name": "Hızlı notlar"
+    },
+    "uk": {
+      "name": "Швидкі нотатки"
+    },
+    "zh-CN": {
+      "name": "快速笔记"
+    },
+    "ja": {
+      "name": "クイックメモ"
+    },
+    "ko": {
+      "name": "빠른 메모"
+    }
   }
 }

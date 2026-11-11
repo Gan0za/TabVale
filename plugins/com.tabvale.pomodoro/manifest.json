@@ -8,16 +8,84 @@
   "entry": "plugin.js",
   "description": "A 25-minute focus timer with a five-minute break.",
   "author": "TabVale",
-  "permissions": { "network": [], "capabilities": [], "storageKB": 16 },
+  "permissions": {
+    "network": [],
+    "capabilities": [],
+    "storageKB": 16
+  },
   "surfaces": {
-    "panel": { "sides": ["right", "left"], "width": [280, 420], "height": [240, 420], "mode": ["overlay"] },
-    "strip": { "positions": ["top", "bottom"], "height": [64, 120] },
-    "rail": { "positions": ["top"] }
+    "panel": {
+      "sides": [
+        "right",
+        "left"
+      ],
+      "width": [
+        280,
+        420
+      ],
+      "height": [
+        240,
+        420
+      ],
+      "mode": [
+        "overlay"
+      ]
+    },
+    "strip": {
+      "positions": [
+        "top",
+        "bottom"
+      ],
+      "height": [
+        64,
+        120
+      ]
+    },
+    "rail": {
+      "positions": [
+        "top"
+      ]
+    }
   },
   "locales": {
-    "ru": { "name": "Помодоро" },
-    "de": { "name": "Pomodoro" },
-    "fr": { "name": "Pomodoro" },
-    "es": { "name": "Pomodoro" }
+    "ru": {
+      "name": "Помодоро"
+    },
+    "en": {
+      "name": "Pomodoro"
+    },
+    "de": {
+      "name": "Pomodoro"
+    },
+    "fr": {
+      "name": "Pomodoro"
+    },
+    "es": {
+      "name": "Pomodoro"
+    },
+    "pt-BR": {
+      "name": "Pomodoro"
+    },
+    "it": {
+      "name": "Pomodoro"
+    },
+    "pl": {
+      "name": "Pomodoro"
+    },
+    "tr": {
+      "name": "Pomodoro"
+    },
+    "uk": {
+      "name": "Помодоро"
+    },
+    "zh-CN": {
+      "name": "番茄钟"
+    },
+    "ja": {
+      "name": "ポモドーロ"
+    },
+    "ko": {
+      "name": "뽀모도로"
+    }
   }
 }

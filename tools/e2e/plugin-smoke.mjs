@@ -311,6 +311,32 @@ localizedManagerName = await evaluate(`(async () => {
 })()`);
 console.log('localized manager name:', localizedManagerName);
 
+const openByManager = await evaluate(`(async () => {
+  document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-open')?.click();
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  return {
+    panel: !!document.querySelector('.plugin-panel'),
+    dock: document.querySelectorAll('.plugin-dock-button').length,
+    strip: document.querySelectorAll('.plugin-strip-item').length,
+  };
+})()`);
+console.log('open by manager:', openByManager);
+await evaluate(`document.querySelector('.plugin-panel-close')?.click()`);
+await sleep(300);
+
+const backToStrip = await evaluate(`(async () => {
+  const select = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-surface');
+  select.value = 'strip:top';
+  select.dispatchEvent(new Event('change', { bubbles: true }));
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  return {
+    panel: !!document.querySelector('.plugin-panel'),
+    dock: document.querySelectorAll('.plugin-dock-button').length,
+    strip: document.querySelectorAll('.plugin-strip-item').length,
+  };
+})()`);
+console.log('back to strip:', backToStrip);
+
 const zone = await evaluate(`(async () => {
   const select = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-surface');
   if (!select) return { top: 0, bottom: 0 };
@@ -427,6 +453,10 @@ const passed = dock.count > 0
     && timePattern.test(stripText.trim())
     && panelText.trim().length > 0
     && manager.rows > 0
+    && openByManager.panel === true
+    && openByManager.dock === baselineDock + 1 && openByManager.strip === baselineStrip - 1
+    && backToStrip.panel === false
+    && backToStrip.dock === baselineDock && backToStrip.strip === baselineStrip
     && zone.bottom === 1 && zone.top === 0
     && removal.rows === baselineRows - 1 && removal.dock === baselineDock
     && afterReload.dock === baselineDock && afterReload.strip === baselineStrip - 1

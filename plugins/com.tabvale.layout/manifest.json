@@ -8,15 +8,74 @@
   "entry": "plugin.js",
   "description": "Converts text typed in the wrong keyboard layout.",
   "author": "TabVale",
-  "permissions": { "network": [], "capabilities": [], "storageKB": 16 },
+  "permissions": {
+    "network": [],
+    "capabilities": [],
+    "storageKB": 16
+  },
   "surfaces": {
-    "panel": { "sides": ["right", "left"], "width": [320, 520], "height": [260, 600], "mode": ["overlay"] },
-    "rail": { "positions": ["top"] }
+    "panel": {
+      "sides": [
+        "right",
+        "left"
+      ],
+      "width": [
+        320,
+        520
+      ],
+      "height": [
+        260,
+        600
+      ],
+      "mode": [
+        "overlay"
+      ]
+    },
+    "rail": {
+      "positions": [
+        "top"
+      ]
+    }
   },
   "locales": {
-    "ru": { "name": "Конвертер раскладок" },
-    "de": { "name": "Tastaturlayout" },
-    "fr": { "name": "Convertisseur" },
-    "es": { "name": "Convertidor" }
+    "ru": {
+      "name": "Конвертер раскладок"
+    },
+    "en": {
+      "name": "Layout converter"
+    },
+    "de": {
+      "name": "Tastaturlayout"
+    },
+    "fr": {
+      "name": "Convertisseur"
+    },
+    "es": {
+      "name": "Convertidor"
+    },
+    "pt-BR": {
+      "name": "Conversor"
+    },
+    "it": {
+      "name": "Convertitore"
+    },
+    "pl": {
+      "name": "Konwerter"
+    },
+    "tr": {
+      "name": "Düzen dönüştürücü"
+    },
+    "uk": {
+      "name": "Конвертер розкладок"
+    },
+    "zh-CN": {
+      "name": "键盘布局转换器"
+    },
+    "ja": {
+      "name": "キーボード配列変換"
+    },
+    "ko": {
+      "name": "키보드 배열 변환"
+    }
   }
 }

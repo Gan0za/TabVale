@@ -8,15 +8,74 @@
   "entry": "plugin.js",
   "description": "Generates random passwords locally, without any permissions.",
   "author": "TabVale",
-  "permissions": { "network": [], "capabilities": [], "storageKB": 16 },
+  "permissions": {
+    "network": [],
+    "capabilities": [],
+    "storageKB": 16
+  },
   "surfaces": {
-    "panel": { "sides": ["right", "left"], "width": [280, 420], "height": [220, 360], "mode": ["overlay"] },
-    "rail": { "positions": ["top"] }
+    "panel": {
+      "sides": [
+        "right",
+        "left"
+      ],
+      "width": [
+        280,
+        420
+      ],
+      "height": [
+        220,
+        360
+      ],
+      "mode": [
+        "overlay"
+      ]
+    },
+    "rail": {
+      "positions": [
+        "top"
+      ]
+    }
   },
   "locales": {
-    "ru": { "name": "Генератор паролей" },
-    "de": { "name": "Passwortgenerator" },
-    "fr": { "name": "Générateur de mots de passe" },
-    "es": { "name": "Generador de contraseñas" }
+    "ru": {
+      "name": "Генератор паролей"
+    },
+    "en": {
+      "name": "Password generator"
+    },
+    "de": {
+      "name": "Passwortgenerator"
+    },
+    "fr": {
+      "name": "Générateur de mots de passe"
+    },
+    "es": {
+      "name": "Generador de contraseñas"
+    },
+    "pt-BR": {
+      "name": "Gerador de senhas"
+    },
+    "it": {
+      "name": "Generatore di password"
+    },
+    "pl": {
+      "name": "Generator haseł"
+    },
+    "tr": {
+      "name": "Parola oluşturucu"
+    },
+    "uk": {
+      "name": "Генератор паролів"
+    },
+    "zh-CN": {
+      "name": "密码生成器"
+    },
+    "ja": {
+      "name": "パスワード生成"
+    },
+    "ko": {
+      "name": "비밀번호 생성기"
+    }
   }
 }
