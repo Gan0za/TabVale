@@ -293,6 +293,8 @@
   "pluginGrantBookmarks": { "message": "Permitir acceso a marcadores" },
   "pluginBookmarksGranted": { "message": "Acceso a marcadores permitido" },
   "pluginBookmarksDenied": { "message": "No se concedió acceso a marcadores: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginGrantPending": { "message": "Esperando confirmación en Chrome…" },
+  "pluginGrantHint": { "message": "Si la solicitud no apareció, haga clic en el icono de TabVale en la barra del navegador y permita el acceso a los marcadores." },
   "pluginPermNetwork": { "message": "red: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "almacenamiento: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Ubicación de $name$", "placeholders": { "name": { "content": "$1" } } },

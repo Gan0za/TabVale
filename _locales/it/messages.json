@@ -293,6 +293,8 @@
   "pluginGrantBookmarks": { "message": "Consenti accesso ai segnalibri" },
   "pluginBookmarksGranted": { "message": "Accesso ai segnalibri consentito" },
   "pluginBookmarksDenied": { "message": "Accesso ai segnalibri non concesso: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginGrantPending": { "message": "In attesa di conferma in Chrome…" },
+  "pluginGrantHint": { "message": "Se la richiesta non è comparsa, fai clic sull'icona TabVale nella barra del browser e consenti l'accesso ai segnalibri." },
   "pluginPermNetwork": { "message": "rete: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "archivio: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Posizione di $name$", "placeholders": { "name": { "content": "$1" } } },

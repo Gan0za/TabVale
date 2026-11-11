@@ -59,8 +59,8 @@ function mount(api) {
             if (!items.size) status.textContent = ru ? 'В браузере нет закладок' : 'No browser bookmarks';
         } catch (error) {
             status.textContent = ru
-                ? 'Нет доступа к закладкам. Разрешите его при открытии плагина.'
-                : 'Bookmark access is not granted. Allow it when opening the plugin.';
+                ? 'Нет доступа к закладкам. Включите его в менеджере: Настройки → Плагины.'
+                : 'Bookmark access is not granted. Enable it in the manager: Settings → Plugins.';
         }
     }
 

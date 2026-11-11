@@ -293,6 +293,8 @@
   "pluginGrantBookmarks": { "message": "Zezwól na dostęp do zakładek" },
   "pluginBookmarksGranted": { "message": "Dostęp do zakładek przyznany" },
   "pluginBookmarksDenied": { "message": "Nie przyznano dostępu do zakładek: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginGrantPending": { "message": "Oczekiwanie na potwierdzenie w Chrome…" },
+  "pluginGrantHint": { "message": "Jeśli prośba się nie pojawiła, kliknij ikonę TabVale na pasku przeglądarki i zezwól na dostęp do zakładek." },
   "pluginPermNetwork": { "message": "sieć: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "pamięć: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Umiejscowienie $name$", "placeholders": { "name": { "content": "$1" } } },

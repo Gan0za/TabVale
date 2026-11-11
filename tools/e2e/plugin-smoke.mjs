@@ -514,6 +514,94 @@ console.log('plugin tile:', { tileCount, tilePanel });
 await evaluate(`document.querySelector('.plugin-panel-close')?.click()`);
 await sleep(300);
 
+await evaluate(`(() => {
+  window.__alerts = [];
+  window.alert = (message) => { window.__alerts.push(String(message)); };
+})()`);
+const grantRect = await evaluate(`(() => {
+  const button = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.bookmarks"] .plugin-manager-grant');
+  if (!button) return null;
+  window.__grantEvents = [];
+  window.__permLog = [];
+  for (const type of ['pointerdown', 'mousedown', 'click']) {
+    button.addEventListener(type, () => window.__grantEvents.push(type));
+  }
+  const nativeRequest = chrome.permissions.request.bind(chrome.permissions);
+  chrome.permissions.request = (perms, callback) => {
+    window.__permLog.push({ called: perms });
+    try {
+      return nativeRequest(perms, (granted) => {
+        window.__permLog.push({ callback: granted, error: chrome.runtime?.lastError?.message || '' });
+        callback?.(granted);
+      });
+    } catch (error) {
+      window.__permLog.push({ threw: String(error?.message || error) });
+      throw error;
+    }
+  };
+  button.scrollIntoView({ block: 'center' });
+  const rect = button.getBoundingClientRect();
+  const x = rect.x + rect.width / 2;
+  const y = rect.y + rect.height / 2;
+  const hit = document.elementFromPoint(x, y);
+  return {
+    x, y,
+    rect: { x: rect.x, y: rect.y, w: rect.width, h: rect.height },
+    hitIsButton: hit === button,
+    hitTag: hit ? (hit.className || hit.tagName) : 'none',
+  };
+})()`);
+console.log('grant button:', grantRect);
+if (grantRect && process.env.SMOKE_VISIBLE === '1') {
+  try {
+    await send('Browser.setWindowBounds', {
+      windowId: (await send('Browser.getWindowForTarget')).windowId,
+      bounds: { left: 80, top: 80, width: 1280, height: 900, windowState: 'normal' },
+    });
+    await send('Page.bringToFront');
+    await sleep(700);
+    Object.assign(grantRect, await evaluate(`(() => {
+      const button = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.bookmarks"] .plugin-manager-grant');
+      if (!button) return {};
+      button.scrollIntoView({ block: 'center' });
+      const rect = button.getBoundingClientRect();
+      return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+    })()`));
+    console.log('grant button after move:', grantRect);
+  } catch (error) {
+    console.log('visible window failed:', error.message);
+  }
+}
+if (grantRect) {
+  await send('Input.dispatchMouseEvent', { type: 'mousePressed', x: grantRect.x, y: grantRect.y, button: 'left', clickCount: 1 });
+  await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: grantRect.x, y: grantRect.y, button: 'left', clickCount: 1 });
+  await sleep(2000);
+}
+const grantResult = await evaluate(`(async () => {
+  const button = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.bookmarks"] .plugin-manager-grant');
+  if (!button) return { found: false };
+  const contains = await new Promise((resolve) => chrome.permissions.contains({ permissions: ['bookmarks'] }, resolve));
+  return {
+    found: true,
+    label: button.textContent,
+    disabled: button.disabled,
+    contains,
+    alerts: window.__alerts,
+    events: window.__grantEvents,
+    permLog: window.__permLog,
+  };
+})()`);
+console.log('grant result:', grantResult);
+// Кнопка доступа должна реально вызвать chrome.permissions.request —
+// это единственное, что можно проверить без ответа человека в диалоге.
+const grantRequested = Array.isArray(grantResult.permLog)
+  && grantResult.permLog.some((entry) => entry.called?.permissions?.includes('bookmarks'))
+  && (grantResult.events || []).includes('click');
+console.log('grant requested:', grantRequested);
+console.log('browser ui after grant:', (await targets())
+  .filter((item) => item.type === 'browser_ui')
+  .map((item) => item.url));
+
 const networkProbe = await evaluate(`(async () => {
   const urls = [
     'https://api.open-meteo.com/v1/forecast?latitude=55.7558&longitude=37.6173&current=temperature_2m',
@@ -563,6 +651,7 @@ const passed = dock.count > 0
     && pomodoroFits
     && appLauncherFits
     && tileWorks
+    && grantRequested
     && errors.length === 0;
 console.log(passed ? 'SMOKE PASS' : 'SMOKE FAIL');
 process.exit(passed ? 0 : 1);

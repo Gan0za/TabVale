@@ -48,6 +48,15 @@ function initPlugins() {
 
     initPluginInstall();
     watchPluginThemeAndLocale();
+
+    // Выдача доступа идёт из двух мест: кнопка в менеджере и иконка
+    // расширения на панели браузера (service worker). Второй путь шлёт
+    // сюда сообщение, чтобы открытые панели перечитали закладки.
+    chrome.runtime?.onMessage?.addListener((message) => {
+        if (message?.type === 'tabvale:bookmarks-permission') {
+            onBookmarksPermission(Boolean(message.granted));
+        }
+    });
 }
 
 function ensurePluginDock() {
@@ -212,6 +221,8 @@ function ensurePluginStrip(position) {
 
 function createPluginInstance(record, surface, root, frame, placement) {
     const instance = { id: ++pluginInstanceSeq, record, surface, root, frame, placement };
+    // Слушатель постоянный, а не once: после перезагрузки кадра (например,
+    // когда выдали доступ к закладкам) плагин должен смонтироваться заново.
     frame.addEventListener('load', () => {
         pluginInstances.set(instance.id, instance);
         frame.contentWindow?.postMessage({
@@ -225,7 +236,7 @@ function createPluginInstance(record, surface, root, frame, placement) {
                 surface,
             },
         }, '*');
-    }, { once: true });
+    });
     return instance;
 }
 
@@ -356,27 +367,66 @@ function watchPluginThemeAndLocale() {
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'lang'] });
 }
 
-function requestBookmarksPermission() {
+/**
+ * Запрашивает доступ к закладкам. Chrome показывает диалог только при
+ * пользовательском жесте и может не вызвать callback, если диалог так и
+ * остался без ответа, — поэтому у запроса есть таймаут.
+ */
+function requestBookmarksPermission(options = {}) {
     return new Promise((resolve) => {
-        if (!chrome.permissions?.request) { resolve({ granted: false, error: 'permissions API is unavailable' }); return; }
+        let settled = false;
+        let timer = null;
+        const finish = (result) => {
+            if (settled) return;
+            settled = true;
+            if (timer) clearTimeout(timer);
+            resolve(result);
+        };
+
+        if (!chrome.permissions?.request) {
+            finish({ granted: false, error: 'permissions API is unavailable' });
+            return;
+        }
+
+        const timeoutMs = Number(options.timeoutMs) > 0 ? Number(options.timeoutMs) : 0;
+        if (timeoutMs) timer = setTimeout(() => finish({ granted: false, timeout: true }), timeoutMs);
+
         try {
             chrome.permissions.request({ permissions: ['bookmarks'] }, (granted) => {
                 const error = chrome.runtime?.lastError;
                 if (error) console.warn('bookmarks permission:', error.message);
-                resolve({ granted: Boolean(granted), error: error?.message || '' });
+                // Подтверждение могло прийти уже после таймаута.
+                if (granted) onBookmarksPermission(true);
+                finish({ granted: Boolean(granted), error: error?.message || '' });
             });
         } catch (error) {
             console.warn('bookmarks permission:', error);
-            resolve({ granted: false, error: String(error?.message || error) });
+            finish({ granted: false, error: String(error?.message || error) });
         }
     });
+}
+
+/**
+ * Применяет выданный доступ: обновляет менеджер и перезагружает панели,
+ * читающие закладки, — иначе они остаются с сообщением «нет доступа».
+ */
+function onBookmarksPermission(granted) {
+    if (granted) {
+        for (const instance of Array.from(pluginInstances.values())) {
+            const capabilities = instance.record.manifest.permissions?.capabilities || [];
+            if (capabilities.includes('bookmarks.read')) instance.frame.src = instance.frame.src;
+        }
+    }
+    renderPluginManager();
 }
 
 function requestPluginPermissions(record) {
     const capabilities = record.manifest.permissions?.capabilities || [];
     if (!capabilities.includes('bookmarks.read')) return;
     // Вызывается из клика по иконке/кнопке — это пользовательский жест.
-    requestBookmarksPermission();
+    hasBookmarksPermission().then((granted) => {
+        if (!granted) requestBookmarksPermission();
+    });
 }
 
 function hasBookmarksPermission() {
@@ -582,9 +632,18 @@ function renderPluginManager() {
             };
             hasBookmarksPermission().then(update);
             grant.addEventListener('click', async () => {
-                const result = await requestBookmarksPermission();
-                update(result.granted);
-                if (!result.granted) {
+                // Диалог Chrome может появиться не сразу и не в этом окне —
+                // показываем, что запрос отправлен, и не даём кликать повторно.
+                grant.disabled = true;
+                grant.textContent = t('pluginGrantPending');
+                const result = await requestBookmarksPermission({ timeoutMs: 20000 });
+                if (result.granted) {
+                    update(true);
+                } else if (result.timeout) {
+                    update(false);
+                    window.alert(t('pluginGrantHint'));
+                } else {
+                    update(false);
                     window.alert(t('pluginBookmarksDenied', { error: result.error || 'denied' }));
                 }
             });

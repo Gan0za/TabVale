@@ -71,6 +71,11 @@ assert.ok(source.includes('chrome.bookmarks.getTree'), 'хост читает д
 assert.ok(source.includes('requestPluginPermissions'), 'разрешение запрашивается по жесту');
 assert.ok(source.includes('requestBookmarksPermission'), 'есть явный запрос доступа к закладкам');
 assert.ok(source.includes('plugin-manager-grant'), 'в менеджере есть кнопка разрешения');
+assert.ok(source.includes('tabvale:bookmarks-permission'), 'хост принимает сообщение о выданном доступе');
+assert.ok(source.includes('onBookmarksPermission'), 'выдача доступа применяется к открытым панелям');
+assert.ok(source.includes("t('pluginGrantPending')"), 'кнопка показывает ожидание подтверждения');
+assert.ok(source.includes("t('pluginGrantHint')"), 'есть подсказка про иконку браузера');
+assert.ok(read('background.js').includes('chrome.action.onClicked'), 'иконка расширения тоже запрашивает доступ');
 assert.ok(db.includes('PLUGIN_DB_STORE'), 'есть object store плагинов');
 
 console.log('plugin-host.test.mjs: все проверки пройдены');

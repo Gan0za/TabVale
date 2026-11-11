@@ -293,6 +293,8 @@
   "pluginGrantBookmarks": { "message": "ブックマークへのアクセスを許可" },
   "pluginBookmarksGranted": { "message": "ブックマークへのアクセスを許可済み" },
   "pluginBookmarksDenied": { "message": "ブックマークへのアクセスが許可されませんでした: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginGrantPending": { "message": "Chrome での確認を待っています…" },
+  "pluginGrantHint": { "message": "リクエストが表示されない場合は、ブラウザのツールバーにある TabVale アイコンをクリックし、ブックマークへのアクセスを許可してください。" },
   "pluginPermNetwork": { "message": "ネットワーク: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "ストレージ: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "$name$ の配置", "placeholders": { "name": { "content": "$1" } } },

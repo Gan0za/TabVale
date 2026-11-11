@@ -293,6 +293,8 @@
   "pluginGrantBookmarks": { "message": "Lesezeichen-Zugriff erlauben" },
   "pluginBookmarksGranted": { "message": "Lesezeichen-Zugriff erlaubt" },
   "pluginBookmarksDenied": { "message": "Lesezeichen-Zugriff nicht erteilt: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginGrantPending": { "message": "Warten auf Bestätigung in Chrome…" },
+  "pluginGrantHint": { "message": "Wenn die Abfrage nicht erschienen ist, klicken Sie in der Browserleiste auf das TabVale-Symbol und erlauben Sie den Lesezeichenzugriff." },
   "pluginPermNetwork": { "message": "Netzwerk: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "Speicher: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Platzierung für $name$", "placeholders": { "name": { "content": "$1" } } },

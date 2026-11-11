@@ -122,6 +122,8 @@
   "pluginGrantBookmarks": { "message": "Allow bookmark access" },
   "pluginBookmarksGranted": { "message": "Bookmark access granted" },
   "pluginBookmarksDenied": { "message": "Bookmark access was not granted: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginGrantPending": { "message": "Waiting for confirmation in Chrome…" },
+  "pluginGrantHint": { "message": "If the request did not appear, click the TabVale icon in the browser toolbar and allow bookmark access." },
   "pluginPermNetwork": { "message": "network: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "storage: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Placement for $name$", "placeholders": { "name": { "content": "$1" } } },

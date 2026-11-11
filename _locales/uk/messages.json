@@ -293,6 +293,8 @@
   "pluginGrantBookmarks": { "message": "Дозволити доступ до закладок" },
   "pluginBookmarksGranted": { "message": "Доступ до закладок надано" },
   "pluginBookmarksDenied": { "message": "Доступ до закладок не надано: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginGrantPending": { "message": "Очікуємо підтвердження в Chrome…" },
+  "pluginGrantHint": { "message": "Якщо запит не з'явився, натисніть іконку TabVale на панелі браузера й дозвольте доступ до закладок." },
   "pluginPermNetwork": { "message": "мережа: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "сховище: $kb$ КБ", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Розміщення плагіна $name$", "placeholders": { "name": { "content": "$1" } } },
