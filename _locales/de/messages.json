@@ -275,6 +275,16 @@
   "tabScreens": {
     "message": "Bildschirme"
   },
+  "tabPlugins": { "message": "Plugins" },
+  "pluginsEmpty": { "message": "Keine Plugins installiert." },
+  "pluginOpen": { "message": "Öffnen" },
+  "pluginRemove": { "message": "Entfernen" },
+  "pluginRestore": { "message": "Mitgelieferte Plugins wiederherstellen" },
+  "pluginRemoveConfirm": { "message": "Plugin $name$ entfernen?", "placeholders": { "name": { "content": "$1" } } },
+  "surfacePanel": { "message": "Panel" },
+  "surfaceStripTop": { "message": "Über Lesezeichen" },
+  "surfaceStripBottom": { "message": "Unter Lesezeichen" },
+  "surfaceOff": { "message": "Aus" },
   "screenLabel": {
     "message": "Bildschirm"
   },

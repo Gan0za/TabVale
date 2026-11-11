@@ -275,6 +275,16 @@
   "tabScreens": {
     "message": "Pantallas"
   },
+  "tabPlugins": { "message": "Complementos" },
+  "pluginsEmpty": { "message": "No hay complementos instalados." },
+  "pluginOpen": { "message": "Abrir" },
+  "pluginRemove": { "message": "Eliminar" },
+  "pluginRestore": { "message": "Restaurar complementos incluidos" },
+  "pluginRemoveConfirm": { "message": "¿Eliminar el complemento $name$?", "placeholders": { "name": { "content": "$1" } } },
+  "surfacePanel": { "message": "Panel" },
+  "surfaceStripTop": { "message": "Encima de marcadores" },
+  "surfaceStripBottom": { "message": "Debajo de marcadores" },
+  "surfaceOff": { "message": "Desactivado" },
   "screenLabel": {
     "message": "Pantalla"
   },

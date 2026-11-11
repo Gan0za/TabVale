@@ -44,7 +44,9 @@ assert.ok(source.includes('renderPluginManager'), 'есть рендер мен�
 assert.ok(source.includes('setPluginPlacement'), 'размещение меняется из менеджера');
 assert.ok(source.includes('removePlugin'), 'плагин можно удалить');
 assert.ok(source.includes('pluginRemovedBuiltins'), 'удалённые встроенные запоминаются');
-assert.ok(source.includes('Restore bundled plugins'), 'есть восстановление встроенных');
+assert.ok(source.includes("t('pluginRestore')"), 'есть восстановление встроенных');
+assert.ok(source.includes("t('pluginOpen')"), 'кнопки менеджера локализованы');
+assert.ok(source.includes("t('pluginRemoveConfirm'"), 'подтверждение удаления локализовано');
 assert.ok(css.includes('.plugin-manager-item'), 'есть стили менеджера');
 
 // 4. IndexedDB используется для пакетов, а не chrome.storage

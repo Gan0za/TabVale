@@ -275,6 +275,16 @@
   "tabScreens": {
     "message": "画面"
   },
+  "tabPlugins": { "message": "プラグイン" },
+  "pluginsEmpty": { "message": "プラグインがインストールされていません。" },
+  "pluginOpen": { "message": "開く" },
+  "pluginRemove": { "message": "削除" },
+  "pluginRestore": { "message": "同梱プラグインを復元" },
+  "pluginRemoveConfirm": { "message": "プラグイン $name$ を削除しますか？", "placeholders": { "name": { "content": "$1" } } },
+  "surfacePanel": { "message": "パネル" },
+  "surfaceStripTop": { "message": "ブックマークの上" },
+  "surfaceStripBottom": { "message": "ブックマークの下" },
+  "surfaceOff": { "message": "オフ" },
   "screenLabel": {
     "message": "画面"
   },

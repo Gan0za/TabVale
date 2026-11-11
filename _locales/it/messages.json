@@ -275,6 +275,16 @@
   "tabScreens": {
     "message": "Schermate"
   },
+  "tabPlugins": { "message": "Estensioni" },
+  "pluginsEmpty": { "message": "Nessuna estensione installata." },
+  "pluginOpen": { "message": "Apri" },
+  "pluginRemove": { "message": "Rimuovi" },
+  "pluginRestore": { "message": "Ripristina estensioni incluse" },
+  "pluginRemoveConfirm": { "message": "Rimuovere l’estensione $name$?", "placeholders": { "name": { "content": "$1" } } },
+  "surfacePanel": { "message": "Pannello" },
+  "surfaceStripTop": { "message": "Sopra i segnalibri" },
+  "surfaceStripBottom": { "message": "Sotto i segnalibri" },
+  "surfaceOff": { "message": "Disattivato" },
   "screenLabel": {
     "message": "Schermata"
   },

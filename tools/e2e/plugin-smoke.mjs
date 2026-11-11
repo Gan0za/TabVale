@@ -191,7 +191,16 @@ if (dock.count) {
   panel = await evaluate(`(() => {
     const panel = document.querySelector('.plugin-panel');
     const frame = document.querySelector('.plugin-panel-frame');
-    return { open: !!panel, frame: !!frame, src: frame?.getAttribute('src') || '' };
+    const root = getComputedStyle(document.documentElement);
+    return {
+      open: !!panel,
+      frame: !!frame,
+      src: frame?.getAttribute('src') || '',
+      panelBg: panel ? getComputedStyle(panel).backgroundColor : '',
+      rootText: root.getPropertyValue('--text').trim(),
+      rootGlass: root.getPropertyValue('--glass-strong').trim(),
+      theme: document.documentElement.dataset.theme || '',
+    };
   })()`);
   console.log('panel:', panel);
 
@@ -212,17 +221,30 @@ if (dock.count) {
         frameWs.send(JSON.stringify({
           id: 1,
           method: 'Runtime.evaluate',
-          params: { expression: 'document.body.innerText', returnByValue: true },
+          params: {
+            expression: `JSON.stringify({
+              text: document.body.innerText,
+              color: getComputedStyle(document.body).color,
+              bg: getComputedStyle(document.body).backgroundColor,
+              textVar: getComputedStyle(document.documentElement).getPropertyValue('--tabvale-text').trim(),
+              bgVar: getComputedStyle(document.documentElement).getPropertyValue('--tabvale-bg').trim(),
+            })`,
+            returnByValue: true,
+          },
         }));
       });
-      frameTexts.push({ title: target.title || '', text: String(frameResult?.result?.value || '') });
+      const info = JSON.parse(String(frameResult?.result?.value || '{}'));
+      frameTexts.push({ title: target.title || '', ...info, text: String(info.text || '') });
       frameWs.close();
     } catch (error) {
       console.log('sandbox read failed:', error.message);
     }
   }
 
-  console.log('sandbox frames:', frameTexts.map((item) => ({ title: item.title, text: item.text.slice(0, 40) })));
+  console.log('sandbox frames:', frameTexts.map((item) => ({
+    title: item.title, text: item.text.slice(0, 40), color: item.color, bg: item.bg,
+    textVar: item.textVar, bgVar: item.bgVar,
+  })));
   const stripEntry = frameTexts.find((item) => /\(strip\)/.test(item.title)) || frameTexts[0];
   const panelEntry = frameTexts.find((item) => /\(panel\)/.test(item.title))
     || frameTexts.find((item) => item !== stripEntry);

@@ -275,6 +275,16 @@
   "tabScreens": {
     "message": "Екрани"
   },
+  "tabPlugins": { "message": "Плагіни" },
+  "pluginsEmpty": { "message": "Плагіни не встановлено." },
+  "pluginOpen": { "message": "Відкрити" },
+  "pluginRemove": { "message": "Видалити" },
+  "pluginRestore": { "message": "Відновити вбудовані" },
+  "pluginRemoveConfirm": { "message": "Видалити плагін $name$?", "placeholders": { "name": { "content": "$1" } } },
+  "surfacePanel": { "message": "Панель" },
+  "surfaceStripTop": { "message": "Над закладками" },
+  "surfaceStripBottom": { "message": "Під закладками" },
+  "surfaceOff": { "message": "Вимк." },
   "screenLabel": {
     "message": "Екран"
   },

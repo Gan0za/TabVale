@@ -275,6 +275,16 @@
   "tabScreens": {
     "message": "Écrans"
   },
+  "tabPlugins": { "message": "Extensions" },
+  "pluginsEmpty": { "message": "Aucune extension installée." },
+  "pluginOpen": { "message": "Ouvrir" },
+  "pluginRemove": { "message": "Supprimer" },
+  "pluginRestore": { "message": "Restaurer les extensions fournies" },
+  "pluginRemoveConfirm": { "message": "Supprimer l’extension $name$ ?", "placeholders": { "name": { "content": "$1" } } },
+  "surfacePanel": { "message": "Panneau" },
+  "surfaceStripTop": { "message": "Au-dessus des favoris" },
+  "surfaceStripBottom": { "message": "Sous les favoris" },
+  "surfaceOff": { "message": "Désactivé" },
   "screenLabel": {
     "message": "Écran"
   },

@@ -295,7 +295,7 @@ async function setPluginPlacement(record, value) {
 }
 
 async function removePlugin(record) {
-    if (!window.confirm(`Remove ${record.manifest.name}?`)) return;
+    if (!window.confirm(t('pluginRemoveConfirm', { name: record.manifest.name }))) return;
     if (record.source === 'builtin') {
         removedBuiltinIds.add(record.id);
         await saveRemovedBuiltins();
@@ -318,7 +318,7 @@ function renderPluginManager() {
         const restore = document.createElement('button');
         restore.type = 'button';
         restore.className = 'btn plugin-manager-restore';
-        restore.textContent = 'Restore bundled plugins';
+        restore.textContent = t('pluginRestore');
         restore.addEventListener('click', async () => {
             removedBuiltinIds.clear();
             await saveRemovedBuiltins();
@@ -334,7 +334,7 @@ function renderPluginManager() {
     if (!installedPluginCache.length) {
         const empty = document.createElement('p');
         empty.className = 'plugin-manager-empty';
-        empty.textContent = 'No plugins installed.';
+        empty.textContent = t('pluginsEmpty');
         list.append(empty);
         return;
     }
@@ -368,12 +368,12 @@ function renderPluginManager() {
         select.className = 'plugin-manager-surface';
         select.setAttribute('aria-label', `Placement for ${record.manifest.name}`);
         const options = [];
-        if (record.manifest.surfaces?.panel) options.push(['panel', 'Panel']);
+        if (record.manifest.surfaces?.panel) options.push(['panel', t('surfacePanel')]);
         if (record.manifest.surfaces?.strip) {
-            options.push(['strip:top', 'Strip above bookmarks']);
-            options.push(['strip:bottom', 'Strip below bookmarks']);
+            options.push(['strip:top', t('surfaceStripTop')]);
+            options.push(['strip:bottom', t('surfaceStripBottom')]);
         }
-        options.push(['off', 'Off']);
+        options.push(['off', t('surfaceOff')]);
         for (const [value, label] of options) {
             const option = document.createElement('option');
             option.value = value;
@@ -389,7 +389,7 @@ function renderPluginManager() {
             const open = document.createElement('button');
             open.type = 'button';
             open.className = 'btn plugin-manager-open';
-            open.textContent = 'Open';
+            open.textContent = t('pluginOpen');
             open.addEventListener('click', () => openPluginPanel(record));
             item.append(open);
         }
@@ -397,7 +397,7 @@ function renderPluginManager() {
         const remove = document.createElement('button');
         remove.type = 'button';
         remove.className = 'btn btn-danger plugin-manager-remove';
-        remove.textContent = 'Remove';
+        remove.textContent = t('pluginRemove');
         remove.addEventListener('click', () => removePlugin(record));
         item.append(remove);
 
@@ -413,6 +413,9 @@ function pluginTheme() {
         text: value('--text', '#e8f2f8'),
         muted: value('--text-soft', '#9db4c4'),
         accent: value('--accent', '#4db6e2'),
+        // Плотная поверхность: iframe рисует собственный канвас, и
+        // прозрачный фон даёт белое поле со светлым текстом в тёмной теме.
+        background: value('--surface', '#24303c'),
         surface: value('--glass', 'rgba(30, 40, 50, 0.5)'),
         border: value('--border', 'rgba(255,255,255,0.14)'),
         radius: value('--radius', '12px'),

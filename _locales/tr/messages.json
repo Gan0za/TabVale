@@ -275,6 +275,16 @@
   "tabScreens": {
     "message": "Ekranlar"
   },
+  "tabPlugins": { "message": "Eklentiler" },
+  "pluginsEmpty": { "message": "Yüklü eklenti yok." },
+  "pluginOpen": { "message": "Aç" },
+  "pluginRemove": { "message": "Kaldır" },
+  "pluginRestore": { "message": "Paket eklentileri geri yükle" },
+  "pluginRemoveConfirm": { "message": "$name$ eklentisi kaldırılsın mı?", "placeholders": { "name": { "content": "$1" } } },
+  "surfacePanel": { "message": "Panel" },
+  "surfaceStripTop": { "message": "Yer imlerinin üstünde" },
+  "surfaceStripBottom": { "message": "Yer imlerinin altında" },
+  "surfaceOff": { "message": "Kapalı" },
   "screenLabel": {
     "message": "Ekran"
   },

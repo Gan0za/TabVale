@@ -275,6 +275,16 @@
   "tabScreens": {
     "message": "화면"
   },
+  "tabPlugins": { "message": "플러그인" },
+  "pluginsEmpty": { "message": "설치된 플러그인이 없습니다." },
+  "pluginOpen": { "message": "열기" },
+  "pluginRemove": { "message": "제거" },
+  "pluginRestore": { "message": "기본 플러그인 복원" },
+  "pluginRemoveConfirm": { "message": "플러그인 $name$을(를) 제거할까요?", "placeholders": { "name": { "content": "$1" } } },
+  "surfacePanel": { "message": "패널" },
+  "surfaceStripTop": { "message": "북마크 위" },
+  "surfaceStripBottom": { "message": "북마크 아래" },
+  "surfaceOff": { "message": "끔" },
   "screenLabel": {
     "message": "화면"
   },
