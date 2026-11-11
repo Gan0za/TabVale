@@ -46,7 +46,7 @@ function initSettings() {
                 const fileBackdrops = currentState.backgrounds.filter((b) => b.type === 'file');
                 const keys = fileBackdrops.map((b) => fileKey(b.fileId)).filter(Boolean);
                 if (!fileBackdrops.length) {
-                    downloadJson(buildExportPayload(currentState.backgrounds, result.theme));
+                    finishExport(currentState.backgrounds, result.theme);
                     return;
                 }
                 chrome.storage.local.get(keys, (files) => {
@@ -54,10 +54,21 @@ function initSettings() {
                     const withData = currentState.backgrounds.map((bg) => (
                         bg.type === 'file' ? { ...bg, data: (files || {})[fileKey(bg.fileId)] || '' } : bg
                     ));
-                    downloadJson(buildExportPayload(withData, result.theme));
+                    finishExport(withData, result.theme);
                 });
             });
         });
+
+        // Встроенные плагины восстанавливаются из CWS, поэтому в бэкап
+        // попадают только установленные из файла пакеты.
+        function finishExport(backgrounds, theme) {
+            dbGetAllPlugins().then((records) => {
+                const plugins = (Array.isArray(records) ? records : [])
+                    .filter((record) => record && record.source !== 'builtin')
+                    .map(({ manifest, code, enabled }) => ({ manifest, code, enabled }));
+                downloadJson({ ...buildExportPayload(backgrounds, theme), plugins });
+            });
+        }
 
         function buildExportPayload(backgrounds, theme) {
             return {
@@ -140,9 +151,36 @@ function initSettings() {
                 }
                 currentState = newState;
                 refreshUI();
+
+                let pluginsSkipped = 0;
+                if (Array.isArray(payload.plugins) && typeof parsePluginPackage === 'function') {
+                    for (const item of payload.plugins) {
+                        const parsed = parsePluginPackage(JSON.stringify(item));
+                        if (!parsed.ok) { pluginsSkipped++; continue; }
+                        const stored = await dbPutPlugin({
+                            id: parsed.manifest.id,
+                            version: parsed.manifest.version,
+                            manifest: parsed.manifest,
+                            code: parsed.code,
+                            basePath: '',
+                            source: 'imported',
+                            enabled: item.enabled !== false,
+                            installedAt: Date.now(),
+                        });
+                        if (!stored) pluginsSkipped++;
+                    }
+                    if (typeof loadInstalledPlugins === 'function') {
+                        await loadInstalledPlugins();
+                        await loadPluginPlacements();
+                        renderPluginDock();
+                        renderPluginStrip();
+                        renderPluginTiles();
+                        renderPluginManager();
+                    }
+                }
                 // Сообщаем не только об успехе, но и о пропущенных элементах:
                 // молчаливое отбрасывание выглядело бы как потеря данных
-                const totalSkipped = bookmarks.skipped + backgrounds.skipped + searchEngines.skipped;
+                const totalSkipped = bookmarks.skipped + backgrounds.skipped + searchEngines.skipped + pluginsSkipped;
                 // Сообщаем не только об успехе, но и о пропущенных элементах:
                 // молчаливое отбрасывание выглядело бы как потеря данных
                 alert(totalSkipped

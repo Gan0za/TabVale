@@ -15,6 +15,7 @@ const source = read('newtab/features/plugins.js');
 const db = read('newtab/core/plugin-db.js');
 const css = read('newtab/styles.css');
 const app = read('newtab/app.js');
+const settings = read('newtab/features/settings.js');
 const manifest = JSON.parse(read('manifest.json'));
 
 // 1. Файлы подключены в правильном порядке
@@ -59,6 +60,8 @@ assert.ok(css.includes('.plugin-manager-item'), 'есть стили менед�
 assert.ok(db.includes('indexedDB.open'), 'пакеты лежат в IndexedDB');
 assert.ok(source.includes('dbDeletePlugin'), 'менеджер удаляет пакет из IndexedDB');
 assert.ok(source.includes('dbPutPlugin'), 'установка пишет пакет в IndexedDB');
+assert.ok(settings.includes('finishExport') && settings.includes('plugins'), 'бэкап включает пакеты плагинов');
+assert.ok(settings.includes('payload.plugins'), 'импорт восстанавливает пакеты плагинов');
 assert.ok(source.includes('watchPluginThemeAndLocale'), 'тема и язык транслируются в плагины');
 assert.ok(source.includes("case 'ui.openExternal'"), 'внешние ссылки открываются через хост');
 assert.ok(manifest.optional_permissions?.includes('bookmarks'), 'доступ к закладкам запрашивается опционально');
