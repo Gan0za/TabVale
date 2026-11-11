@@ -295,6 +295,7 @@
   "pluginBookmarksDenied": { "message": "Accesso ai segnalibri non concesso: $error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginGrantPending": { "message": "In attesa di conferma in Chrome…" },
   "pluginGrantHint": { "message": "Se la richiesta non è comparsa, fai clic sull'icona TabVale nella barra del browser e consenti l'accesso ai segnalibri." },
+  "pluginGrantReload": { "message": "Il browser non vede l'autorizzazione nel manifest. Ricarica l'estensione dalla pagina delle estensioni e riprova." },
   "pluginPermNetwork": { "message": "rete: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "archivio: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Posizione di $name$", "placeholders": { "name": { "content": "$1" } } },

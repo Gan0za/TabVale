@@ -295,6 +295,7 @@
   "pluginBookmarksDenied": { "message": "Nie przyznano dostępu do zakładek: $error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginGrantPending": { "message": "Oczekiwanie na potwierdzenie w Chrome…" },
   "pluginGrantHint": { "message": "Jeśli prośba się nie pojawiła, kliknij ikonę TabVale na pasku przeglądarki i zezwól na dostęp do zakładek." },
+  "pluginGrantReload": { "message": "Przeglądarka nie widzi uprawnienia w manifeście. Przeładuj rozszerzenie na stronie rozszerzeń i spróbuj ponownie." },
   "pluginPermNetwork": { "message": "sieć: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "pamięć: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Umiejscowienie $name$", "placeholders": { "name": { "content": "$1" } } },

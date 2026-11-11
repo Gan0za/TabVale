@@ -78,6 +78,7 @@ assert.ok(source.includes('tabvale:bookmarks-permission'), 'хост прини�
 assert.ok(source.includes('onBookmarksPermission'), 'выдача доступа применяется к открытым панелям');
 assert.ok(source.includes("t('pluginGrantPending')"), 'кнопка показывает ожидание подтверждения');
 assert.ok(source.includes("t('pluginGrantHint')"), 'есть подсказка про иконку браузера');
+assert.ok(source.includes("t('pluginGrantReload')"), 'устаревший манифест объясняется перезагрузкой');
 assert.ok(read('background.js').includes('chrome.action.onClicked'), 'иконка расширения тоже запрашивает доступ');
 assert.ok(db.includes('PLUGIN_DB_STORE'), 'есть object store плагинов');
 

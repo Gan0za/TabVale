@@ -295,6 +295,7 @@
   "pluginBookmarksDenied": { "message": "未授予书签访问权限：$error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginGrantPending": { "message": "正在等待 Chrome 确认…" },
   "pluginGrantHint": { "message": "如果未出现请求，请点击浏览器工具栏中的 TabVale 图标并允许访问书签。" },
+  "pluginGrantReload": { "message": "浏览器在清单中看不到该权限。请在扩展程序页面重新加载扩展后再试。" },
   "pluginPermNetwork": { "message": "网络：$count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "存储：$kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "$name$ 的位置", "placeholders": { "name": { "content": "$1" } } },

@@ -645,6 +645,11 @@ function renderPluginManager() {
                 } else if (result.timeout) {
                     update(false);
                     window.alert(t('pluginGrantHint'));
+                } else if (/specified in the manifest/i.test(result.error || '')) {
+                    // Браузер уже загрузил манифест без optional_permissions:
+                    // помогает только перезапуск расширения.
+                    update(false);
+                    window.alert(t('pluginGrantReload'));
                 } else {
                     update(false);
                     window.alert(t('pluginBookmarksDenied', { error: result.error || 'denied' }));

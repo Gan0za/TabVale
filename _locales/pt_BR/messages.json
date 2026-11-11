@@ -295,6 +295,7 @@
   "pluginBookmarksDenied": { "message": "Acesso aos favoritos não concedido: $error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginGrantPending": { "message": "Aguardando confirmação no Chrome…" },
   "pluginGrantHint": { "message": "Se a solicitação não apareceu, clique no ícone do TabVale na barra do navegador e permita o acesso aos favoritos." },
+  "pluginGrantReload": { "message": "O navegador não vê a permissão no manifesto. Recarregue a extensão na página de extensões e tente novamente." },
   "pluginPermNetwork": { "message": "rede: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "armazenamento: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Posição de $name$", "placeholders": { "name": { "content": "$1" } } },
