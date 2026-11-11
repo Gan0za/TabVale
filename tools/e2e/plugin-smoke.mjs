@@ -631,6 +631,12 @@ await evaluate(`(async () => {
   select.dispatchEvent(new Event('change', { bubbles: true }));
   await new Promise((resolve) => setTimeout(resolve, 800));
 })()`);
+// Настройки закрываем: их подложка перекрывает окно и перехватила бы мышь.
+await evaluate(`(() => {
+  document.getElementById('settings-modal')?.classList.add('hidden');
+  document.getElementById('overlay')?.classList.add('hidden');
+})()`);
+await sleep(200);
 const floatingStart = await evaluate(`(() => {
   const root = document.querySelector('.plugin-floating[data-plugin-id="com.tabvale.clock"]');
   if (!root) return null;
@@ -638,16 +644,22 @@ const floatingStart = await evaluate(`(() => {
   return { x: rect.left, y: rect.top, w: rect.width, h: rect.height, hidden: root.hidden };
 })()`);
 const floatingText = await frameEval(/com\.tabvale\.clock \(floating\)/, 'document.body.textContent');
+// Тянем настоящим вводом: CDP порождает pointer-события, как мышь.
+const floatingHandle = await evaluate(`(() => {
+  const root = document.querySelector('.plugin-floating[data-plugin-id="com.tabvale.clock"]');
+  if (!root) return null;
+  const rect = root.getBoundingClientRect();
+  return { x: rect.left + 40, y: rect.top + 12 };
+})()`);
+if (floatingHandle) {
+  await send('Input.dispatchMouseEvent', { type: 'mousePressed', x: floatingHandle.x, y: floatingHandle.y, button: 'left', clickCount: 1 });
+  await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: floatingHandle.x - 150, y: floatingHandle.y + 60, button: 'left', buttons: 1 });
+  await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: floatingHandle.x - 150, y: floatingHandle.y + 60, button: 'left', clickCount: 1 });
+  await sleep(200);
+}
 const floatingMoved = await evaluate(`(() => {
   const root = document.querySelector('.plugin-floating[data-plugin-id="com.tabvale.clock"]');
   if (!root) return null;
-  const header = root.querySelector('.plugin-floating-header');
-  const rect = root.getBoundingClientRect();
-  const startX = rect.left + 40;
-  const startY = rect.top + 12;
-  header.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: startX, clientY: startY, pointerId: 1 }));
-  header.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientX: startX - 150, clientY: startY + 60, pointerId: 1 }));
-  header.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, clientX: startX - 150, clientY: startY + 60, pointerId: 1 }));
   const moved = root.getBoundingClientRect();
   return { left: moved.left, top: moved.top };
 })()`);
@@ -662,13 +674,31 @@ const floatingHidden = await evaluate(`document.querySelector('.plugin-floating[
 await evaluate(`document.querySelector('.plugin-dock-button[data-plugin-id="com.tabvale.clock"]')?.click()`);
 await sleep(250);
 const floatingRestored = await evaluate(`document.querySelector('.plugin-floating[data-plugin-id="com.tabvale.clock"]')?.hidden === false`);
+// Уменьшаем окно: плавающее окно должно остаться в видимой области.
+await send('Emulation.setDeviceMetricsOverride', { width: 600, height: 500, deviceScaleFactor: 1, mobile: false });
+await sleep(400);
+const floatingClamped = await evaluate(`(() => {
+  const root = document.querySelector('.plugin-floating[data-plugin-id="com.tabvale.clock"]');
+  if (!root) return null;
+  const rect = root.getBoundingClientRect();
+  return {
+    fitsX: rect.right <= window.innerWidth + 1,
+    fitsY: rect.bottom <= window.innerHeight + 1,
+    viewport: [window.innerWidth, window.innerHeight],
+    rect: [Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height)],
+  };
+})()`);
+await send('Emulation.clearDeviceMetricsOverride');
+await sleep(300);
+console.log('floating after resize:', floatingClamped);
 const floatingWorks = !!floatingStart
     && floatingStart.hidden === false
     && /^\d{1,2}:\d{2}/.test(String(floatingText || '').trim())
     && floatingStart.w > 0 && floatingStart.h > 0
     && !!floatingMoved && Math.abs(floatingMoved.left - floatingStart.x) > 50
     && floatingSaved?.surface === 'floating' && Number.isFinite(floatingSaved?.x)
-    && floatingHidden && floatingRestored;
+    && floatingHidden && floatingRestored
+    && !!floatingClamped && floatingClamped.fitsX && floatingClamped.fitsY;
 console.log('floating window:', { floatingStart, floatingMoved, saved: floatingSaved && { surface: floatingSaved.surface, x: floatingSaved.x, y: floatingSaved.y }, floatingHidden, floatingRestored, works: floatingWorks });
 
 // Панель импортёра без доступа ведёт прямо к менеджеру: кнопка внутри

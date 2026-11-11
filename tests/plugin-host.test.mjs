@@ -42,6 +42,7 @@ assert.ok(source.includes('renderPluginStrip'), 'есть рендер поло�
 assert.ok(css.includes('.plugin-strip-item'), 'есть стили элемента полосы');
 assert.ok(source.includes('renderPluginFloating'), 'есть рендер плавающих окон');
 assert.ok(source.includes('openFloatingWindow'), 'док показывает плавающее окно');
+assert.ok(source.includes('clampFloatingWindows'), 'позиция окна пересчитывается при ресайзе');
 assert.ok(css.includes('.plugin-floating'), 'есть стили плавающего окна');
 assert.ok(source.includes("t('surfaceFloating')"), 'вариант зоны локализован');
 assert.ok(source.includes('renderPluginTiles'), 'есть рендер плиток плагинов');

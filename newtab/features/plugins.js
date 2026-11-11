@@ -25,6 +25,7 @@ let removedBuiltinIds = new Set();
 function initPlugins() {
     ensurePluginDock();
     window.addEventListener('message', onPluginMessage);
+    window.addEventListener('resize', clampFloatingWindows);
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && pluginPanelInstance) closePluginPanel();
     });
@@ -407,6 +408,21 @@ function makeFloatingDraggable(record, root, handle) {
         handle.addEventListener('pointerup', up);
         event.preventDefault();
     });
+}
+
+/**
+ * После изменения размера окна браузера сохранённая позиция может
+ * оказаться за краем — подтягиваем окна обратно в видимую область.
+ */
+function clampFloatingWindows() {
+    for (const instance of pluginInstances.values()) {
+        if (instance.surface !== 'floating') continue;
+        const rect = instance.root.getBoundingClientRect();
+        const maxX = Math.max(0, window.innerWidth - rect.width);
+        const maxY = Math.max(0, window.innerHeight - rect.height);
+        instance.root.style.left = `${Math.min(maxX, Math.max(0, rect.left))}px`;
+        instance.root.style.top = `${Math.min(maxY, Math.max(0, rect.top))}px`;
+    }
 }
 
 /** Иконка в доке показывает окно, не меняя размещение. */
