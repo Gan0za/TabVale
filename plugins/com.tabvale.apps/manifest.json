@@ -2,10 +2,11 @@
   "schema": 1,
   "id": "com.tabvale.apps",
   "name": "App launcher",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "apiVersion": 1,
   "minAppVersion": "1.2.0",
   "entry": "plugin.js",
+  "icon": "icon.svg",
   "description": "Opens Obsidian and VS Code through their URL schemes.",
   "author": "TabVale",
   "permissions": {

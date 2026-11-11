@@ -145,6 +145,28 @@ async function loadInstalledPlugins() {
     return installedPluginCache;
 }
 
+/**
+ * Иконка плагина: картинка из пакета, если она объявлена, иначе буква.
+ * Один вид во всех местах — док, плитка, менеджер, заголовки.
+ */
+function pluginIcon(record, className, size = 24) {
+    if (record.manifest.icon && record.basePath) {
+        const image = document.createElement('img');
+        image.src = chrome.runtime.getURL(record.basePath + record.manifest.icon);
+        image.alt = '';
+        image.className = className;
+        image.width = size;
+        image.height = size;
+        image.loading = 'lazy';
+        return image;
+    }
+    const letter = document.createElement('span');
+    letter.className = `${className} plugin-icon-letter`;
+    letter.textContent = pluginDisplayName(record).slice(0, 1).toUpperCase();
+    letter.setAttribute('aria-hidden', 'true');
+    return letter;
+}
+
 function pluginDisplayName(record) {
     const locale = document.documentElement.lang || 'en';
     const locales = record.manifest.locales || {};
@@ -172,16 +194,7 @@ function renderPluginDock() {
         button.title = pluginDisplayName(record);
         button.setAttribute('aria-label', pluginDisplayName(record));
 
-        if (record.manifest.icon && record.basePath) {
-            const icon = document.createElement('img');
-            icon.src = chrome.runtime.getURL(record.basePath + record.manifest.icon);
-            icon.alt = '';
-            icon.width = 24;
-            icon.height = 24;
-            button.append(icon);
-        } else {
-            button.textContent = pluginDisplayName(record).slice(0, 1).toUpperCase();
-        }
+        button.append(pluginIcon(record, 'plugin-icon plugin-icon-dock'));
 
         button.addEventListener('click', () => {
             if (placement.surface === 'floating') openFloatingWindow(record);
@@ -359,7 +372,11 @@ function createFloatingWindow(record, placement, index) {
     close.textContent = '✕';
     close.addEventListener('click', () => { root.hidden = true; });
 
-    header.append(title, close);
+    const heading = document.createElement('span');
+    heading.className = 'plugin-floating-heading';
+    heading.append(pluginIcon(record, 'plugin-icon plugin-icon-heading', 20), title);
+
+    header.append(heading, close);
 
     const frame = document.createElement('iframe');
     frame.className = 'plugin-floating-frame';
@@ -456,17 +473,7 @@ function renderPluginTiles() {
         tile.setAttribute('role', 'button');
         tile.setAttribute('aria-label', pluginDisplayName(record));
 
-        if (record.manifest.icon && record.basePath) {
-            const image = document.createElement('img');
-            image.src = chrome.runtime.getURL(record.basePath + record.manifest.icon);
-            image.alt = '';
-            tile.append(image);
-        } else {
-            const letter = document.createElement('span');
-            letter.className = 'plugin-tile-letter';
-            letter.textContent = pluginDisplayName(record).slice(0, 1).toUpperCase();
-            tile.append(letter);
-        }
+        tile.append(pluginIcon(record, 'plugin-icon plugin-icon-tile', 40));
 
         const title = document.createElement('span');
         title.className = 'plugin-tile-title';
@@ -799,7 +806,7 @@ function renderPluginManager() {
         select.value = pluginPlacementValue(record);
         select.addEventListener('change', () => setPluginPlacement(record, select.value));
 
-        item.append(info, select);
+        item.append(pluginIcon(record, 'plugin-icon plugin-manager-icon', 32), info, select);
 
         if ((record.manifest.permissions?.capabilities || []).includes('bookmarks.read')) {
             const grant = document.createElement('button');
@@ -913,7 +920,11 @@ function openPluginPanel(record) {
     frame.title = `${pluginDisplayName(record)} (panel)`;
     frame.src = chrome.runtime.getURL('sandbox/plugin-host.html');
 
-    header.append(title, close);
+    const heading = document.createElement('span');
+    heading.className = 'plugin-panel-heading';
+    heading.append(pluginIcon(record, 'plugin-icon plugin-icon-heading', 20), title);
+
+    header.append(heading, close);
     root.append(header, frame);
     document.body.append(root);
 

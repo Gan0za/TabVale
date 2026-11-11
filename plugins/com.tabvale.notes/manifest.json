@@ -2,10 +2,11 @@
   "schema": 1,
   "id": "com.tabvale.notes",
   "name": "Quick notes",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "apiVersion": 1,
   "minAppVersion": "1.2.0",
   "entry": "plugin.js",
+  "icon": "icon.svg",
   "description": "A small scratchpad that saves as you type.",
   "author": "TabVale",
   "permissions": {

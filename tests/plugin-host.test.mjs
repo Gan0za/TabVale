@@ -89,4 +89,19 @@ assert.ok(source.includes("t('pluginGrantReload')"), 'устаревший ма�
 assert.ok(read('background.js').includes('chrome.action.onClicked'), 'иконка расширения тоже запрашивает доступ');
 assert.ok(db.includes('PLUGIN_DB_STORE'), 'есть object store плагинов');
 
+// 5. Иконки: у каждого встроенного плагина свой файл, версии совпадают с реестром
+const registry = JSON.parse(read('plugins/index.json'));
+for (const entry of registry) {
+    const manifest = JSON.parse(read(`plugins/${entry.path}manifest.json`));
+    assert.equal(manifest.icon, 'icon.svg', `${entry.id}: объявлена иконка`);
+    assert.equal(manifest.version, entry.version, `${entry.id}: версия совпадает с реестром`);
+    assert.ok(fs.existsSync(path.join(root, 'plugins', entry.path, 'icon.svg')), `${entry.id}: файл иконки существует`);
+}
+assert.ok(source.includes('function pluginIcon'), 'есть общий рендер иконки');
+assert.ok(source.includes("pluginIcon(record, 'plugin-icon plugin-icon-dock'"), 'иконка в доке');
+assert.ok(source.includes("pluginIcon(record, 'plugin-icon plugin-icon-tile'"), 'иконка в плитке');
+assert.ok(source.includes("pluginIcon(record, 'plugin-icon plugin-manager-icon'"), 'иконка в менеджере');
+assert.ok(source.includes("pluginIcon(record, 'plugin-icon plugin-icon-heading'"), 'иконка в заголовках');
+assert.ok(css.includes('.plugin-icon'), 'есть стили иконок');
+
 console.log('plugin-host.test.mjs: все проверки пройдены');

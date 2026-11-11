@@ -284,6 +284,19 @@ const dock = await evaluate(`(() => {
 })()`);
 console.log('dock:', dock);
 
+// Иконки: у каждого встроенного плагина картинка в доке и менеджере.
+const icons = await evaluate(`(() => {
+  const buttons = [...document.querySelectorAll('.plugin-dock-button')];
+  const rows = [...document.querySelectorAll('.plugin-manager-item')];
+  return {
+    dock: buttons.length,
+    dockWithImage: buttons.filter((button) => !!button.querySelector('img')).length,
+    rows: rows.length,
+    rowsWithImage: rows.filter((row) => !!row.querySelector('img.plugin-manager-icon')).length,
+  };
+})()`);
+console.log('plugin icons:', icons);
+
 const strip = await evaluate(`(() => {
   const items = [...document.querySelectorAll('.plugin-strip-item')];
   return { count: items.length, id: items[0]?.dataset.pluginId || '' };
@@ -309,6 +322,7 @@ if (dock.count) {
     const root = getComputedStyle(document.documentElement);
     return {
       open: !!panel,
+      headingIcon: !!panel?.querySelector('.plugin-panel-heading img'),
       frame: !!frame,
       src: frame?.getAttribute('src') || '',
       panelBg: panel ? getComputedStyle(panel).backgroundColor : '',
@@ -641,7 +655,14 @@ const floatingStart = await evaluate(`(() => {
   const root = document.querySelector('.plugin-floating[data-plugin-id="com.tabvale.clock"]');
   if (!root) return null;
   const rect = root.getBoundingClientRect();
-  return { x: rect.left, y: rect.top, w: rect.width, h: rect.height, hidden: root.hidden };
+  return {
+    x: rect.left,
+    y: rect.top,
+    w: rect.width,
+    h: rect.height,
+    hidden: root.hidden,
+    headerIcon: !!root.querySelector('.plugin-floating-header img'),
+  };
 })()`);
 const floatingText = await frameEval(/com\.tabvale\.clock \(floating\)/, 'document.body.textContent');
 // Тянем настоящим вводом: CDP порождает pointer-события, как мышь.
@@ -843,7 +864,10 @@ child.kill();
 const timePattern = /^\d{1,2}:\d{2}/;
 const passed = dock.count > 0
     && strip.count > 0
-    && panel?.open === true
+    && panel?.open === true && panel.headingIcon === true
+    && icons.dock > 0 && icons.dock === icons.dockWithImage
+    && icons.rows > 0 && icons.rows === icons.rowsWithImage
+    && floatingStart?.headerIcon === true
     && timePattern.test(stripText.trim())
     && panelText.trim().length > 0
     && manager.rows > 0

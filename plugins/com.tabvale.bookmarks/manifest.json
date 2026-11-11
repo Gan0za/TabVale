@@ -2,10 +2,11 @@
   "schema": 1,
   "id": "com.tabvale.bookmarks",
   "name": "Bookmark importer",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "apiVersion": 1,
   "minAppVersion": "1.2.0",
   "entry": "plugin.js",
+  "icon": "icon.svg",
   "description": "Moves bookmarks from the browser into the active screen.",
   "author": "TabVale",
   "permissions": {
