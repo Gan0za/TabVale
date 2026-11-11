@@ -18,6 +18,9 @@
     "https://api.github.com/*",
     "https://habr.com/*"
   ],
+  "optional_permissions": [
+    "bookmarks"
+  ],
   "optional_host_permissions": [
     "http://*/*",
     "https://*/*"

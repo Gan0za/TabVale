@@ -309,6 +309,23 @@ function watchPluginThemeAndLocale() {
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'lang'] });
 }
 
+function requestPluginPermissions(record) {
+    const capabilities = record.manifest.permissions?.capabilities || [];
+    if (!capabilities.includes('bookmarks.read') || !chrome.permissions?.request) return;
+    // Вызывается из клика по иконке/кнопке — это пользовательский жест.
+    try { chrome.permissions.request({ permissions: ['bookmarks'] }); } catch { /* отказ обработает брокер */ }
+}
+
+function hasBookmarksPermission() {
+    return new Promise((resolve) => {
+        if (!chrome.permissions?.contains) { resolve(false); return; }
+        chrome.permissions.contains({ permissions: ['bookmarks'] }, (granted) => {
+            void chrome.runtime?.lastError;
+            resolve(Boolean(granted));
+        });
+    });
+}
+
 function initPluginInstall() {
     const button = document.getElementById('install-plugin-file');
     const input = document.getElementById('plugin-package-file');
@@ -493,6 +510,7 @@ function renderPluginManager() {
             open.textContent = t('pluginOpen');
             open.addEventListener('click', async () => {
                 // «Открыть» — это выбор панели, а не второй поверхности.
+                requestPluginPermissions(record);
                 await setPluginPlacement(record, 'panel');
                 openPluginPanel(record);
             });
@@ -536,6 +554,7 @@ function pluginPanelPlacement(record) {
 }
 
 function openPluginPanel(record) {
+    requestPluginPermissions(record);
     closePluginPanel();
 
     const placement = pluginPanelPlacement(record);
@@ -697,9 +716,46 @@ async function onPluginMessage(event) {
                 reply(true);
                 break;
             }
-            case 'bookmarks.tree':
-            case 'bookmarks.import':
-                throw new Error('bookmarks capability is not enabled yet');
+            case 'bookmarks.tree': {
+                if (!(await hasBookmarksPermission())) throw new Error('bookmarks permission is not granted');
+                const tree = await new Promise((resolve, reject) => {
+                    chrome.bookmarks.getTree((nodes) => {
+                        const error = chrome.runtime?.lastError;
+                        if (error) reject(new Error(error.message));
+                        else resolve(nodes);
+                    });
+                });
+                reply(tree);
+                break;
+            }
+            case 'bookmarks.import': {
+                if (!(await hasBookmarksPermission())) throw new Error('bookmarks permission is not granted');
+                const items = Array.isArray(params.items) ? params.items.slice(0, 300) : [];
+                const screens = currentState.screens || [];
+                const screen = screens.find(
+                    (entry) => entry.id === (params.screenId || currentState.currentScreenId)
+                ) || screens[0];
+                if (!screen) throw new Error('active screen is missing');
+
+                let added = 0;
+                let skipped = 0;
+                for (const item of items) {
+                    const url = String(item?.url || '');
+                    const title = String(item?.title || url).trim();
+                    if (!isSafeWebUrl(url) || !title || screen.bookmarks.some((bookmark) => bookmark.url === url)) {
+                        skipped++;
+                        continue;
+                    }
+                    screen.bookmarks.push({ title, url });
+                    added++;
+                }
+                if (added) {
+                    saveState({ screens: currentState.screens });
+                    if (typeof refreshUI === 'function') refreshUI();
+                }
+                reply({ added, skipped });
+                break;
+            }
             default:
                 fail('unknown method');
         }

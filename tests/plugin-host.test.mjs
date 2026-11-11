@@ -15,6 +15,7 @@ const source = read('newtab/features/plugins.js');
 const db = read('newtab/core/plugin-db.js');
 const css = read('newtab/styles.css');
 const app = read('newtab/app.js');
+const manifest = JSON.parse(read('manifest.json'));
 
 // 1. Файлы подключены в правильном порядке
 const dbIndex = html.indexOf('core/plugin-db.js');
@@ -57,6 +58,9 @@ assert.ok(source.includes('dbDeletePlugin'), 'менеджер удаляет п
 assert.ok(source.includes('dbPutPlugin'), 'установка пишет пакет в IndexedDB');
 assert.ok(source.includes('watchPluginThemeAndLocale'), 'тема и язык транслируются в плагины');
 assert.ok(source.includes("case 'ui.openExternal'"), 'внешние ссылки открываются через хост');
+assert.ok(manifest.optional_permissions?.includes('bookmarks'), 'доступ к закладкам запрашивается опционально');
+assert.ok(source.includes('chrome.bookmarks.getTree'), 'хост читает дерево закладок');
+assert.ok(source.includes('requestPluginPermissions'), 'разрешение запрашивается по жесту');
 assert.ok(db.includes('PLUGIN_DB_STORE'), 'есть object store плагинов');
 
 console.log('plugin-host.test.mjs: все проверки пройдены');

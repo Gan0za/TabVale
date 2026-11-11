@@ -43,5 +43,10 @@
     "id": "com.tabvale.rss",
     "version": "1.0.1",
     "path": "com.tabvale.rss/"
+  },
+  {
+    "id": "com.tabvale.bookmarks",
+    "version": "1.0.1",
+    "path": "com.tabvale.bookmarks/"
   }
 ]
