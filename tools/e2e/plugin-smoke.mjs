@@ -341,6 +341,30 @@ const cleaned = await evaluate(`({ dock: document.querySelectorAll('.plugin-dock
 console.log('imported plugin removed:', cleaned);
 fs.unlinkSync(testPackage);
 
+const off = await evaluate(`(async () => {
+  const select = document.querySelector('.plugin-manager-surface');
+  select.value = 'off';
+  select.dispatchEvent(new Event('change', { bubbles: true }));
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  return {
+    dock: document.querySelectorAll('.plugin-dock-button').length,
+    strip: document.querySelectorAll('.plugin-strip-item').length,
+  };
+})()`);
+console.log('placement off:', off);
+
+const panelOnly = await evaluate(`(async () => {
+  const select = document.querySelector('.plugin-manager-surface');
+  select.value = 'panel';
+  select.dispatchEvent(new Event('change', { bubbles: true }));
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  return {
+    dock: document.querySelectorAll('.plugin-dock-button').length,
+    strip: document.querySelectorAll('.plugin-strip-item').length,
+  };
+})()`);
+console.log('placement panel:', panelOnly);
+
 console.log('logs:', logs.slice(-8));
 console.log('exceptions:', errors.slice(0, 5));
 ws.close();
@@ -359,6 +383,8 @@ const passed = dock.count > 0
     && restored.dock === 1
     && installed.dock === 2 && installed.rows === 2
     && cleaned.dock === 1
+    && off.dock === 0 && off.strip === 0
+    && panelOnly.dock === 1 && panelOnly.strip === 0
     && errors.length === 0;
 console.log(passed ? 'SMOKE PASS' : 'SMOKE FAIL');
 process.exit(passed ? 0 : 1);

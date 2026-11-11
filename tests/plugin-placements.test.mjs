@@ -37,6 +37,7 @@ const list = api.normalizePluginPlacements([
 ]);
 assert.equal(list.length, 1, 'осталась одна уникальная запись');
 assert.equal(list[0].pluginId, 'com.a');
+assert.equal(api.normalizePluginPlacement({ pluginId: 'com.a', surface: 'off' }).surface, 'off');
 
 // 3. placementFor и withPlacement
 assert.equal(api.placementFor(list, 'com.a').pluginId, 'com.a');
@@ -56,8 +57,10 @@ const records = [
     { id: 'com.e', manifest: { name: 'E', surfaces: { strip: { positions: ['top'] } } } },
 ];
 const defaults = api.defaultPluginPlacements(records);
-assert.equal(defaults.length, 3, 'не больше трёх виджетов в полосе');
-assert.deepEqual(defaults.map((item) => item.pluginId), ['com.a', 'com.c', 'com.d']);
-assert.ok(defaults.every((item) => item.surface === 'strip' && item.position === 'top'));
+assert.equal(defaults.length, 5, 'размещение есть у каждого плагина');
+assert.deepEqual(Array.from(defaults.map((item) => item.pluginId)), ['com.a', 'com.b', 'com.c', 'com.d', 'com.e']);
+assert.equal(defaults.filter((item) => item.surface === 'strip').length, 3, 'не больше трёх виджетов в полосе');
+assert.equal(defaults.find((item) => item.pluginId === 'com.b').surface, 'panel');
+assert.equal(defaults.find((item) => item.pluginId === 'com.e').surface, 'off');
 
 console.log('plugin-placements.test.mjs: все проверки пройдены');

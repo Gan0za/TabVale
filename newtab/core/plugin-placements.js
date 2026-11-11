@@ -7,7 +7,7 @@
 // =============================================================================
 
 const PLUGIN_PLACEMENTS_KEY = 'pluginPlacements';
-const PLUGIN_PLACEMENT_SURFACES = ['strip', 'panel', 'tiles', 'floating'];
+const PLUGIN_PLACEMENT_SURFACES = ['strip', 'panel', 'tiles', 'floating', 'off'];
 const PLUGIN_STRIP_DEFAULT_HEIGHT = 88;
 
 function normalizePluginPlacement(raw) {
@@ -20,6 +20,8 @@ function normalizePluginPlacement(raw) {
         surface: raw.surface,
         order: Number.isFinite(Number(raw.order)) ? Math.max(0, Math.round(Number(raw.order))) : 0,
     };
+
+    if (raw.surface === 'off') return placement;
 
     if (raw.surface === 'strip') {
         placement.position = raw.position === 'bottom' ? 'bottom' : 'top';
@@ -66,17 +68,35 @@ function withPlacement(placements, next) {
  * Стартовые размещения: встроенные плагины, у которых манифест разрешает
  * strip, ставятся полосой сверху. Пользователь меняет это в менеджере.
  */
-function defaultPluginPlacements(records) {
-    if (!Array.isArray(records)) return [];
-    return records
-        .filter((record) => record?.manifest?.surfaces?.strip)
-        .sort((left, right) => left.manifest.name.localeCompare(right.manifest.name))
-        .slice(0, 3)
-        .map((record, index) => ({
+/**
+ * Стартовое размещение для одного плагина: до трёх strip-виджетов,
+ * остальные — панелью, иначе off. Возвращает null, если размещение уже есть.
+ */
+function ensureDefaultPlacement(record, placements) {
+    if (!record || placementFor(placements, record.id)) return null;
+    const stripCount = (Array.isArray(placements) ? placements : [])
+        .filter((placement) => placement.surface === 'strip').length;
+    const surfaces = record.manifest?.surfaces || {};
+
+    if (surfaces.strip && stripCount < 3) {
+        return {
             pluginId: record.id,
             surface: 'strip',
             position: 'top',
             height: PLUGIN_STRIP_DEFAULT_HEIGHT,
-            order: index,
-        }));
+            order: stripCount,
+        };
+    }
+    if (surfaces.panel) return { pluginId: record.id, surface: 'panel', side: 'right' };
+    return { pluginId: record.id, surface: 'off' };
+}
+
+function defaultPluginPlacements(records) {
+    if (!Array.isArray(records)) return [];
+    const placements = [];
+    for (const record of [...records].sort((left, right) => left.manifest.name.localeCompare(right.manifest.name))) {
+        const placement = ensureDefaultPlacement(record, placements);
+        if (placement) placements.push(placement);
+    }
+    return placements;
 }

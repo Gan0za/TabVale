@@ -141,6 +141,9 @@ function renderPluginDock() {
     dock.textContent = '';
 
     for (const record of installedPluginCache) {
+        const placement = placementFor(pluginPlacementsCache, record.id);
+        if (!placement || placement.surface === 'off') continue;
+
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'plugin-dock-button';
@@ -170,12 +173,18 @@ async function loadPluginPlacements() {
     const stored = await new Promise((resolve) => storageLocalGet(PLUGIN_PLACEMENTS_KEY, resolve));
     const hasStored = stored && Object.prototype.hasOwnProperty.call(stored, PLUGIN_PLACEMENTS_KEY);
     let placements = normalizePluginPlacements(stored?.[PLUGIN_PLACEMENTS_KEY]);
+    let changed = !hasStored;
 
-    // Первый запуск: встроенные плагины со strip показываем полосой сверху.
-    // Если пользователь потом уберёт все размещения, ключ уже существует —
-    // повторно не навязываем.
-    if (!hasStored && installedPluginCache.length) {
-        placements = defaultPluginPlacements(installedPluginCache);
+    // У каждого установленного плагина должно быть явное размещение:
+    // panel, strip, off. Иначе иконка в доке жила отдельно от выбора.
+    for (const record of installedPluginCache) {
+        const placement = ensureDefaultPlacement(record, placements);
+        if (!placement) continue;
+        placements = withPlacement(placements, placement);
+        changed = true;
+    }
+
+    if (changed) {
         await new Promise((resolve) => storageLocalSet({ [PLUGIN_PLACEMENTS_KEY]: placements }, resolve));
     }
     pluginPlacementsCache = placements;
@@ -334,6 +343,7 @@ function initPluginInstall() {
             installedAt: Date.now(),
         });
         await loadInstalledPlugins();
+        await loadPluginPlacements();
         renderPluginDock();
         renderPluginStrip();
         renderPluginManager();
@@ -351,7 +361,9 @@ async function setPluginPlacement(record, value) {
     const previous = placementFor(pluginPlacementsCache, record.id);
     let placements = pluginPlacementsCache.filter((placement) => placement.pluginId !== record.id);
 
-    if (value === 'panel') {
+    if (value === 'off') {
+        placements = withPlacement(placements, { pluginId: record.id, surface: 'off' });
+    } else if (value === 'panel') {
         placements = withPlacement(placements, { pluginId: record.id, surface: 'panel', side: 'right' });
     } else if (value === 'strip:top' || value === 'strip:bottom') {
         placements = withPlacement(placements, {
@@ -365,6 +377,7 @@ async function setPluginPlacement(record, value) {
 
     pluginPlacementsCache = placements;
     await new Promise((resolve) => storageLocalSet({ [PLUGIN_PLACEMENTS_KEY]: placements }, resolve));
+    renderPluginDock();
     renderPluginStrip();
 }
 
@@ -398,6 +411,7 @@ function renderPluginManager() {
             await saveRemovedBuiltins();
             await installBuiltinPlugins();
             await loadInstalledPlugins();
+            await loadPluginPlacements();
             renderPluginDock();
             renderPluginStrip();
             renderPluginManager();
