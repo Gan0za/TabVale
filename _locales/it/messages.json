@@ -290,6 +290,8 @@
   "pluginInstallConfirm": { "message": "$name$ richiede: $permissions$. Installare?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
   "pluginInstallInvalid": { "message": "File di estensione non valido: $error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginInstallManifestOnly": { "message": "È un manifest, non un pacchetto. Usa JSON {manifest, code}; le estensioni incluse tornano con «Ripristina estensioni incluse»." },
+  "pluginGrantBookmarks": { "message": "Consenti accesso ai segnalibri" },
+  "pluginBookmarksGranted": { "message": "Accesso ai segnalibri consentito" },
   "pluginPermNetwork": { "message": "rete: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "archivio: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Posizione di $name$", "placeholders": { "name": { "content": "$1" } } },

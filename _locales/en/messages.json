@@ -119,6 +119,8 @@
   "pluginInstallConfirm": { "message": "$name$ requests: $permissions$. Install?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
   "pluginInstallInvalid": { "message": "Invalid plugin file: $error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginInstallManifestOnly": { "message": "That is a plugin manifest, not a package. Use JSON {manifest, code}; bundled plugins come back with Restore bundled plugins." },
+  "pluginGrantBookmarks": { "message": "Allow bookmark access" },
+  "pluginBookmarksGranted": { "message": "Bookmark access granted" },
   "pluginPermNetwork": { "message": "network: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "storage: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Placement for $name$", "placeholders": { "name": { "content": "$1" } } },

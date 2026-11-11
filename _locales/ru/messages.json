@@ -119,6 +119,8 @@
   "pluginInstallConfirm": { "message": "$name$ запрашивает: $permissions$. Установить?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
   "pluginInstallInvalid": { "message": "Некорректный файл плагина: $error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginInstallManifestOnly": { "message": "Вы выбрали манифест, а не пакет плагина. Нужен JSON {manifest, code}; встроенные плагины возвращаются кнопкой «Восстановить встроенные»." },
+  "pluginGrantBookmarks": { "message": "Разрешить доступ к закладкам" },
+  "pluginBookmarksGranted": { "message": "Доступ к закладкам разрешён" },
   "pluginPermNetwork": { "message": "сеть: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "хранилище: $kb$ КБ", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Размещение плагина $name$", "placeholders": { "name": { "content": "$1" } } },

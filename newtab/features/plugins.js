@@ -356,11 +356,27 @@ function watchPluginThemeAndLocale() {
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'lang'] });
 }
 
+function requestBookmarksPermission() {
+    return new Promise((resolve) => {
+        if (!chrome.permissions?.request) { resolve(false); return; }
+        try {
+            chrome.permissions.request({ permissions: ['bookmarks'] }, (granted) => {
+                const error = chrome.runtime?.lastError;
+                if (error) console.warn('bookmarks permission:', error.message);
+                resolve(Boolean(granted));
+            });
+        } catch (error) {
+            console.warn('bookmarks permission:', error);
+            resolve(false);
+        }
+    });
+}
+
 function requestPluginPermissions(record) {
     const capabilities = record.manifest.permissions?.capabilities || [];
-    if (!capabilities.includes('bookmarks.read') || !chrome.permissions?.request) return;
+    if (!capabilities.includes('bookmarks.read')) return;
     // Вызывается из клика по иконке/кнопке — это пользовательский жест.
-    try { chrome.permissions.request({ permissions: ['bookmarks'] }); } catch { /* отказ обработает брокер */ }
+    requestBookmarksPermission();
 }
 
 function hasBookmarksPermission() {
@@ -555,6 +571,21 @@ function renderPluginManager() {
         select.addEventListener('change', () => setPluginPlacement(record, select.value));
 
         item.append(info, select);
+
+        if ((record.manifest.permissions?.capabilities || []).includes('bookmarks.read')) {
+            const grant = document.createElement('button');
+            grant.type = 'button';
+            grant.className = 'btn plugin-manager-grant';
+            const update = (granted) => {
+                grant.textContent = granted ? t('pluginBookmarksGranted') : t('pluginGrantBookmarks');
+                grant.disabled = Boolean(granted);
+            };
+            hasBookmarksPermission().then(update);
+            grant.addEventListener('click', async () => {
+                update(await requestBookmarksPermission());
+            });
+            item.append(grant);
+        }
 
         if (record.manifest.surfaces?.panel) {
             const open = document.createElement('button');

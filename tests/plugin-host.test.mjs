@@ -69,6 +69,8 @@ assert.ok(source.includes("case 'ui.openExternal'"), 'внешние ссылк�
 assert.ok(manifest.optional_permissions?.includes('bookmarks'), 'доступ к закладкам запрашивается опционально');
 assert.ok(source.includes('chrome.bookmarks.getTree'), 'хост читает дерево закладок');
 assert.ok(source.includes('requestPluginPermissions'), 'разрешение запрашивается по жесту');
+assert.ok(source.includes('requestBookmarksPermission'), 'есть явный запрос доступа к закладкам');
+assert.ok(source.includes('plugin-manager-grant'), 'в менеджере есть кнопка разрешения');
 assert.ok(db.includes('PLUGIN_DB_STORE'), 'есть object store плагинов');
 
 console.log('plugin-host.test.mjs: все проверки пройдены');
