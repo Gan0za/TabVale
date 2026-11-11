@@ -676,6 +676,22 @@ async function onPluginMessage(event) {
                 console.info(`[plugin ${instance.record.id}]`, params.text);
                 reply(true);
                 break;
+            case 'ui.openExternal': {
+                const raw = String(params.url || '');
+                let parsed;
+                try { parsed = new URL(raw); } catch { throw new Error('invalid url'); }
+                const allowed = ['https:', 'http:', 'obsidian:', 'vscode:'];
+                if (!allowed.includes(parsed.protocol)) throw new Error('scheme is not allowed');
+                const link = document.createElement('a');
+                link.href = raw;
+                link.target = '_blank';
+                link.rel = 'noopener';
+                document.body.append(link);
+                link.click();
+                link.remove();
+                reply(true);
+                break;
+            }
             case 'bookmarks.tree':
             case 'bookmarks.import':
                 throw new Error('bookmarks capability is not enabled yet');

@@ -75,6 +75,7 @@
                 close: () => rpc('ui.close'),
                 resize: (size) => rpc('ui.resize', size || {}),
                 notify: (text, level) => rpc('ui.notify', { text, level }),
+                openExternal: (url) => rpc('ui.openExternal', { url }),
             },
             on: (name, handler) => {
                 if (typeof handler !== 'function') return;

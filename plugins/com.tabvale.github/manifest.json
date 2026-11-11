@@ -1,0 +1,93 @@
+{
+  "schema": 1,
+  "id": "com.tabvale.github",
+  "name": "GitHub stats",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "minAppVersion": "1.2.0",
+  "entry": "plugin.js",
+  "description": "Stars, forks and open issues of a public repository.",
+  "author": "TabVale",
+  "permissions": {
+    "network": [
+      "https://api.github.com/*"
+    ],
+    "capabilities": [],
+    "storageKB": 16
+  },
+  "surfaces": {
+    "panel": {
+      "sides": [
+        "right",
+        "left"
+      ],
+      "width": [
+        300,
+        460
+      ],
+      "height": [
+        220,
+        420
+      ],
+      "mode": [
+        "overlay"
+      ]
+    },
+    "strip": {
+      "positions": [
+        "top",
+        "bottom"
+      ],
+      "height": [
+        64,
+        120
+      ]
+    },
+    "rail": {
+      "positions": [
+        "top"
+      ]
+    }
+  },
+  "locales": {
+    "ru": {
+      "name": "Статистика GitHub"
+    },
+    "en": {
+      "name": "GitHub stats"
+    },
+    "de": {
+      "name": "GitHub-Statistiken"
+    },
+    "fr": {
+      "name": "Statistiques GitHub"
+    },
+    "es": {
+      "name": "Estadísticas de GitHub"
+    },
+    "pt-BR": {
+      "name": "Estatísticas do GitHub"
+    },
+    "it": {
+      "name": "Statistiche GitHub"
+    },
+    "pl": {
+      "name": "Statystyki GitHub"
+    },
+    "tr": {
+      "name": "GitHub istatistikleri"
+    },
+    "uk": {
+      "name": "Статистика GitHub"
+    },
+    "zh-CN": {
+      "name": "GitHub 统计"
+    },
+    "ja": {
+      "name": "GitHub 統計"
+    },
+    "ko": {
+      "name": "GitHub 통계"
+    }
+  }
+}

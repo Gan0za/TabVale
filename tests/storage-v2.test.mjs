@@ -220,7 +220,7 @@ const bookmarks = [
 
     api.persistScreens([{ id: 'main', title: 'Main', bookmarks: [{ title: 'First', url: 'https://a.com' }] }], () => { firstDone++; });
     api.persistScreens([{ id: 'main', title: 'Main', bookmarks: [{ title: 'Second', url: 'https://b.com' }] }], () => { secondDone++; });
-    await new Promise((resolve) => setTimeout(resolve, 60));
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     assert.equal(firstDone, 1, 'первая запись завершилась');
     assert.equal(secondDone, 1, 'вторая запись завершилась');

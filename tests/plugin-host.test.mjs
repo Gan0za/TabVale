@@ -56,6 +56,7 @@ assert.ok(db.includes('indexedDB.open'), 'пакеты лежат в IndexedDB')
 assert.ok(source.includes('dbDeletePlugin'), 'менеджер удаляет пакет из IndexedDB');
 assert.ok(source.includes('dbPutPlugin'), 'установка пишет пакет в IndexedDB');
 assert.ok(source.includes('watchPluginThemeAndLocale'), 'тема и язык транслируются в плагины');
+assert.ok(source.includes("case 'ui.openExternal'"), 'внешние ссылки открываются через хост');
 assert.ok(db.includes('PLUGIN_DB_STORE'), 'есть object store плагинов');
 
 console.log('plugin-host.test.mjs: все проверки пройдены');

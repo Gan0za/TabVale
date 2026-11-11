@@ -40,6 +40,7 @@ assert.equal(api.pluginMethodAllowed(noNetwork, 'bookmarks.tree'), false, 'за�
 assert.equal(api.pluginMethodAllowed(withBookmarks, 'bookmarks.tree'), true, 'закладки с capability разрешены');
 assert.equal(api.pluginMethodAllowed(withBookmarks, 'bookmarks.import'), true);
 assert.equal(api.pluginMethodAllowed(noNetwork, 'eval'), false, 'неизвестный метод запрещён');
+assert.equal(api.pluginMethodAllowed(noNetwork, 'ui.openExternal'), true, 'открытие внешней ссылки разрешено');
 
 // 2. Ключи хранилища namespaced и валидируются
 assert.equal(api.pluginStorageKey('com.example.clock', 'draft'), 'plugin:com.example.clock:draft');

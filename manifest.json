@@ -13,6 +13,11 @@
     "contextMenus",
     "clipboardRead"
   ],
+  "host_permissions": [
+    "https://api.open-meteo.com/*",
+    "https://api.github.com/*",
+    "https://habr.com/*"
+  ],
   "optional_host_permissions": [
     "http://*/*",
     "https://*/*"

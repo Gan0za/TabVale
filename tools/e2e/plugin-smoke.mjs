@@ -305,7 +305,7 @@ localizedManagerName = await evaluate(`(async () => {
   const previous = document.documentElement.lang;
   document.documentElement.lang = 'ru';
   await new Promise((resolve) => setTimeout(resolve, 300));
-  const name = document.querySelector('.plugin-manager-name')?.textContent || '';
+  const name = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-name')?.textContent || '';
   document.documentElement.lang = previous;
   return name;
 })()`);
@@ -440,6 +440,25 @@ const panelOnly = await evaluate(`(async () => {
   };
 })()`);
 console.log('placement panel:', panelOnly);
+
+const networkProbe = await evaluate(`(async () => {
+  const urls = [
+    'https://api.open-meteo.com/v1/forecast?latitude=55.7558&longitude=37.6173&current=temperature_2m',
+    'https://api.github.com/repos/Gan0za/TabVale',
+    'https://habr.com/ru/rss/news/',
+  ];
+  const result = {};
+  for (const url of urls) {
+    try {
+      const response = await fetch(url);
+      result[new URL(url).host] = response.status;
+    } catch (error) {
+      result[new URL(url).host] = String(error);
+    }
+  }
+  return result;
+})()`);
+console.log('network probe:', networkProbe);
 
 console.log('logs:', logs.slice(-8));
 console.log('exceptions:', errors.slice(0, 5));
