@@ -288,6 +288,7 @@
   "pluginInstall": { "message": "Zainstaluj z pliku…" },
   "pluginInstallConfirm": { "message": "$name$ wymaga: $permissions$. Zainstalować?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
   "pluginInstallInvalid": { "message": "Nieprawidłowy plik wtyczki: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginInstallManifestOnly": { "message": "To manifest, nie pakiet. Użyj JSON {manifest, code}; dołączone wtyczki wracają przez „Przywróć dołączone wtyczki”." },
   "pluginPermNetwork": { "message": "sieć: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "pamięć: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Umiejscowienie $name$", "placeholders": { "name": { "content": "$1" } } },

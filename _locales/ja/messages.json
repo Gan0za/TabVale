@@ -288,6 +288,7 @@
   "pluginInstall": { "message": "ファイルからインストール…" },
   "pluginInstallConfirm": { "message": "$name$ の要求: $permissions$。インストールしますか？", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
   "pluginInstallInvalid": { "message": "プラグイン ファイルが無効です: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginInstallManifestOnly": { "message": "これはマニフェストで、プラグイン パッケージではありません。JSON {manifest, code} を使用してください。同梱プラグインは「同梱プラグインを復元」で戻ります。" },
   "pluginPermNetwork": { "message": "ネットワーク: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "ストレージ: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "$name$ の配置", "placeholders": { "name": { "content": "$1" } } },

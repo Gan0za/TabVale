@@ -288,6 +288,7 @@
   "pluginInstall": { "message": "Instalar de um arquivo…" },
   "pluginInstallConfirm": { "message": "$name$ solicita: $permissions$. Instalar?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
   "pluginInstallInvalid": { "message": "Arquivo de complemento inválido: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginInstallManifestOnly": { "message": "Isso é um manifesto, não um pacote. Use JSON {manifest, code}; os complementos incluídos voltam com «Restaurar complementos incluídos»." },
   "pluginPermNetwork": { "message": "rede: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "armazenamento: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Posição de $name$", "placeholders": { "name": { "content": "$1" } } },

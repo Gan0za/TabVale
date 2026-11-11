@@ -288,6 +288,7 @@
   "pluginInstall": { "message": "Установити з файлу…" },
   "pluginInstallConfirm": { "message": "$name$ запитує: $permissions$. Встановити?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
   "pluginInstallInvalid": { "message": "Некоректний файл плагіна: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginInstallManifestOnly": { "message": "Це маніфест, а не пакет. Потрібен JSON {manifest, code}; вбудовані повертаються кнопкою «Відновити вбудовані»." },
   "pluginPermNetwork": { "message": "мережа: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "сховище: $kb$ КБ", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Розміщення плагіна $name$", "placeholders": { "name": { "content": "$1" } } },

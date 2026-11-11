@@ -288,6 +288,7 @@
   "pluginInstall": { "message": "Instalar desde archivo…" },
   "pluginInstallConfirm": { "message": "$name$ solicita: $permissions$. ¿Instalar?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
   "pluginInstallInvalid": { "message": "Archivo de complemento no válido: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginInstallManifestOnly": { "message": "Es un manifiesto, no un paquete. Use JSON {manifest, code}; los complementos incluidos vuelven con «Restaurar complementos incluidos»." },
   "pluginPermNetwork": { "message": "red: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "almacenamiento: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Ubicación de $name$", "placeholders": { "name": { "content": "$1" } } },

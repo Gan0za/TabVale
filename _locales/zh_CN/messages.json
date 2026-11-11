@@ -288,6 +288,7 @@
   "pluginInstall": { "message": "从文件安装…" },
   "pluginInstallConfirm": { "message": "$name$ 请求：$permissions$。安装？", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
   "pluginInstallInvalid": { "message": "插件文件无效：$error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginInstallManifestOnly": { "message": "这是清单，不是插件包。请使用 JSON {manifest, code}；内置插件可通过“恢复内置插件”恢复。" },
   "pluginPermNetwork": { "message": "网络：$count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "存储：$kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "$name$ 的位置", "placeholders": { "name": { "content": "$1" } } },

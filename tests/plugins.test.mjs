@@ -125,6 +125,7 @@ assert.ok(parsedPackage.code.includes('mount'));
 
 assert.equal(api.parsePluginPackage('{').ok, false, 'битый JSON отклонён');
 assert.equal(api.parsePluginPackage(JSON.stringify({ manifest: validManifest })).ok, false, 'без кода отклонён');
+assert.deepEqual(Array.from(api.parsePluginPackage(JSON.stringify(validManifest)).errors), ['manifest-only'], 'сырой манифест распознан отдельно');
 assert.equal(api.parsePluginPackage(JSON.stringify({ manifest: { ...validManifest, id: 'bad' }, code: 'x' })).ok, false, 'плохой манифест отклонён');
 
 console.log('plugins.test.mjs: все проверки пройдены');

@@ -288,6 +288,7 @@
   "pluginInstall": { "message": "파일에서 설치…" },
   "pluginInstallConfirm": { "message": "$name$ 요청: $permissions$. 설치할까요?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
   "pluginInstallInvalid": { "message": "잘못된 플러그인 파일: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginInstallManifestOnly": { "message": "이것은 매니페스트이며 플러그인 패키지가 아닙니다. JSON {manifest, code}을 사용하세요. 기본 플러그인은 \"기본 플러그인 복원\"으로 돌아옵니다." },
   "pluginPermNetwork": { "message": "네트워크: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "저장소: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "$name$ 배치", "placeholders": { "name": { "content": "$1" } } },

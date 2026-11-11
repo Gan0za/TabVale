@@ -288,6 +288,7 @@
   "pluginInstall": { "message": "Installer depuis un fichier…" },
   "pluginInstallConfirm": { "message": "$name$ demande : $permissions$. Installer ?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
   "pluginInstallInvalid": { "message": "Fichier d’extension invalide : $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginInstallManifestOnly": { "message": "C’est un manifeste, pas un paquet. Utilisez JSON {manifest, code} ; les extensions fournies reviennent via « Restaurer les extensions fournies »." },
   "pluginPermNetwork": { "message": "réseau : $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "stockage : $kb$ Ko", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Emplacement de $name$", "placeholders": { "name": { "content": "$1" } } },

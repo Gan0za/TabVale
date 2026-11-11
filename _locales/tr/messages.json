@@ -288,6 +288,7 @@
   "pluginInstall": { "message": "Dosyadan yükle…" },
   "pluginInstallConfirm": { "message": "$name$ şunları istiyor: $permissions$. Yüklensin mi?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
   "pluginInstallInvalid": { "message": "Geçersiz eklenti dosyası: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginInstallManifestOnly": { "message": "Bu bir manifest, paket değil. JSON {manifest, code} kullanın; paket eklentiler «Paket eklentileri geri yükle» ile döner." },
   "pluginPermNetwork": { "message": "ağ: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "depolama: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "$name$ konumu", "placeholders": { "name": { "content": "$1" } } },

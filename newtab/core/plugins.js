@@ -251,6 +251,11 @@ function parsePluginPackage(text) {
         return { ok: false, errors: ['invalid JSON'], manifest: null, code: '' };
     }
 
+    // Пользователь мог выбрать сам manifest.json вместо пакета.
+    if (raw && !raw.manifest && typeof raw.code !== 'string' && (raw.schema !== undefined || raw.id)) {
+        return { ok: false, errors: ['manifest-only'], manifest: null, code: '' };
+    }
+
     const manifestResult = validatePluginManifest(raw?.manifest || raw);
     if (!manifestResult.ok) {
         return { ok: false, errors: manifestResult.errors, manifest: null, code: '' };

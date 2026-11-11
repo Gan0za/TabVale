@@ -322,7 +322,11 @@ function initPluginInstall() {
 
         const parsed = parsePluginPackage(await file.text());
         if (!parsed.ok) {
-            window.alert(t('pluginInstallInvalid', { error: parsed.errors.slice(0, 3).join('; ') }));
+            if (parsed.errors.includes('manifest-only')) {
+                window.alert(t('pluginInstallManifestOnly'));
+            } else {
+                window.alert(t('pluginInstallInvalid', { error: parsed.errors.slice(0, 3).join('; ') }));
+            }
             return;
         }
 
