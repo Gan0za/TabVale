@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "com.tabvale.passwords",
   "name": "Password generator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "apiVersion": 1,
   "minAppVersion": "1.2.0",
   "entry": "plugin.js",
