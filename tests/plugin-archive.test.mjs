@@ -64,7 +64,7 @@ function buildZip(files) {
         central.writeUInt16LE(20, 6);
         central.writeUInt16LE(method, 10);
         central.writeUInt32LE(payload.length, 20);
-        central.writeUInt32LE(data.length, 24);
+        central.writeUInt32LE(file.fakeSize ?? data.length, 24);
         central.writeUInt16LE(name.length, 28);
         central.writeUInt32LE(offset, 42);
         centralParts.push(central, name);
@@ -174,7 +174,25 @@ const bigIconResult = await parsePluginArchive(bigIcon);
 assert.equal(bigIconResult.ok, true, 'большая иконка не ломает пакет');
 assert.equal(bigIconResult.icon, '', 'иконка сверх лимита отброшена');
 
-// 11. Слишком большой архив отклоняется до разбора
+// 11. Архив врёт о размере: распаковка ограничена по факту, а не по заголовку
+const liar = buildZip([
+    { name: 'manifest.json', data: manifestJson },
+    { name: 'plugin.js', data: 'a'.repeat(700 * 1024), fakeSize: 32 },
+]);
+const liarResult = await parsePluginArchive(liar);
+assert.equal(liarResult.ok, false, 'раздутый код не проходит');
+assert.ok(liarResult.errors.includes('package is too large'), 'срабатывает лимит распаковки');
+
+const liarIcon = buildZip([
+    { name: 'manifest.json', data: JSON.stringify({ ...manifest, icon: 'icon.svg' }) },
+    { name: 'plugin.js', data: code },
+    { name: 'icon.svg', data: 'x'.repeat(200 * 1024), fakeSize: 32 },
+]);
+const liarIconResult = await parsePluginArchive(liarIcon);
+assert.equal(liarIconResult.ok, true, 'обман в иконке не ломает установку');
+assert.equal(liarIconResult.icon, '', 'иконка сверх лимита не распаковывается');
+
+// 12. Слишком большой архив отклоняется до разбора
 const huge = new Uint8Array(1024 * 1024 + 8);
 huge.set([0x50, 0x4b, 0x03, 0x04]);
 const hugeResult = await parsePluginArchive(huge.buffer);

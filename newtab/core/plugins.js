@@ -347,23 +347,53 @@ function zipMethodSupported(entry) {
     return entry.method === 0 || entry.method === 8;
 }
 
+/**
+ * Читает поток не больше лимита. Размер в заголовке zip подделывается,
+ * поэтому распаковку ограничиваем по фактически полученным байтам.
+ */
+async function readStreamLimited(stream, limit) {
+    const reader = stream.getReader();
+    const chunks = [];
+    let total = 0;
+    for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        total += value?.length || 0;
+        if (total > limit) {
+            await reader.cancel().catch(() => {});
+            return null;
+        }
+        if (value?.length) chunks.push(value);
+    }
+    const bytes = new Uint8Array(total);
+    let offset = 0;
+    for (const chunk of chunks) {
+        bytes.set(chunk, offset);
+        offset += chunk.length;
+    }
+    return bytes;
+}
+
+const PLUGIN_MANIFEST_LIMIT = 64 * 1024;
+
 /** Байты записи: zip хранит данные без сжатия (0) или deflate (8). */
-async function archiveEntryBytes(buffer, entry) {
+async function archiveEntryBytes(buffer, entry, limit) {
+    if (entry.uncompressedSize > limit) return null;
     const view = new DataView(buffer);
     if (view.getUint32(entry.localOffset, true) !== 0x04034b50) return null;
     const start = entry.localOffset + 30
         + view.getUint16(entry.localOffset + 26, true)
         + view.getUint16(entry.localOffset + 28, true);
     const bytes = new Uint8Array(buffer, start, entry.compressedSize);
-    if (entry.method === 0) return bytes;
+    if (entry.method === 0) return bytes.length <= limit ? bytes : null;
     if (entry.method !== 8) return null;
     const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
-    return new Uint8Array(await new Response(stream).arrayBuffer());
+    return readStreamLimited(stream, limit);
 }
 
 /** Текст записи. */
-async function archiveEntryText(buffer, entry) {
-    const bytes = await archiveEntryBytes(buffer, entry);
+async function archiveEntryText(buffer, entry, limit) {
+    const bytes = await archiveEntryBytes(buffer, entry, limit);
     return bytes ? new TextDecoder().decode(bytes) : null;
 }
 
@@ -414,8 +444,13 @@ async function parsePluginArchive(buffer) {
         return { ok: false, errors: ['unsupported compression'], manifest: null, code: '' };
     }
 
+    const manifestText = await archiveEntryText(buffer, manifestEntry, PLUGIN_MANIFEST_LIMIT);
+    if (manifestText === null) {
+        return { ok: false, errors: ['package is too large'], manifest: null, code: '' };
+    }
+
     let raw;
-    try { raw = JSON.parse(await archiveEntryText(buffer, manifestEntry)); } catch {
+    try { raw = JSON.parse(manifestText); } catch {
         return { ok: false, errors: ['invalid manifest'], manifest: null, code: '' };
     }
 
@@ -431,8 +466,11 @@ async function parsePluginArchive(buffer) {
     if (!zipMethodSupported(codeEntry)) {
         return { ok: false, errors: ['unsupported compression'], manifest: null, code: '' };
     }
-    const code = await archiveEntryText(buffer, codeEntry);
-    if (!code || !code.trim()) {
+    const code = await archiveEntryText(buffer, codeEntry, PLUGIN_PACKAGE_LIMIT);
+    if (code === null) {
+        return { ok: false, errors: ['package is too large'], manifest: null, code: '' };
+    }
+    if (!code.trim()) {
         return { ok: false, errors: ['code is missing'], manifest: null, code: '' };
     }
     if (utf8ByteLength(code) > PLUGIN_PACKAGE_LIMIT) {
@@ -444,10 +482,9 @@ async function parsePluginArchive(buffer) {
     const iconName = manifestResult.manifest.icon;
     const mime = pluginIconMime(iconName);
     const iconEntry = iconName && mime ? archiveEntry(entries, iconName) : null;
-    if (iconEntry && zipMethodSupported(iconEntry)
-        && iconEntry.uncompressedSize > 0 && iconEntry.uncompressedSize <= PLUGIN_ICON_LIMIT) {
-        const bytes = await archiveEntryBytes(buffer, iconEntry);
-        if (bytes) icon = pluginIconDataUrl(bytes, mime);
+    if (iconEntry && zipMethodSupported(iconEntry) && iconEntry.uncompressedSize > 0) {
+        const bytes = await archiveEntryBytes(buffer, iconEntry, PLUGIN_ICON_LIMIT);
+        if (bytes?.length) icon = pluginIconDataUrl(bytes, mime);
     }
 
     return { ok: true, errors: [], manifest: manifestResult.manifest, code, icon };
