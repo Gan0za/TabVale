@@ -125,7 +125,12 @@ async function loadInstalledPlugins() {
 
 function pluginDisplayName(record) {
     const locale = document.documentElement.lang || 'en';
-    return record.manifest.locales?.[locale]?.name || record.manifest.name;
+    const locales = record.manifest.locales || {};
+    const candidates = [locale, locale.replace('_', '-'), locale.split(/[-_]/)[0]];
+    for (const candidate of candidates) {
+        if (locales[candidate]?.name) return locales[candidate].name;
+    }
+    return record.manifest.name;
 }
 
 function renderPluginDock() {
