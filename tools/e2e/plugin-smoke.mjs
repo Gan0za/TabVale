@@ -557,6 +557,14 @@ const tvpInstalled = await evaluate(`({
   rows: document.querySelectorAll('.plugin-manager-item').length,
 })`);
 console.log('installed from tvp:', tvpInstalled);
+// Код из архива должен не просто записаться, а исполниться в песочнице.
+await evaluate(`document.querySelector('.plugin-dock-button[data-plugin-id="com.test.zipped"]')?.click()`);
+await sleep(1000);
+// document.title кадра — это id плагина и поверхность, а не имя из манифеста.
+const tvpFrameText = await frameEval(/com\.test\.zipped \(panel\)/, 'document.body.textContent');
+console.log('tvp plugin frame:', tvpFrameText);
+await evaluate(`document.querySelector('.plugin-panel-close')?.click()`);
+await sleep(300);
 await evaluate(`document.querySelector('.plugin-manager-item[data-plugin-id="com.test.zipped"] .plugin-manager-remove')?.click()`);
 await sleep(500);
 const tvpCleaned = await evaluate(`({ dock: document.querySelectorAll('.plugin-dock-button').length })`);
@@ -773,6 +781,7 @@ const passed = dock.count > 0
     && installed.dock === baselineDock + 1 && installed.rows === baselineRows + 1
     && cleaned.dock === baselineDock
     && tvpInstalled.dock === baselineDock + 1 && tvpInstalled.rows === baselineRows + 1
+    && /Zipped plugin/.test(tvpFrameText || '')
     && tvpCleaned.dock === baselineDock
     && off.dock === baselineDock && off.strip === baselineStrip - 1
     && panelOnly.dock === baselineDock + 1 && panelOnly.strip === baselineStrip - 1
