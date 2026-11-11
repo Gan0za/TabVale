@@ -11,7 +11,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 const code = fs.readFileSync(path.join(root, 'newtab', 'core', 'plugin-placements.js'), 'utf8');
 const api = vm.runInNewContext(
-    code + `\n;({ normalizePluginPlacement, normalizePluginPlacements, placementFor, withPlacement, defaultPluginPlacements })`,
+    code + `\n;({ normalizePluginPlacement, normalizePluginPlacements, placementFor, withPlacement, defaultPluginPlacements, ensureDefaultPlacement })`,
     {}
 );
 
@@ -62,5 +62,17 @@ assert.deepEqual(Array.from(defaults.map((item) => item.pluginId)), ['com.a', 'c
 assert.equal(defaults.filter((item) => item.surface === 'strip').length, 3, 'не больше трёх виджетов в полосе');
 assert.equal(defaults.find((item) => item.pluginId === 'com.b').surface, 'panel');
 assert.equal(defaults.find((item) => item.pluginId === 'com.e').surface, 'off');
+
+const preferred = api.ensureDefaultPlacement({
+    id: 'com.panel.strip',
+    manifest: {
+        name: 'Preferred',
+        surfaces: {
+            panel: { sides: ['right'] },
+            strip: { positions: ['top'], height: [64, 120], default: true },
+        },
+    },
+}, []);
+assert.equal(preferred.surface, 'strip', 'strip.default важнее панели');
 
 console.log('plugin-placements.test.mjs: все проверки пройдены');

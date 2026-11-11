@@ -120,6 +120,44 @@ const evaluate = async (expression, contextId) => {
   return r.result.value;
 };
 
+async function readSandboxFrames() {
+  const list = await targets();
+  const frames = [];
+  for (const target of list.filter((item) => item.url.includes('sandbox/plugin-host.html'))) {
+    try {
+      const frameWs = new WebSocket(target.webSocketDebuggerUrl);
+      await new Promise((res, rej) => {
+        frameWs.addEventListener('open', res, { once: true });
+        frameWs.addEventListener('error', rej, { once: true });
+      });
+      const result = await new Promise((resolve) => {
+        frameWs.addEventListener('message', (event) => {
+          const msg = JSON.parse(event.data);
+          if (msg.id === 1) resolve(msg.result);
+        });
+        frameWs.send(JSON.stringify({
+          id: 1,
+          method: 'Runtime.evaluate',
+          params: {
+            expression: `JSON.stringify({
+              docTitle: document.title,
+              text: document.body.innerText,
+              scrollH: document.documentElement.scrollHeight,
+              clientH: document.documentElement.clientHeight,
+            })`,
+            returnByValue: true,
+          },
+        }));
+      });
+      frames.push(JSON.parse(String(result?.result?.value || '{}')));
+      frameWs.close();
+    } catch {
+      // кадр мог закрыться между списком целей и подключением
+    }
+  }
+  return frames;
+}
+
 await send('Page.enable');
 await send('Runtime.enable');
 
@@ -190,6 +228,7 @@ let darkSandboxBg = '';
 let lightSandboxBg = '';
 let localizedManagerName = '';
 let pomodoroFits = false;
+let appLauncherFits = false;
 if (dock.count) {
   await evaluate(`document.querySelector('.plugin-dock-button[data-plugin-id="com.tabvale.layout"]').click()`);
   await sleep(1500);
@@ -445,6 +484,20 @@ const panelOnly = await evaluate(`(async () => {
 })()`);
 console.log('placement panel:', panelOnly);
 
+await evaluate(`(async () => {
+  const select = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.apps"] .plugin-manager-surface');
+  select.value = 'strip:bottom';
+  select.dispatchEvent(new Event('change', { bubbles: true }));
+  await new Promise((resolve) => setTimeout(resolve, 700));
+})()`);
+const launcherFrames = await readSandboxFrames();
+const launcherFrame = launcherFrames.find((item) => /com\.tabvale\.apps \(strip\)/.test(item.docTitle));
+appLauncherFits = !!launcherFrame
+    && /Obsidian/.test(launcherFrame.text)
+    && /VS Code/.test(launcherFrame.text)
+    && launcherFrame.scrollH <= launcherFrame.clientH + 1;
+console.log('app launcher strip:', launcherFrame, 'fits:', appLauncherFits);
+
 const networkProbe = await evaluate(`(async () => {
   const urls = [
     'https://api.open-meteo.com/v1/forecast?latitude=55.7558&longitude=37.6173&current=temperature_2m',
@@ -492,6 +545,7 @@ const passed = dock.count > 0
     && lightSandboxBg === 'rgb(242, 245, 248)'
     && localizedManagerName === 'Часы'
     && pomodoroFits
+    && appLauncherFits
     && errors.length === 0;
 console.log(passed ? 'SMOKE PASS' : 'SMOKE FAIL');
 process.exit(passed ? 0 : 1);

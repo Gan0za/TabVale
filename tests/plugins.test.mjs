@@ -51,6 +51,16 @@ assert.deepEqual(Array.from(good.manifest.permissions.capabilities), ['bookmarks
 assert.deepEqual(Array.from(good.manifest.surfaces.panel.sides), ['right']);
 assert.equal(good.manifest.locales.ru.name, 'Часы');
 
+const withStripDefault = api.validatePluginManifest({
+    ...validManifest,
+    surfaces: {
+        ...validManifest.surfaces,
+        strip: { positions: ['top'], height: [64, 120], default: true },
+    },
+});
+assert.equal(withStripDefault.ok, true, withStripDefault.errors.join('; '));
+assert.equal(withStripDefault.manifest.surfaces.strip.default, true, 'strip.default сохраняется');
+
 // 2. Неверные поля отбрасываются с ошибками
 const badCases = [
     [{ ...validManifest, id: 'Clock' }, 'id'],
