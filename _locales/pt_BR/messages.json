@@ -285,6 +285,12 @@
   "surfaceStripTop": { "message": "Acima dos favoritos" },
   "surfaceStripBottom": { "message": "Abaixo dos favoritos" },
   "surfaceOff": { "message": "Desativado" },
+  "pluginInstall": { "message": "Instalar de um arquivo…" },
+  "pluginInstallConfirm": { "message": "$name$ solicita: $permissions$. Instalar?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
+  "pluginInstallInvalid": { "message": "Arquivo de complemento inválido: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginPermNetwork": { "message": "rede: $count$", "placeholders": { "count": { "content": "$1" } } },
+  "pluginPermStorage": { "message": "armazenamento: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
+  "pluginPlacementLabel": { "message": "Posição de $name$", "placeholders": { "name": { "content": "$1" } } },
   "screenLabel": {
     "message": "Tela"
   },

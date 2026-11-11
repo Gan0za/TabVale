@@ -44,6 +44,9 @@ function initPlugins() {
         const tab = event.target.closest?.('.settings-tab');
         if (tab && tab.dataset.tab === 'plugins') renderPluginManager();
     });
+
+    initPluginInstall();
+    watchPluginThemeAndLocale();
 }
 
 function ensurePluginDock() {
@@ -271,6 +274,72 @@ function removePluginInstance(instance) {
     }
 }
 
+function broadcastPluginEvent(name, payload) {
+    for (const instance of pluginInstances.values()) {
+        instance.frame.contentWindow?.postMessage({ type: 'tabvale:event', name, payload }, '*');
+    }
+}
+
+function watchPluginThemeAndLocale() {
+    if (typeof MutationObserver !== 'function') return;
+    const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+            if (mutation.attributeName === 'data-theme') {
+                broadcastPluginEvent('theme', pluginTheme());
+                renderPluginManager();
+            }
+            if (mutation.attributeName === 'lang') {
+                broadcastPluginEvent('locale', document.documentElement.lang);
+                renderPluginManager();
+            }
+        }
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'lang'] });
+}
+
+function initPluginInstall() {
+    const button = document.getElementById('install-plugin-file');
+    const input = document.getElementById('plugin-package-file');
+    if (!button || !input) return;
+
+    button.addEventListener('click', () => input.click());
+    input.addEventListener('change', async () => {
+        const file = input.files?.[0];
+        input.value = '';
+        if (!file) return;
+
+        const parsed = parsePluginPackage(await file.text());
+        if (!parsed.ok) {
+            window.alert(t('pluginInstallInvalid', { error: parsed.errors.slice(0, 3).join('; ') }));
+            return;
+        }
+
+        const manifest = parsed.manifest;
+        const permissions = [
+            t('pluginPermNetwork', { count: manifest.permissions.network.length }),
+            t('pluginPermStorage', { kb: manifest.permissions.storageKB }),
+            ...manifest.permissions.capabilities,
+        ].join(', ');
+
+        if (!window.confirm(t('pluginInstallConfirm', { name: manifest.name, permissions }))) return;
+
+        await dbPutPlugin({
+            id: manifest.id,
+            version: manifest.version,
+            manifest,
+            code: parsed.code,
+            basePath: '',
+            source: 'imported',
+            enabled: true,
+            installedAt: Date.now(),
+        });
+        await loadInstalledPlugins();
+        renderPluginDock();
+        renderPluginStrip();
+        renderPluginManager();
+    });
+}
+
 function pluginPlacementValue(record) {
     const placement = placementFor(pluginPlacementsCache, record.id);
     if (!placement) return 'off';
@@ -362,16 +431,16 @@ function renderPluginManager() {
         const permissions = record.manifest.permissions?.capabilities || [];
         meta.textContent = [
             `v${record.manifest.version}`,
-            `${network} network rule${network === 1 ? '' : 's'}`,
+            t('pluginPermNetwork', { count: network }),
             ...permissions,
-            `${record.manifest.permissions?.storageKB || 64} KB`,
+            t('pluginPermStorage', { kb: record.manifest.permissions?.storageKB || 64 }),
         ].join(' · ');
 
         info.append(name, meta);
 
         const select = document.createElement('select');
         select.className = 'plugin-manager-surface';
-        select.setAttribute('aria-label', `Placement for ${record.manifest.name}`);
+        select.setAttribute('aria-label', t('pluginPlacementLabel', { name: pluginDisplayName(record) }));
         const options = [];
         if (record.manifest.surfaces?.panel) options.push(['panel', t('surfacePanel')]);
         if (record.manifest.surfaces?.strip) {

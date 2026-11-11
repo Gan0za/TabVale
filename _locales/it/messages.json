@@ -285,6 +285,12 @@
   "surfaceStripTop": { "message": "Sopra i segnalibri" },
   "surfaceStripBottom": { "message": "Sotto i segnalibri" },
   "surfaceOff": { "message": "Disattivato" },
+  "pluginInstall": { "message": "Installa da file…" },
+  "pluginInstallConfirm": { "message": "$name$ richiede: $permissions$. Installare?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
+  "pluginInstallInvalid": { "message": "File di estensione non valido: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginPermNetwork": { "message": "rete: $count$", "placeholders": { "count": { "content": "$1" } } },
+  "pluginPermStorage": { "message": "archivio: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
+  "pluginPlacementLabel": { "message": "Posizione di $name$", "placeholders": { "name": { "content": "$1" } } },
   "screenLabel": {
     "message": "Schermata"
   },

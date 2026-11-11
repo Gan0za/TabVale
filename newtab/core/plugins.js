@@ -227,6 +227,39 @@ function validatePluginManifest(raw) {
     };
 }
 
+const PLUGIN_PACKAGE_LIMIT = 512 * 1024;
+
+/**
+ * Разбирает файл плагина: JSON вида { manifest, code }. Код не
+ * исполняется — только проверяется размер и манифест.
+ */
+function parsePluginPackage(text) {
+    if (typeof text !== 'string' || !text.trim()) {
+        return { ok: false, errors: ['empty file'], manifest: null, code: '' };
+    }
+    if (utf8ByteLength(text) > PLUGIN_PACKAGE_LIMIT) {
+        return { ok: false, errors: ['package is too large'], manifest: null, code: '' };
+    }
+
+    let raw;
+    try {
+        raw = JSON.parse(text);
+    } catch {
+        return { ok: false, errors: ['invalid JSON'], manifest: null, code: '' };
+    }
+
+    const manifestResult = validatePluginManifest(raw?.manifest || raw);
+    if (!manifestResult.ok) {
+        return { ok: false, errors: manifestResult.errors, manifest: null, code: '' };
+    }
+    const code = typeof raw?.code === 'string' ? raw.code : '';
+    if (!code.trim()) {
+        return { ok: false, errors: ['code is missing'], manifest: null, code: '' };
+    }
+
+    return { ok: true, errors: [], manifest: manifestResult.manifest, code };
+}
+
 function surfaceRange(manifest, surface, key) {
     return manifest?.surfaces?.[surface]?.[key] || null;
 }

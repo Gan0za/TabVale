@@ -9,11 +9,14 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
-const code = fs.readFileSync(path.join(projectRoot, 'newtab', 'core', 'plugins.js'), 'utf8');
+const source = [
+    fs.readFileSync(path.join(projectRoot, 'newtab', 'core', 'storage.js'), 'utf8'),
+    fs.readFileSync(path.join(projectRoot, 'newtab', 'core', 'plugins.js'), 'utf8'),
+].join('\n');
 
 const api = vm.runInNewContext(
-    code + `\n;({ validatePluginManifest, clampPlacement, pluginAllowsUrl, isValidPluginId })`,
-    { URL }
+    source + `\n;({ validatePluginManifest, clampPlacement, pluginAllowsUrl, isValidPluginId, parsePluginPackage })`,
+    { URL, console }
 );
 
 const validManifest = {
@@ -102,5 +105,16 @@ assert.equal(api.isValidPluginId('com.example.clock'), true);
 assert.equal(api.isValidPluginId('clock'), false);
 assert.equal(api.isValidPluginId('Com.Example.Clock'), false);
 assert.equal(api.isValidPluginId('com..clock'), false);
+
+// 6. Пакет установки: JSON с манифестом и кодом
+const packageJson = JSON.stringify({ manifest: validManifest, code: 'function mount() {}' });
+const parsedPackage = api.parsePluginPackage(packageJson);
+assert.equal(parsedPackage.ok, true, parsedPackage.errors.join('; '));
+assert.equal(parsedPackage.manifest.id, 'com.example.clock');
+assert.ok(parsedPackage.code.includes('mount'));
+
+assert.equal(api.parsePluginPackage('{').ok, false, 'битый JSON отклонён');
+assert.equal(api.parsePluginPackage(JSON.stringify({ manifest: validManifest })).ok, false, 'без кода отклонён');
+assert.equal(api.parsePluginPackage(JSON.stringify({ manifest: { ...validManifest, id: 'bad' }, code: 'x' })).ok, false, 'плохой манифест отклонён');
 
 console.log('plugins.test.mjs: все проверки пройдены');

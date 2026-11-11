@@ -131,6 +131,7 @@
         }
 
         if (data.type === 'tabvale:event') {
+            if (data.name === 'theme') applyTheme(data.payload);
             emit(data.name, data.payload);
         }
     });

@@ -303,6 +303,44 @@ const restored = await evaluate(`(async () => {
 })()`);
 console.log('restored:', restored);
 
+const testPackage = path.join(os.tmpdir(), 'tabvale-test-plugin.json');
+fs.writeFileSync(testPackage, JSON.stringify({
+  manifest: {
+    schema: 1,
+    id: 'com.test.hello',
+    name: 'Hello test',
+    version: '1.0.0',
+    apiVersion: 1,
+    entry: 'plugin.js',
+    permissions: { network: [], capabilities: [], storageKB: 16 },
+    surfaces: {
+      panel: { sides: ['right'], width: [280, 360], height: [200, 300], mode: ['overlay'] },
+    },
+  },
+  code: 'function mount(api) { document.body.textContent = "Hello plugin"; api.ui.ready(); }',
+}));
+
+await send('DOM.enable');
+await evaluate('window.confirm = () => true');
+const documentNode = await send('DOM.getDocument');
+const fileInput = await send('DOM.querySelector', {
+  nodeId: documentNode.root.nodeId,
+  selector: '#plugin-package-file',
+});
+await send('DOM.setFileInputFiles', { files: [testPackage], nodeId: fileInput.nodeId });
+await sleep(1200);
+const installed = await evaluate(`({
+  dock: document.querySelectorAll('.plugin-dock-button').length,
+  rows: document.querySelectorAll('.plugin-manager-item').length,
+})`);
+console.log('installed from file:', installed);
+
+await evaluate(`document.querySelector('.plugin-manager-item[data-plugin-id="com.test.hello"] .plugin-manager-remove')?.click()`);
+await sleep(500);
+const cleaned = await evaluate(`({ dock: document.querySelectorAll('.plugin-dock-button').length })`);
+console.log('imported plugin removed:', cleaned);
+fs.unlinkSync(testPackage);
+
 console.log('logs:', logs.slice(-8));
 console.log('exceptions:', errors.slice(0, 5));
 ws.close();
@@ -319,6 +357,8 @@ const passed = dock.count > 0
     && removal.rows === 0 && removal.dock === 0
     && afterReload.dock === 0
     && restored.dock === 1
+    && installed.dock === 2 && installed.rows === 2
+    && cleaned.dock === 1
     && errors.length === 0;
 console.log(passed ? 'SMOKE PASS' : 'SMOKE FAIL');
 process.exit(passed ? 0 : 1);

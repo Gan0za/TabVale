@@ -285,6 +285,12 @@
   "surfaceStripTop": { "message": "Nad zakładkami" },
   "surfaceStripBottom": { "message": "Pod zakładkami" },
   "surfaceOff": { "message": "Wył." },
+  "pluginInstall": { "message": "Zainstaluj z pliku…" },
+  "pluginInstallConfirm": { "message": "$name$ wymaga: $permissions$. Zainstalować?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
+  "pluginInstallInvalid": { "message": "Nieprawidłowy plik wtyczki: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginPermNetwork": { "message": "sieć: $count$", "placeholders": { "count": { "content": "$1" } } },
+  "pluginPermStorage": { "message": "pamięć: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
+  "pluginPlacementLabel": { "message": "Umiejscowienie $name$", "placeholders": { "name": { "content": "$1" } } },
   "screenLabel": {
     "message": "Ekran"
   },

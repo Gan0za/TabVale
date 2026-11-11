@@ -285,6 +285,12 @@
   "surfaceStripTop": { "message": "Encima de marcadores" },
   "surfaceStripBottom": { "message": "Debajo de marcadores" },
   "surfaceOff": { "message": "Desactivado" },
+  "pluginInstall": { "message": "Instalar desde archivo…" },
+  "pluginInstallConfirm": { "message": "$name$ solicita: $permissions$. ¿Instalar?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
+  "pluginInstallInvalid": { "message": "Archivo de complemento no válido: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginPermNetwork": { "message": "red: $count$", "placeholders": { "count": { "content": "$1" } } },
+  "pluginPermStorage": { "message": "almacenamiento: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
+  "pluginPlacementLabel": { "message": "Ubicación de $name$", "placeholders": { "name": { "content": "$1" } } },
   "screenLabel": {
     "message": "Pantalla"
   },

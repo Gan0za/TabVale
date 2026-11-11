@@ -285,6 +285,12 @@
   "surfaceStripTop": { "message": "Über Lesezeichen" },
   "surfaceStripBottom": { "message": "Unter Lesezeichen" },
   "surfaceOff": { "message": "Aus" },
+  "pluginInstall": { "message": "Aus Datei installieren…" },
+  "pluginInstallConfirm": { "message": "$name$ fordert: $permissions$. Installieren?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
+  "pluginInstallInvalid": { "message": "Ungültige Plugin-Datei: $error$", "placeholders": { "error": { "content": "$1" } } },
+  "pluginPermNetwork": { "message": "Netzwerk: $count$", "placeholders": { "count": { "content": "$1" } } },
+  "pluginPermStorage": { "message": "Speicher: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
+  "pluginPlacementLabel": { "message": "Platzierung für $name$", "placeholders": { "name": { "content": "$1" } } },
   "screenLabel": {
     "message": "Bildschirm"
   },

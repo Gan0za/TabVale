@@ -1573,3 +1573,10 @@ h1, h2 {
 
 .plugin-manager-open,
 .plugin-manager-remove { min-height: 34px; padding: 0 12px; font-size: 13px; }
+
+/* Нативный список select рисует ОС; без явных цветов option в тёмной
+   теме получается белый фон с унаследованным светлым текстом. */
+.plugin-manager-surface option {
+    background-color: var(--surface);
+    color: var(--text);
+}
