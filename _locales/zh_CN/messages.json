@@ -282,6 +282,7 @@
   "pluginRestore": { "message": "恢复内置插件" },
   "pluginRemoveConfirm": { "message": "删除插件 $name$？", "placeholders": { "name": { "content": "$1" } } },
   "surfacePanel": { "message": "面板" },
+  "surfaceTiles": { "message": "磁贴" },
   "surfaceStripTop": { "message": "书签上方" },
   "surfaceStripBottom": { "message": "书签下方" },
   "surfaceOff": { "message": "关闭" },

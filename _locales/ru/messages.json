@@ -111,6 +111,7 @@
   "pluginRestore": { "message": "Восстановить встроенные" },
   "pluginRemoveConfirm": { "message": "Удалить плагин $name$?", "placeholders": { "name": { "content": "$1" } } },
   "surfacePanel": { "message": "Панель" },
+  "surfaceTiles": { "message": "Плитка" },
   "surfaceStripTop": { "message": "Над закладками" },
   "surfaceStripBottom": { "message": "Под закладками" },
   "surfaceOff": { "message": "Выкл." },

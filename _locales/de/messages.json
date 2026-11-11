@@ -282,6 +282,7 @@
   "pluginRestore": { "message": "Mitgelieferte Plugins wiederherstellen" },
   "pluginRemoveConfirm": { "message": "Plugin $name$ entfernen?", "placeholders": { "name": { "content": "$1" } } },
   "surfacePanel": { "message": "Panel" },
+  "surfaceTiles": { "message": "Kachel" },
   "surfaceStripTop": { "message": "Über Lesezeichen" },
   "surfaceStripBottom": { "message": "Unter Lesezeichen" },
   "surfaceOff": { "message": "Aus" },

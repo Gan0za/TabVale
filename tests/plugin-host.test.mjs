@@ -39,7 +39,10 @@ assert.ok(source.includes('instance.root.hidden = true'), 'закрытие stri
 assert.ok(source.includes("sandbox/plugin-host.html"), 'панель грузит sandbox-страницу');
 assert.ok(source.includes('renderPluginStrip'), 'есть рендер полосы плагинов');
 assert.ok(css.includes('.plugin-strip-item'), 'есть стили элемента полосы');
+assert.ok(source.includes('renderPluginTiles'), 'есть рендер плиток плагинов');
+assert.ok(css.includes('.plugin-tile'), 'есть стили плитки плагина');
 assert.ok(html.includes('data-tab="plugins"'), 'есть вкладка плагинов');
+assert.ok(source.includes("surface === 'tiles'"), 'менеджер умеет ставить плитку');
 assert.ok(html.includes('plugins-manager-list'), 'есть контейнер менеджера');
 assert.ok(html.includes('install-plugin-file'), 'есть установка из файла');
 assert.ok(source.includes('parsePluginPackage'), 'пакет разбирается перед установкой');

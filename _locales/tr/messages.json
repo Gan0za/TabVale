@@ -282,6 +282,7 @@
   "pluginRestore": { "message": "Paket eklentileri geri yükle" },
   "pluginRemoveConfirm": { "message": "$name$ eklentisi kaldırılsın mı?", "placeholders": { "name": { "content": "$1" } } },
   "surfacePanel": { "message": "Panel" },
+  "surfaceTiles": { "message": "Kutucuk" },
   "surfaceStripTop": { "message": "Yer imlerinin üstünde" },
   "surfaceStripBottom": { "message": "Yer imlerinin altında" },
   "surfaceOff": { "message": "Kapalı" },

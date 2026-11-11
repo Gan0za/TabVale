@@ -111,6 +111,7 @@
   "pluginRestore": { "message": "Restore bundled plugins" },
   "pluginRemoveConfirm": { "message": "Remove plugin $name$?", "placeholders": { "name": { "content": "$1" } } },
   "surfacePanel": { "message": "Panel" },
+  "surfaceTiles": { "message": "Tile" },
   "surfaceStripTop": { "message": "Above bookmarks" },
   "surfaceStripBottom": { "message": "Below bookmarks" },
   "surfaceOff": { "message": "Off" },

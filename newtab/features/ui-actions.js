@@ -209,6 +209,7 @@ function refreshUI() {
     renderBookmarkScreenSelect();
     renderSearchEngineDropdown(currentState.searchEngines, currentState.currentSearchEngineIndex);
     renderBookmarks(bookmarksContainer, currentState.bookmarks);
+    if (typeof renderPluginTiles === 'function') renderPluginTiles();
     const managed = managedScreen();
     renderManagerList(bookmarkManagerList, managed ? managed.bookmarks : currentState.bookmarks, renderBookmarkManagerItem);
     renderManagerList(backgroundManagerList, currentState.backgrounds, (bg, idx) => renderBackgroundManagerItem(bg, idx, currentState.currentBackgroundIndex));

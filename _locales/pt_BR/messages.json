@@ -282,6 +282,7 @@
   "pluginRestore": { "message": "Restaurar complementos incluídos" },
   "pluginRemoveConfirm": { "message": "Remover o complemento $name$?", "placeholders": { "name": { "content": "$1" } } },
   "surfacePanel": { "message": "Painel" },
+  "surfaceTiles": { "message": "Bloco" },
   "surfaceStripTop": { "message": "Acima dos favoritos" },
   "surfaceStripBottom": { "message": "Abaixo dos favoritos" },
   "surfaceOff": { "message": "Desativado" },

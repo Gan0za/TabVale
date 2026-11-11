@@ -36,6 +36,7 @@ function initPlugins() {
         .then(() => {
             renderPluginDock();
             renderPluginStrip();
+            renderPluginTiles();
             renderPluginManager();
         })
         .catch((error) => console.warn('Плагины недоступны:', error));
@@ -269,6 +270,52 @@ function renderPluginStrip() {
     }
 }
 
+function renderPluginTiles() {
+    const container = document.getElementById('bookmarks-container');
+    if (!container) return;
+
+    container.querySelectorAll('.plugin-tile').forEach((element) => element.remove());
+
+    const placements = pluginPlacementsCache.filter((placement) => placement.surface === 'tiles');
+    for (const placement of placements) {
+        const record = installedPluginCache.find((item) => item.id === placement.pluginId);
+        if (!record) continue;
+
+        const tile = document.createElement('div');
+        tile.className = 'plugin-tile';
+        tile.dataset.pluginId = record.id;
+        tile.tabIndex = 0;
+        tile.setAttribute('role', 'button');
+        tile.setAttribute('aria-label', pluginDisplayName(record));
+
+        if (record.manifest.icon && record.basePath) {
+            const image = document.createElement('img');
+            image.src = chrome.runtime.getURL(record.basePath + record.manifest.icon);
+            image.alt = '';
+            tile.append(image);
+        } else {
+            const letter = document.createElement('span');
+            letter.className = 'plugin-tile-letter';
+            letter.textContent = pluginDisplayName(record).slice(0, 1).toUpperCase();
+            tile.append(letter);
+        }
+
+        const title = document.createElement('span');
+        title.className = 'plugin-tile-title';
+        title.textContent = pluginDisplayName(record);
+        tile.append(title);
+
+        const open = () => {
+            if (record.manifest.surfaces?.panel) openPluginPanel(record);
+        };
+        tile.addEventListener('click', open);
+        tile.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); }
+        });
+        container.append(tile);
+    }
+}
+
 function findPluginInstance(source) {
     for (const instance of pluginInstances.values()) {
         if (instance.frame.contentWindow === source) return instance;
@@ -370,6 +417,7 @@ function initPluginInstall() {
         await loadPluginPlacements();
         renderPluginDock();
         renderPluginStrip();
+        renderPluginTiles();
         renderPluginManager();
     });
 }
@@ -397,6 +445,8 @@ async function setPluginPlacement(record, value) {
             height: previous?.height || PLUGIN_STRIP_DEFAULT_HEIGHT,
             order: placements.length,
         });
+    } else if (value === 'tiles') {
+        placements = withPlacement(placements, { pluginId: record.id, surface: 'tiles' });
     }
 
     pluginPlacementsCache = placements;
@@ -409,6 +459,7 @@ async function setPluginPlacement(record, value) {
 
     renderPluginDock();
     renderPluginStrip();
+    renderPluginTiles();
 }
 
 async function removePlugin(record) {
@@ -423,6 +474,7 @@ async function removePlugin(record) {
     installedPluginCache = installedPluginCache.filter((item) => item.id !== record.id);
     renderPluginDock();
     renderPluginStrip();
+    renderPluginTiles();
     renderPluginManager();
 }
 
@@ -487,6 +539,7 @@ function renderPluginManager() {
         select.setAttribute('aria-label', t('pluginPlacementLabel', { name: pluginDisplayName(record) }));
         const options = [];
         if (record.manifest.surfaces?.panel) options.push(['panel', t('surfacePanel')]);
+        if (record.manifest.surfaces?.tiles) options.push(['tiles', t('surfaceTiles')]);
         if (record.manifest.surfaces?.strip) {
             options.push(['strip:top', t('surfaceStripTop')]);
             options.push(['strip:bottom', t('surfaceStripBottom')]);

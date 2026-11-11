@@ -229,6 +229,7 @@ let lightSandboxBg = '';
 let localizedManagerName = '';
 let pomodoroFits = false;
 let appLauncherFits = false;
+let tileWorks = false;
 if (dock.count) {
   await evaluate(`document.querySelector('.plugin-dock-button[data-plugin-id="com.tabvale.layout"]').click()`);
   await sleep(1500);
@@ -498,6 +499,21 @@ appLauncherFits = !!launcherFrame
     && launcherFrame.scrollH <= launcherFrame.clientH + 1;
 console.log('app launcher strip:', launcherFrame, 'fits:', appLauncherFits);
 
+await evaluate(`(async () => {
+  const select = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-surface');
+  select.value = 'tiles';
+  select.dispatchEvent(new Event('change', { bubbles: true }));
+  await new Promise((resolve) => setTimeout(resolve, 600));
+})()`);
+const tileCount = await evaluate(`document.querySelectorAll('.plugin-tile[data-plugin-id="com.tabvale.clock"]').length`);
+await evaluate(`document.querySelector('.plugin-tile[data-plugin-id="com.tabvale.clock"]')?.click()`);
+await sleep(800);
+const tilePanel = await evaluate(`!!document.querySelector('.plugin-panel')`);
+tileWorks = tileCount === 1 && tilePanel;
+console.log('plugin tile:', { tileCount, tilePanel });
+await evaluate(`document.querySelector('.plugin-panel-close')?.click()`);
+await sleep(300);
+
 const networkProbe = await evaluate(`(async () => {
   const urls = [
     'https://api.open-meteo.com/v1/forecast?latitude=55.7558&longitude=37.6173&current=temperature_2m',
@@ -546,6 +562,7 @@ const passed = dock.count > 0
     && localizedManagerName === 'Часы'
     && pomodoroFits
     && appLauncherFits
+    && tileWorks
     && errors.length === 0;
 console.log(passed ? 'SMOKE PASS' : 'SMOKE FAIL');
 process.exit(passed ? 0 : 1);

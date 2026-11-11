@@ -38,6 +38,7 @@ const list = api.normalizePluginPlacements([
 assert.equal(list.length, 1, 'осталась одна уникальная запись');
 assert.equal(list[0].pluginId, 'com.a');
 assert.equal(api.normalizePluginPlacement({ pluginId: 'com.a', surface: 'off' }).surface, 'off');
+assert.equal(api.normalizePluginPlacement({ pluginId: 'com.a', surface: 'tiles' }).surface, 'tiles');
 
 // 3. placementFor и withPlacement
 assert.equal(api.placementFor(list, 'com.a').pluginId, 'com.a');

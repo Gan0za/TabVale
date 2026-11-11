@@ -1580,3 +1580,48 @@ h1, h2 {
     background-color: var(--surface);
     color: var(--text);
 }
+
+/* Плитка плагина в сетке закладок. */
+.plugin-tile {
+    width: 130px;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    color: var(--text);
+    cursor: pointer;
+    text-align: center;
+    transition: transform .15s ease, background .15s ease;
+}
+
+.plugin-tile:hover { transform: translateY(-2px); background: var(--glass-strong); }
+.plugin-tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.plugin-tile img { width: 40px; height: 40px; border-radius: 9px; display: block; }
+
+.plugin-tile-letter {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--glass-strong);
+    font-weight: 600;
+    font-size: 19px;
+}
+
+.plugin-tile-title {
+    font-size: 13px;
+    line-height: 1.2;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

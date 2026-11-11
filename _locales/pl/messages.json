@@ -282,6 +282,7 @@
   "pluginRestore": { "message": "Przywróć dołączone wtyczki" },
   "pluginRemoveConfirm": { "message": "Usunąć wtyczkę $name$?", "placeholders": { "name": { "content": "$1" } } },
   "surfacePanel": { "message": "Panel" },
+  "surfaceTiles": { "message": "Kafelek" },
   "surfaceStripTop": { "message": "Nad zakładkami" },
   "surfaceStripBottom": { "message": "Pod zakładkami" },
   "surfaceOff": { "message": "Wył." },
