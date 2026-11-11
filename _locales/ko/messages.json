@@ -292,6 +292,7 @@
   "pluginInstallManifestOnly": { "message": "이것은 매니페스트이며 플러그인 패키지가 아닙니다. JSON {manifest, code}을 사용하세요. 기본 플러그인은 \"기본 플러그인 복원\"으로 돌아옵니다." },
   "pluginGrantBookmarks": { "message": "북마크 접근 허용" },
   "pluginBookmarksGranted": { "message": "북마크 접근 허용됨" },
+  "pluginBookmarksDenied": { "message": "북마크 접근이 허용되지 않았습니다: $error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginPermNetwork": { "message": "네트워크: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "저장소: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "$name$ 배치", "placeholders": { "name": { "content": "$1" } } },

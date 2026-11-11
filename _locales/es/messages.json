@@ -292,6 +292,7 @@
   "pluginInstallManifestOnly": { "message": "Es un manifiesto, no un paquete. Use JSON {manifest, code}; los complementos incluidos vuelven con «Restaurar complementos incluidos»." },
   "pluginGrantBookmarks": { "message": "Permitir acceso a marcadores" },
   "pluginBookmarksGranted": { "message": "Acceso a marcadores permitido" },
+  "pluginBookmarksDenied": { "message": "No se concedió acceso a marcadores: $error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginPermNetwork": { "message": "red: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "almacenamiento: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Ubicación de $name$", "placeholders": { "name": { "content": "$1" } } },

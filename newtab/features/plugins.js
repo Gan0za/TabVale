@@ -358,16 +358,16 @@ function watchPluginThemeAndLocale() {
 
 function requestBookmarksPermission() {
     return new Promise((resolve) => {
-        if (!chrome.permissions?.request) { resolve(false); return; }
+        if (!chrome.permissions?.request) { resolve({ granted: false, error: 'permissions API is unavailable' }); return; }
         try {
             chrome.permissions.request({ permissions: ['bookmarks'] }, (granted) => {
                 const error = chrome.runtime?.lastError;
                 if (error) console.warn('bookmarks permission:', error.message);
-                resolve(Boolean(granted));
+                resolve({ granted: Boolean(granted), error: error?.message || '' });
             });
         } catch (error) {
             console.warn('bookmarks permission:', error);
-            resolve(false);
+            resolve({ granted: false, error: String(error?.message || error) });
         }
     });
 }
@@ -582,7 +582,11 @@ function renderPluginManager() {
             };
             hasBookmarksPermission().then(update);
             grant.addEventListener('click', async () => {
-                update(await requestBookmarksPermission());
+                const result = await requestBookmarksPermission();
+                update(result.granted);
+                if (!result.granted) {
+                    window.alert(t('pluginBookmarksDenied', { error: result.error || 'denied' }));
+                }
             });
             item.append(grant);
         }

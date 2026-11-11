@@ -292,6 +292,7 @@
   "pluginInstallManifestOnly": { "message": "Das ist ein Manifest, kein Plugin-Paket. Verwenden Sie JSON {manifest, code}; mitgelieferte Plugins kehren über „Mitgelieferte Plugins wiederherstellen“ zurück." },
   "pluginGrantBookmarks": { "message": "Lesezeichen-Zugriff erlauben" },
   "pluginBookmarksGranted": { "message": "Lesezeichen-Zugriff erlaubt" },
+  "pluginBookmarksDenied": { "message": "Lesezeichen-Zugriff nicht erteilt: $error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginPermNetwork": { "message": "Netzwerk: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "Speicher: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Platzierung für $name$", "placeholders": { "name": { "content": "$1" } } },

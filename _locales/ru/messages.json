@@ -121,6 +121,7 @@
   "pluginInstallManifestOnly": { "message": "Вы выбрали манифест, а не пакет плагина. Нужен JSON {manifest, code}; встроенные плагины возвращаются кнопкой «Восстановить встроенные»." },
   "pluginGrantBookmarks": { "message": "Разрешить доступ к закладкам" },
   "pluginBookmarksGranted": { "message": "Доступ к закладкам разрешён" },
+  "pluginBookmarksDenied": { "message": "Доступ к закладкам не выдан: $error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginPermNetwork": { "message": "сеть: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "хранилище: $kb$ КБ", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Размещение плагина $name$", "placeholders": { "name": { "content": "$1" } } },

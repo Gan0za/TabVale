@@ -292,6 +292,7 @@
   "pluginInstallManifestOnly": { "message": "これはマニフェストで、プラグイン パッケージではありません。JSON {manifest, code} を使用してください。同梱プラグインは「同梱プラグインを復元」で戻ります。" },
   "pluginGrantBookmarks": { "message": "ブックマークへのアクセスを許可" },
   "pluginBookmarksGranted": { "message": "ブックマークへのアクセスを許可済み" },
+  "pluginBookmarksDenied": { "message": "ブックマークへのアクセスが許可されませんでした: $error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginPermNetwork": { "message": "ネットワーク: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "ストレージ: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "$name$ の配置", "placeholders": { "name": { "content": "$1" } } },

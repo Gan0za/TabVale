@@ -292,6 +292,7 @@
   "pluginInstallManifestOnly": { "message": "È un manifest, non un pacchetto. Usa JSON {manifest, code}; le estensioni incluse tornano con «Ripristina estensioni incluse»." },
   "pluginGrantBookmarks": { "message": "Consenti accesso ai segnalibri" },
   "pluginBookmarksGranted": { "message": "Accesso ai segnalibri consentito" },
+  "pluginBookmarksDenied": { "message": "Accesso ai segnalibri non concesso: $error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginPermNetwork": { "message": "rete: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "archivio: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Posizione di $name$", "placeholders": { "name": { "content": "$1" } } },

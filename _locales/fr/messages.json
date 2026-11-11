@@ -292,6 +292,7 @@
   "pluginInstallManifestOnly": { "message": "C’est un manifeste, pas un paquet. Utilisez JSON {manifest, code} ; les extensions fournies reviennent via « Restaurer les extensions fournies »." },
   "pluginGrantBookmarks": { "message": "Autoriser l’accès aux favoris" },
   "pluginBookmarksGranted": { "message": "Accès aux favoris autorisé" },
+  "pluginBookmarksDenied": { "message": "Accès aux favoris non accordé : $error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginPermNetwork": { "message": "réseau : $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "stockage : $kb$ Ko", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Emplacement de $name$", "placeholders": { "name": { "content": "$1" } } },

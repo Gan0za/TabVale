@@ -292,6 +292,7 @@
   "pluginInstallManifestOnly": { "message": "To manifest, nie pakiet. Użyj JSON {manifest, code}; dołączone wtyczki wracają przez „Przywróć dołączone wtyczki”." },
   "pluginGrantBookmarks": { "message": "Zezwól na dostęp do zakładek" },
   "pluginBookmarksGranted": { "message": "Dostęp do zakładek przyznany" },
+  "pluginBookmarksDenied": { "message": "Nie przyznano dostępu do zakładek: $error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginPermNetwork": { "message": "sieć: $count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "pamięć: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "Umiejscowienie $name$", "placeholders": { "name": { "content": "$1" } } },

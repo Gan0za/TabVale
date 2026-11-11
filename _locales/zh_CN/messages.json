@@ -292,6 +292,7 @@
   "pluginInstallManifestOnly": { "message": "这是清单，不是插件包。请使用 JSON {manifest, code}；内置插件可通过“恢复内置插件”恢复。" },
   "pluginGrantBookmarks": { "message": "允许访问书签" },
   "pluginBookmarksGranted": { "message": "已允许访问书签" },
+  "pluginBookmarksDenied": { "message": "未授予书签访问权限：$error$", "placeholders": { "error": { "content": "$1" } } },
   "pluginPermNetwork": { "message": "网络：$count$", "placeholders": { "count": { "content": "$1" } } },
   "pluginPermStorage": { "message": "存储：$kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
   "pluginPlacementLabel": { "message": "$name$ 的位置", "placeholders": { "name": { "content": "$1" } } },
