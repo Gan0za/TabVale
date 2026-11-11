@@ -268,6 +268,124 @@ function parsePluginPackage(text) {
     return { ok: true, errors: [], manifest: manifestResult.manifest, code };
 }
 
+const PLUGIN_ARCHIVE_LIMIT = 1024 * 1024;
+
+/** Пакет .tvp — обычный zip: первые байты локального заголовка PK\x03\x04. */
+function isPluginArchive(bytes) {
+    return Boolean(bytes) && bytes.length > 4
+        && bytes[0] === 0x50 && bytes[1] === 0x4b && bytes[2] === 0x03 && bytes[3] === 0x04;
+}
+
+/**
+ * Читает оглавление zip: имена и смещения записей. Нужны только
+ * manifest.json и файл кода, поэтому всё остальное просто пропускается.
+ */
+function zipEntries(buffer) {
+    const view = new DataView(buffer);
+    const decoder = new TextDecoder();
+    const uint16 = (offset) => view.getUint16(offset, true);
+    const uint32 = (offset) => view.getUint32(offset, true);
+
+    // End of central directory — последняя запись архива, ищем с конца.
+    let end = -1;
+    const stop = Math.max(0, view.byteLength - 0x10000 - 22);
+    for (let offset = view.byteLength - 22; offset >= stop; offset--) {
+        if (uint32(offset) === 0x06054b50) { end = offset; break; }
+    }
+    if (end < 0) return null;
+
+    const count = uint16(end + 10);
+    let cursor = uint32(end + 16);
+    const entries = new Map();
+    for (let i = 0; i < count; i++) {
+        if (uint32(cursor) !== 0x02014b50) return null;
+        const entry = {
+            method: uint16(cursor + 10),
+            compressedSize: uint32(cursor + 20),
+            localOffset: uint32(cursor + 42),
+        };
+        const nameLength = uint16(cursor + 28);
+        const extraLength = uint16(cursor + 30);
+        const commentLength = uint16(cursor + 32);
+        const name = decoder.decode(new Uint8Array(buffer, cursor + 46, nameLength))
+            .replace(/\\/g, '/').replace(/^\.?\//, '');
+        entries.set(name, entry);
+        cursor += 46 + nameLength + extraLength + commentLength;
+    }
+    return entries;
+}
+
+/** Имя в архиве могло получить общую папку — ищем по хвосту пути. */
+function archiveEntry(entries, name) {
+    if (entries.has(name)) return entries.get(name);
+    for (const [entryName, entry] of entries) {
+        if (entryName.endsWith('/' + name)) return entry;
+    }
+    return null;
+}
+
+/** Текст записи: zip хранит данные без сжатия (0) или deflate (8). */
+async function archiveEntryText(buffer, entry) {
+    const view = new DataView(buffer);
+    if (view.getUint32(entry.localOffset, true) !== 0x04034b50) return null;
+    const start = entry.localOffset + 30
+        + view.getUint16(entry.localOffset + 26, true)
+        + view.getUint16(entry.localOffset + 28, true);
+    const bytes = new Uint8Array(buffer, start, entry.compressedSize);
+    if (entry.method === 0) return new TextDecoder().decode(bytes);
+    if (entry.method !== 8) return null;
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+    return new Response(stream).text();
+}
+
+/**
+ * Разбирает пакет .tvp: zip с manifest.json и файлом кода из манифеста.
+ * Код не исполняется — только проверяются размер, манифест и наличие кода.
+ */
+async function parsePluginArchive(buffer) {
+    if (!buffer || typeof buffer.byteLength !== 'number' || !buffer.byteLength) {
+        return { ok: false, errors: ['empty file'], manifest: null, code: '' };
+    }
+    if (buffer.byteLength > PLUGIN_ARCHIVE_LIMIT) {
+        return { ok: false, errors: ['package is too large'], manifest: null, code: '' };
+    }
+
+    let entries;
+    try { entries = zipEntries(buffer); } catch { entries = null; }
+    if (!entries) {
+        return { ok: false, errors: ['invalid archive'], manifest: null, code: '' };
+    }
+
+    const manifestEntry = archiveEntry(entries, 'manifest.json');
+    if (!manifestEntry) {
+        return { ok: false, errors: ['manifest.json is missing'], manifest: null, code: '' };
+    }
+
+    let raw;
+    try { raw = JSON.parse(await archiveEntryText(buffer, manifestEntry)); } catch {
+        return { ok: false, errors: ['invalid manifest'], manifest: null, code: '' };
+    }
+
+    const manifestResult = validatePluginManifest(raw);
+    if (!manifestResult.ok) {
+        return { ok: false, errors: manifestResult.errors, manifest: null, code: '' };
+    }
+
+    const codeEntry = archiveEntry(entries, manifestResult.manifest.entry || 'plugin.js');
+    if (!codeEntry) {
+        return { ok: false, errors: ['code is missing'], manifest: null, code: '' };
+    }
+    const code = await archiveEntryText(buffer, codeEntry);
+    if (!code || !code.trim()) {
+        return { ok: false, errors: ['code is missing'], manifest: null, code: '' };
+    }
+    if (utf8ByteLength(code) > PLUGIN_PACKAGE_LIMIT) {
+        return { ok: false, errors: ['package is too large'], manifest: null, code: '' };
+    }
+
+    return { ok: true, errors: [], manifest: manifestResult.manifest, code };
+}
+
 function surfaceRange(manifest, surface, key) {
     return manifest?.surfaces?.[surface]?.[key] || null;
 }

@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import zlib from 'node:zlib';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
@@ -10,6 +11,43 @@ const EXT = path.resolve(__dirname, '..', '..');
 const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'tabvale-e2e-'));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Минимальный zip для проверки установки пакета .tvp.
+function zipBuffer(files) {
+  const localParts = [];
+  const centralParts = [];
+  let offset = 0;
+  for (const file of files) {
+    const name = Buffer.from(file.name, 'utf8');
+    const data = Buffer.from(file.data, 'utf8');
+    const payload = zlib.deflateRawSync(data);
+    const local = Buffer.alloc(30);
+    local.writeUInt32LE(0x04034b50, 0);
+    local.writeUInt16LE(20, 4);
+    local.writeUInt16LE(8, 8);
+    local.writeUInt16LE(name.length, 26);
+    localParts.push(local, name, payload);
+    const central = Buffer.alloc(46);
+    central.writeUInt32LE(0x02014b50, 0);
+    central.writeUInt16LE(20, 4);
+    central.writeUInt16LE(20, 6);
+    central.writeUInt16LE(8, 10);
+    central.writeUInt32LE(payload.length, 20);
+    central.writeUInt32LE(data.length, 24);
+    central.writeUInt16LE(name.length, 28);
+    central.writeUInt32LE(offset, 42);
+    centralParts.push(central, name);
+    offset += 30 + name.length + payload.length;
+  }
+  const centralBuffer = Buffer.concat(centralParts);
+  const end = Buffer.alloc(22);
+  end.writeUInt32LE(0x06054b50, 0);
+  end.writeUInt16LE(files.length, 8);
+  end.writeUInt16LE(files.length, 10);
+  end.writeUInt32LE(centralBuffer.length, 12);
+  end.writeUInt32LE(offset, 16);
+  return Buffer.concat([...localParts, centralBuffer, end]);
+}
 
 const child = spawn(CHROME, [
   '--disable-gpu', '--no-first-run', '--no-default-browser-check',
@@ -493,6 +531,38 @@ const cleaned = await evaluate(`({ dock: document.querySelectorAll('.plugin-dock
 console.log('imported plugin removed:', cleaned);
 fs.unlinkSync(testPackage);
 
+const tvpPackage = path.join(os.tmpdir(), 'tabvale-test-plugin.tvp');
+fs.writeFileSync(tvpPackage, zipBuffer([
+  {
+    name: 'manifest.json',
+    data: JSON.stringify({
+      schema: 1,
+      id: 'com.test.zipped',
+      name: 'Zipped test',
+      version: '1.0.0',
+      apiVersion: 1,
+      entry: 'plugin.js',
+      permissions: { network: [], capabilities: [], storageKB: 16 },
+      surfaces: {
+        panel: { sides: ['right'], width: [280, 360], height: [200, 300], mode: ['overlay'] },
+      },
+    }),
+  },
+  { name: 'plugin.js', data: 'function mount(api) { document.body.textContent = "Zipped plugin"; api.ui.ready(); }' },
+]));
+await send('DOM.setFileInputFiles', { files: [tvpPackage], nodeId: fileInput.nodeId });
+await sleep(1200);
+const tvpInstalled = await evaluate(`({
+  dock: document.querySelectorAll('.plugin-dock-button').length,
+  rows: document.querySelectorAll('.plugin-manager-item').length,
+})`);
+console.log('installed from tvp:', tvpInstalled);
+await evaluate(`document.querySelector('.plugin-manager-item[data-plugin-id="com.test.zipped"] .plugin-manager-remove')?.click()`);
+await sleep(500);
+const tvpCleaned = await evaluate(`({ dock: document.querySelectorAll('.plugin-dock-button').length })`);
+console.log('tvp removed:', tvpCleaned);
+fs.unlinkSync(tvpPackage);
+
 const off = await evaluate(`(async () => {
   const select = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-surface');
   select.value = 'off';
@@ -702,6 +772,8 @@ const passed = dock.count > 0
     && restored.dock === baselineDock
     && installed.dock === baselineDock + 1 && installed.rows === baselineRows + 1
     && cleaned.dock === baselineDock
+    && tvpInstalled.dock === baselineDock + 1 && tvpInstalled.rows === baselineRows + 1
+    && tvpCleaned.dock === baselineDock
     && off.dock === baselineDock && off.strip === baselineStrip - 1
     && panelOnly.dock === baselineDock + 1 && panelOnly.strip === baselineStrip - 1
     && darkSandboxBg === 'rgb(36, 48, 60)'

@@ -441,7 +441,11 @@ function initPluginInstall() {
         input.value = '';
         if (!file) return;
 
-        const parsed = parsePluginPackage(await file.text());
+        // Два формата: JSON {manifest, code} и zip-пакет .tvp.
+        const buffer = await file.arrayBuffer();
+        const parsed = isPluginArchive(new Uint8Array(buffer))
+            ? await parsePluginArchive(buffer)
+            : parsePluginPackage(new TextDecoder().decode(buffer));
         if (!parsed.ok) {
             if (parsed.errors.includes('manifest-only')) {
                 window.alert(t('pluginInstallManifestOnly'));

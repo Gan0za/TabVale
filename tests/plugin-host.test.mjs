@@ -47,6 +47,8 @@ assert.ok(source.includes("surface === 'tiles'"), 'менеджер умеет �
 assert.ok(html.includes('plugins-manager-list'), 'есть контейнер менеджера');
 assert.ok(html.includes('install-plugin-file'), 'есть установка из файла');
 assert.ok(source.includes('parsePluginPackage'), 'пакет разбирается перед установкой');
+assert.ok(source.includes('parsePluginArchive'), 'установка понимает zip-пакет .tvp');
+assert.ok(html.includes('.tvp'), 'диалог выбора файла принимает .tvp');
 assert.ok(source.includes('renderPluginManager'), 'есть рендер менеджера');
 assert.ok(source.includes('setPluginPlacement'), 'размещение меняется из менеджера');
 assert.ok(source.includes('removePlugin'), 'плагин можно удалить');
