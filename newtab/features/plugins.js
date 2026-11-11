@@ -215,6 +215,7 @@ function createPluginInstance(record, surface, root, frame, placement) {
             type: 'tabvale:run',
             context: {
                 code: record.code,
+                pluginId: record.id,
                 config: {},
                 theme: pluginTheme(),
                 locale: pluginTheme().locale,

@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "id": "com.tabvale.passwords",
+  "name": "Password generator",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "minAppVersion": "1.2.0",
+  "entry": "plugin.js",
+  "description": "Generates random passwords locally, without any permissions.",
+  "author": "TabVale",
+  "permissions": { "network": [], "capabilities": [], "storageKB": 16 },
+  "surfaces": {
+    "panel": { "sides": ["right", "left"], "width": [280, 420], "height": [220, 360], "mode": ["overlay"] },
+    "rail": { "positions": ["top"] }
+  },
+  "locales": {
+    "ru": { "name": "Генератор паролей" },
+    "de": { "name": "Passwortgenerator" },
+    "fr": { "name": "Générateur de mots de passe" },
+    "es": { "name": "Generador de contraseñas" }
+  }
+}

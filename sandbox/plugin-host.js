@@ -90,6 +90,7 @@
             return;
         }
 
+        document.title = `${context.pluginId || 'plugin'} (${context.surface || 'panel'})`;
         applyTheme(context.theme);
         const api = buildApi(context);
 

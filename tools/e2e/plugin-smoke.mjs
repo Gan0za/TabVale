@@ -189,7 +189,7 @@ let darkSandboxBg = '';
 let lightSandboxBg = '';
 let localizedManagerName = '';
 if (dock.count) {
-  await evaluate(`document.querySelector('.plugin-dock-button').click()`);
+  await evaluate(`document.querySelector('.plugin-dock-button[data-plugin-id="com.tabvale.clock"]').click()`);
   await sleep(1500);
   panel = await evaluate(`(() => {
     const panel = document.querySelector('.plugin-panel');
@@ -290,6 +290,9 @@ const manager = await evaluate(`(() => {
   return { rows: document.querySelectorAll('.plugin-manager-item').length };
 })()`);
 console.log('manager:', manager);
+const baselineDock = dock.count;
+const baselineStrip = strip.count;
+const baselineRows = manager.rows;
 
 localizedManagerName = await evaluate(`(async () => {
   const previous = document.documentElement.lang;
@@ -302,21 +305,21 @@ localizedManagerName = await evaluate(`(async () => {
 console.log('localized manager name:', localizedManagerName);
 
 const zone = await evaluate(`(async () => {
-  const select = document.querySelector('.plugin-manager-surface');
+  const select = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-surface');
   if (!select) return { top: 0, bottom: 0 };
   select.value = 'strip:bottom';
   select.dispatchEvent(new Event('change', { bubbles: true }));
   await new Promise((resolve) => setTimeout(resolve, 500));
   return {
-    top: document.querySelectorAll('#plugin-strip-top .plugin-strip-item').length,
-    bottom: document.querySelectorAll('#plugin-strip-bottom .plugin-strip-item').length,
+    top: document.querySelectorAll('#plugin-strip-top .plugin-strip-item[data-plugin-id="com.tabvale.clock"]').length,
+    bottom: document.querySelectorAll('#plugin-strip-bottom .plugin-strip-item[data-plugin-id="com.tabvale.clock"]').length,
   };
 })()`);
 console.log('zone:', zone);
 
 const removal = await evaluate(`(async () => {
   window.confirm = () => true;
-  document.querySelector('.plugin-manager-remove')?.click();
+  document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-remove')?.click();
   await new Promise((resolve) => setTimeout(resolve, 600));
   return {
     rows: document.querySelectorAll('.plugin-manager-item').length,
@@ -382,7 +385,7 @@ console.log('imported plugin removed:', cleaned);
 fs.unlinkSync(testPackage);
 
 const off = await evaluate(`(async () => {
-  const select = document.querySelector('.plugin-manager-surface');
+  const select = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-surface');
   select.value = 'off';
   select.dispatchEvent(new Event('change', { bubbles: true }));
   await new Promise((resolve) => setTimeout(resolve, 400));
@@ -394,7 +397,7 @@ const off = await evaluate(`(async () => {
 console.log('placement off:', off);
 
 const panelOnly = await evaluate(`(async () => {
-  const select = document.querySelector('.plugin-manager-surface');
+  const select = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-surface');
   select.value = 'panel';
   select.dispatchEvent(new Event('change', { bubbles: true }));
   await new Promise((resolve) => setTimeout(resolve, 400));
@@ -418,13 +421,13 @@ const passed = dock.count > 0
     && timePattern.test(panelText.trim())
     && manager.rows > 0
     && zone.bottom === 1 && zone.top === 0
-    && removal.rows === 0 && removal.dock === 0
-    && afterReload.dock === 0
-    && restored.dock === 1
-    && installed.dock === 2 && installed.rows === 2
-    && cleaned.dock === 1
-    && off.dock === 0 && off.strip === 0
-    && panelOnly.dock === 1 && panelOnly.strip === 0
+    && removal.rows === baselineRows - 1 && removal.dock === baselineDock - 1
+    && afterReload.dock === baselineDock - 1
+    && restored.dock === baselineDock
+    && installed.dock === baselineDock + 1 && installed.rows === baselineRows + 1
+    && cleaned.dock === baselineDock
+    && off.dock === baselineDock - 1 && off.strip === baselineStrip - 1
+    && panelOnly.dock === baselineDock && panelOnly.strip === baselineStrip - 1
     && darkSandboxBg === 'rgb(36, 48, 60)'
     && lightSandboxBg === 'rgb(242, 245, 248)'
     && localizedManagerName === 'Часы'
