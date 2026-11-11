@@ -1542,3 +1542,34 @@ h1, h2 {
 @media (max-width: 700px) {
     .plugin-strip-item { flex: 1 1 100%; }
 }
+
+/* Менеджер плагинов: строка списка в настройках. */
+.plugin-manager-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.plugin-manager-item:last-child { border-bottom: 0; }
+
+.plugin-manager-info { flex: 1 1 200px; min-width: 160px; }
+.plugin-manager-name { font-weight: 600; color: var(--text); }
+.plugin-manager-meta { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
+.plugin-manager-empty { color: var(--text-soft); }
+
+.plugin-manager-surface {
+    min-height: 34px;
+    padding: 0 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--glass-input);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+}
+
+.plugin-manager-open,
+.plugin-manager-remove { min-height: 34px; padding: 0 12px; font-size: 13px; }

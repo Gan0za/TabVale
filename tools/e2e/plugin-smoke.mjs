@@ -231,6 +231,14 @@ if (dock.count) {
   sandboxText = stripText || panelText;
 }
 
+const manager = await evaluate(`(() => {
+  document.getElementById('settings-button')?.click();
+  const tab = [...document.querySelectorAll('.settings-tab')].find((item) => item.dataset.tab === 'plugins');
+  tab?.click();
+  return { rows: document.querySelectorAll('.plugin-manager-item').length };
+})()`);
+console.log('manager:', manager);
+
 console.log('logs:', logs.slice(-8));
 console.log('exceptions:', errors.slice(0, 5));
 ws.close();
@@ -242,6 +250,7 @@ const passed = dock.count > 0
     && panel?.open === true
     && timePattern.test(stripText.trim())
     && timePattern.test(panelText.trim())
+    && manager.rows > 0
     && errors.length === 0;
 console.log(passed ? 'SMOKE PASS' : 'SMOKE FAIL');
 process.exit(passed ? 0 : 1);

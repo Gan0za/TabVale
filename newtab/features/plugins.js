@@ -33,8 +33,14 @@ function initPlugins() {
         .then(() => {
             renderPluginDock();
             renderPluginStrip();
+            renderPluginManager();
         })
         .catch((error) => console.warn('Плагины недоступны:', error));
+
+    document.addEventListener('click', (event) => {
+        const tab = event.target.closest?.('.settings-tab');
+        if (tab && tab.dataset.tab === 'plugins') renderPluginManager();
+    });
 }
 
 function ensurePluginDock() {
@@ -242,6 +248,124 @@ function removePluginInstance(instance) {
         pluginPlacementsCache = pluginPlacementsCache
             .filter((placement) => placement.pluginId !== instance.record.id);
         storageLocalSet({ [PLUGIN_PLACEMENTS_KEY]: pluginPlacementsCache });
+    }
+}
+
+function pluginPlacementValue(record) {
+    const placement = placementFor(pluginPlacementsCache, record.id);
+    if (!placement) return 'off';
+    if (placement.surface === 'strip') return `strip:${placement.position || 'top'}`;
+    return placement.surface;
+}
+
+async function setPluginPlacement(record, value) {
+    const previous = placementFor(pluginPlacementsCache, record.id);
+    let placements = pluginPlacementsCache.filter((placement) => placement.pluginId !== record.id);
+
+    if (value === 'panel') {
+        placements = withPlacement(placements, { pluginId: record.id, surface: 'panel', side: 'right' });
+    } else if (value === 'strip:top' || value === 'strip:bottom') {
+        placements = withPlacement(placements, {
+            pluginId: record.id,
+            surface: 'strip',
+            position: value === 'strip:bottom' ? 'bottom' : 'top',
+            height: previous?.height || PLUGIN_STRIP_DEFAULT_HEIGHT,
+            order: placements.length,
+        });
+    }
+
+    pluginPlacementsCache = placements;
+    await new Promise((resolve) => storageLocalSet({ [PLUGIN_PLACEMENTS_KEY]: placements }, resolve));
+    renderPluginStrip();
+}
+
+async function removePlugin(record) {
+    if (!window.confirm(`Remove ${record.manifest.name}?`)) return;
+    await dbDeletePlugin(record.id);
+    pluginPlacementsCache = pluginPlacementsCache.filter((placement) => placement.pluginId !== record.id);
+    await new Promise((resolve) => storageLocalSet({ [PLUGIN_PLACEMENTS_KEY]: pluginPlacementsCache }, resolve));
+    installedPluginCache = installedPluginCache.filter((item) => item.id !== record.id);
+    renderPluginDock();
+    renderPluginStrip();
+    renderPluginManager();
+}
+
+function renderPluginManager() {
+    const list = document.getElementById('plugins-manager-list');
+    if (!list) return;
+    list.textContent = '';
+
+    if (!installedPluginCache.length) {
+        const empty = document.createElement('p');
+        empty.className = 'plugin-manager-empty';
+        empty.textContent = 'No plugins installed.';
+        list.append(empty);
+        return;
+    }
+
+    for (const record of installedPluginCache) {
+        const item = document.createElement('div');
+        item.className = 'plugin-manager-item';
+        item.dataset.pluginId = record.id;
+
+        const info = document.createElement('div');
+        info.className = 'plugin-manager-info';
+
+        const name = document.createElement('div');
+        name.className = 'plugin-manager-name';
+        name.textContent = pluginDisplayName(record);
+
+        const meta = document.createElement('div');
+        meta.className = 'plugin-manager-meta';
+        const network = record.manifest.permissions?.network?.length || 0;
+        const permissions = record.manifest.permissions?.capabilities || [];
+        meta.textContent = [
+            `v${record.manifest.version}`,
+            `${network} network rule${network === 1 ? '' : 's'}`,
+            ...permissions,
+            `${record.manifest.permissions?.storageKB || 64} KB`,
+        ].join(' · ');
+
+        info.append(name, meta);
+
+        const select = document.createElement('select');
+        select.className = 'plugin-manager-surface';
+        select.setAttribute('aria-label', `Placement for ${record.manifest.name}`);
+        const options = [];
+        if (record.manifest.surfaces?.panel) options.push(['panel', 'Panel']);
+        if (record.manifest.surfaces?.strip) {
+            options.push(['strip:top', 'Strip above bookmarks']);
+            options.push(['strip:bottom', 'Strip below bookmarks']);
+        }
+        options.push(['off', 'Off']);
+        for (const [value, label] of options) {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = label;
+            select.append(option);
+        }
+        select.value = pluginPlacementValue(record);
+        select.addEventListener('change', () => setPluginPlacement(record, select.value));
+
+        item.append(info, select);
+
+        if (record.manifest.surfaces?.panel) {
+            const open = document.createElement('button');
+            open.type = 'button';
+            open.className = 'btn plugin-manager-open';
+            open.textContent = 'Open';
+            open.addEventListener('click', () => openPluginPanel(record));
+            item.append(open);
+        }
+
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'btn btn-danger plugin-manager-remove';
+        remove.textContent = 'Remove';
+        remove.addEventListener('click', () => removePlugin(record));
+        item.append(remove);
+
+        list.append(item);
     }
 }
 

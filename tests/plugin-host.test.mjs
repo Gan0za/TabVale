@@ -38,9 +38,16 @@ assert.ok(source.includes('instance.root.hidden = true'), 'закрытие stri
 assert.ok(source.includes("sandbox/plugin-host.html"), 'панель грузит sandbox-страницу');
 assert.ok(source.includes('renderPluginStrip'), 'есть рендер полосы плагинов');
 assert.ok(css.includes('.plugin-strip-item'), 'есть стили элемента полосы');
+assert.ok(html.includes('data-tab="plugins"'), 'есть вкладка плагинов');
+assert.ok(html.includes('plugins-manager-list'), 'есть контейнер менеджера');
+assert.ok(source.includes('renderPluginManager'), 'есть рендер менеджера');
+assert.ok(source.includes('setPluginPlacement'), 'размещение меняется из менеджера');
+assert.ok(source.includes('removePlugin'), 'плагин можно удалить');
+assert.ok(css.includes('.plugin-manager-item'), 'есть стили менеджера');
 
 // 4. IndexedDB используется для пакетов, а не chrome.storage
 assert.ok(db.includes('indexedDB.open'), 'пакеты лежат в IndexedDB');
+assert.ok(source.includes('dbDeletePlugin'), 'менеджер удаляет пакет из IndexedDB');
 assert.ok(db.includes('PLUGIN_DB_STORE'), 'есть object store плагинов');
 
 console.log('plugin-host.test.mjs: все проверки пройдены');
