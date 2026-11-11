@@ -1555,6 +1555,13 @@ h1, h2 {
 
 .plugin-manager-item:last-child { border-bottom: 0; }
 
+/* Строка, к которой привёл плагин: подсветка гаснет сама */
+.plugin-manager-highlight {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 8px;
+}
+
 .plugin-manager-info { flex: 1 1 200px; min-width: 160px; }
 .plugin-manager-name { font-weight: 600; color: var(--text); }
 .plugin-manager-meta { font-size: 12px; color: var(--text-soft); margin-top: 2px; }

@@ -37,6 +37,7 @@ function pluginMethodAllowed(manifest, method) {
         case 'ui.resize':
         case 'ui.notify':
         case 'ui.openExternal':
+        case 'ui.openManager':
             return true;
         case 'fetch':
             return Array.isArray(manifest?.permissions?.network)

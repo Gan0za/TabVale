@@ -158,6 +158,38 @@ async function readSandboxFrames() {
   return frames;
 }
 
+// Выполняет выражение в том sandbox-кадре, чей document.title подходит
+// под шаблон. Нужен для проверки кнопок внутри панели плагина.
+async function frameEval(titlePattern, expression) {
+  const list = await targets();
+  for (const target of list.filter((item) => item.url.includes('sandbox/plugin-host.html'))) {
+    const frameWs = new WebSocket(target.webSocketDebuggerUrl);
+    try {
+      await new Promise((res, rej) => {
+        frameWs.addEventListener('open', res, { once: true });
+        frameWs.addEventListener('error', rej, { once: true });
+      });
+      const evaluateInFrame = (id, expr) => new Promise((resolve) => {
+        const onMessage = (event) => {
+          const msg = JSON.parse(event.data);
+          if (msg.id === id) { frameWs.removeEventListener('message', onMessage); resolve(msg.result); }
+        };
+        frameWs.addEventListener('message', onMessage);
+        frameWs.send(JSON.stringify({ id, method: 'Runtime.evaluate', params: { expression: expr, returnByValue: true, awaitPromise: true } }));
+      });
+      const title = await evaluateInFrame(1, 'document.title');
+      if (!titlePattern.test(String(title?.result?.value || ''))) continue;
+      const value = await evaluateInFrame(2, expression);
+      return value?.result?.value;
+    } catch {
+      // кадр мог закрыться между списком целей и подключением
+    } finally {
+      frameWs.close();
+    }
+  }
+  return undefined;
+}
+
 await send('Page.enable');
 await send('Runtime.enable');
 
@@ -514,6 +546,33 @@ console.log('plugin tile:', { tileCount, tilePanel });
 await evaluate(`document.querySelector('.plugin-panel-close')?.click()`);
 await sleep(300);
 
+// Панель импортёра без доступа ведёт прямо к менеджеру: кнопка внутри
+// кадра открывает настройки на вкладке плагинов и подсвечивает строку.
+await evaluate(`(() => {
+  document.querySelector('.settings-tab[data-tab="bookmarks"]')?.click();
+  document.getElementById('settings-modal')?.classList.add('hidden');
+  document.getElementById('overlay')?.classList.add('hidden');
+  document.querySelector('.plugin-dock-button[data-plugin-id="com.tabvale.bookmarks"]')?.click();
+})()`);
+await sleep(1200);
+const grantButtonClicked = await frameEval(/\(panel\)/, `(() => {
+  const button = [...document.querySelectorAll('button')]
+    .find((item) => /Разрешить доступ|Allow access/.test(item.textContent));
+  if (!button) return false;
+  button.click();
+  return true;
+})()`);
+await sleep(600);
+const panelToManager = await evaluate(`(() => ({
+  open: !document.getElementById('settings-modal')?.classList.contains('hidden'),
+  pane: document.querySelector('.settings-pane[data-pane="plugins"]')?.classList.contains('active') || false,
+  highlighted: !!document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.bookmarks"].plugin-manager-highlight'),
+}))()`);
+panelToManager.clicked = grantButtonClicked === true;
+console.log('panel to manager:', panelToManager);
+await evaluate(`document.querySelector('.plugin-panel-close')?.click()`);
+await sleep(300);
+
 await evaluate(`(() => {
   window.__alerts = [];
   window.alert = (message) => { window.__alerts.push(String(message)); };
@@ -651,6 +710,7 @@ const passed = dock.count > 0
     && pomodoroFits
     && appLauncherFits
     && tileWorks
+    && panelToManager.clicked && panelToManager.open && panelToManager.pane && panelToManager.highlighted
     && grantRequested
     && errors.length === 0;
 console.log(passed ? 'SMOKE PASS' : 'SMOKE FAIL');

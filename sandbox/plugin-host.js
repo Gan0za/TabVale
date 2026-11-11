@@ -76,6 +76,9 @@
                 resize: (size) => rpc('ui.resize', size || {}),
                 notify: (text, level) => rpc('ui.notify', { text, level }),
                 openExternal: (url) => rpc('ui.openExternal', { url }),
+                // Открывает менеджер плагинов на строке этого плагина —
+                // оттуда пользователь выдаёт доступ к закладкам.
+                openManager: () => rpc('ui.openManager'),
             },
             on: (name, handler) => {
                 if (typeof handler !== 'function') return;

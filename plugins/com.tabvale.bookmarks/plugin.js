@@ -14,7 +14,23 @@ function mount(api) {
     add.style.cssText = 'padding:10px;border:1px solid var(--tabvale-border);border-radius:8px;' +
         'background:var(--tabvale-surface);color:var(--tabvale-text);cursor:pointer;font:inherit';
 
-    wrap.append(list, status, add);
+    // Без доступа список пуст — вместо него показываем переход к менеджеру,
+    // где кнопка разрешения нажимается настоящим кликом.
+    const grant = document.createElement('button');
+    grant.type = 'button';
+    grant.textContent = ru ? 'Разрешить доступ' : 'Allow access';
+    grant.style.cssText = add.style.cssText;
+    grant.hidden = true;
+    grant.addEventListener('click', async () => {
+        grant.disabled = true;
+        try {
+            await api.ui.openManager();
+        } finally {
+            grant.disabled = false;
+        }
+    });
+
+    wrap.append(list, status, grant, add);
     document.body.append(wrap);
 
     const checked = new Set();
@@ -56,11 +72,15 @@ function mount(api) {
         try {
             const tree = await api.bookmarks.tree();
             render(tree, 0, '');
+            grant.hidden = true;
+            add.hidden = false;
             if (!items.size) status.textContent = ru ? 'В браузере нет закладок' : 'No browser bookmarks';
         } catch (error) {
             status.textContent = ru
-                ? 'Нет доступа к закладкам. Включите его в менеджере: Настройки → Плагины.'
-                : 'Bookmark access is not granted. Enable it in the manager: Settings → Plugins.';
+                ? 'Нет доступа к закладкам.'
+                : 'Bookmark access is not granted.';
+            grant.hidden = false;
+            add.hidden = true;
         }
     }
 

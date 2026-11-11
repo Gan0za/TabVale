@@ -535,6 +535,18 @@ async function removePlugin(record) {
     renderPluginManager();
 }
 
+/**
+ * Подсвечивает строку плагина в менеджере и прокручивает к ней — так
+ * кнопка «Разрешить доступ» в панели приводит точно к нужному месту.
+ */
+function focusPluginManagerRow(pluginId) {
+    const row = document.querySelector(`.plugin-manager-item[data-plugin-id="${pluginId}"]`);
+    if (!row) return;
+    row.scrollIntoView({ block: 'center' });
+    row.classList.add('plugin-manager-highlight');
+    setTimeout(() => row.classList.remove('plugin-manager-highlight'), 2400);
+}
+
 function renderPluginManager() {
     const list = document.getElementById('plugins-manager-list');
     if (!list) return;
@@ -849,6 +861,15 @@ async function onPluginMessage(event) {
                 document.body.append(link);
                 link.click();
                 link.remove();
+                reply(true);
+                break;
+            }
+            case 'ui.openManager': {
+                // Кнопка внутри панели ведёт к строке менеджера: сам запрос
+                // прав делает кнопка там, где клик — настоящий жест.
+                renderPluginManager();
+                openSettingsModal('plugins');
+                focusPluginManagerRow(instance.record.id);
                 reply(true);
                 break;
             }
