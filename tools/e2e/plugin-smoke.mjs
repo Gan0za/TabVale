@@ -188,8 +188,9 @@ let panelText = '';
 let darkSandboxBg = '';
 let lightSandboxBg = '';
 let localizedManagerName = '';
+let pomodoroFits = false;
 if (dock.count) {
-  await evaluate(`document.querySelector('.plugin-dock-button[data-plugin-id="com.tabvale.clock"]').click()`);
+  await evaluate(`document.querySelector('.plugin-dock-button[data-plugin-id="com.tabvale.layout"]').click()`);
   await sleep(1500);
   panel = await evaluate(`(() => {
     const panel = document.querySelector('.plugin-panel');
@@ -226,18 +227,21 @@ if (dock.count) {
           method: 'Runtime.evaluate',
           params: {
             expression: `JSON.stringify({
+              docTitle: document.title,
               text: document.body.innerText,
               color: getComputedStyle(document.body).color,
               bg: getComputedStyle(document.body).backgroundColor,
               textVar: getComputedStyle(document.documentElement).getPropertyValue('--tabvale-text').trim(),
               bgVar: getComputedStyle(document.documentElement).getPropertyValue('--tabvale-bg').trim(),
+              scrollH: document.documentElement.scrollHeight,
+              clientH: document.documentElement.clientHeight,
             })`,
             returnByValue: true,
           },
         }));
       });
       const info = JSON.parse(String(frameResult?.result?.value || '{}'));
-      frameTexts.push({ title: target.title || '', ...info, text: String(info.text || '') });
+      frameTexts.push({ title: info.docTitle || target.title || '', ...info, text: String(info.text || '') });
       frameWs.close();
     } catch (error) {
       console.log('sandbox read failed:', error.message);
@@ -254,6 +258,9 @@ if (dock.count) {
   stripText = stripEntry?.text || '';
   panelText = panelEntry?.text || '';
   sandboxText = stripText || panelText;
+
+  const pomodoroEntry = frameTexts.find((item) => /com\.tabvale\.pomodoro \(strip\)/.test(item.title));
+  pomodoroFits = !!pomodoroEntry && pomodoroEntry.scrollH <= pomodoroEntry.clientH + 1;
 
   const themeTarget = sandboxTargets[0];
   const readSandboxBackground = async () => {
@@ -418,19 +425,20 @@ const passed = dock.count > 0
     && strip.count > 0
     && panel?.open === true
     && timePattern.test(stripText.trim())
-    && timePattern.test(panelText.trim())
+    && panelText.trim().length > 0
     && manager.rows > 0
     && zone.bottom === 1 && zone.top === 0
-    && removal.rows === baselineRows - 1 && removal.dock === baselineDock - 1
-    && afterReload.dock === baselineDock - 1
+    && removal.rows === baselineRows - 1 && removal.dock === baselineDock
+    && afterReload.dock === baselineDock && afterReload.strip === baselineStrip - 1
     && restored.dock === baselineDock
     && installed.dock === baselineDock + 1 && installed.rows === baselineRows + 1
     && cleaned.dock === baselineDock
-    && off.dock === baselineDock - 1 && off.strip === baselineStrip - 1
-    && panelOnly.dock === baselineDock && panelOnly.strip === baselineStrip - 1
+    && off.dock === baselineDock && off.strip === baselineStrip - 1
+    && panelOnly.dock === baselineDock + 1 && panelOnly.strip === baselineStrip - 1
     && darkSandboxBg === 'rgb(36, 48, 60)'
     && lightSandboxBg === 'rgb(242, 245, 248)'
     && localizedManagerName === 'Часы'
+    && pomodoroFits
     && errors.length === 0;
 console.log(passed ? 'SMOKE PASS' : 'SMOKE FAIL');
 process.exit(passed ? 0 : 1);

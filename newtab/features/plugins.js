@@ -142,7 +142,9 @@ function renderPluginDock() {
 
     for (const record of installedPluginCache) {
         const placement = placementFor(pluginPlacementsCache, record.id);
-        if (!placement || placement.surface === 'off') continue;
+        // Док — это поверхность «панель». Плагин в полосе живёт только
+        // в полосе, а «выкл.» не показывает его нигде.
+        if (!placement || placement.surface !== 'panel') continue;
 
         const button = document.createElement('button');
         button.type = 'button';
