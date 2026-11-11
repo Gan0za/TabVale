@@ -420,15 +420,6 @@ function onBookmarksPermission(granted) {
     renderPluginManager();
 }
 
-function requestPluginPermissions(record) {
-    const capabilities = record.manifest.permissions?.capabilities || [];
-    if (!capabilities.includes('bookmarks.read')) return;
-    // Вызывается из клика по иконке/кнопке — это пользовательский жест.
-    hasBookmarksPermission().then((granted) => {
-        if (!granted) requestBookmarksPermission();
-    });
-}
-
 function hasBookmarksPermission() {
     return new Promise((resolve) => {
         if (!chrome.permissions?.contains) { resolve(false); return; }
@@ -657,7 +648,6 @@ function renderPluginManager() {
             open.textContent = t('pluginOpen');
             open.addEventListener('click', async () => {
                 // «Открыть» — это выбор панели, а не второй поверхности.
-                requestPluginPermissions(record);
                 await setPluginPlacement(record, 'panel');
                 openPluginPanel(record);
             });
@@ -701,7 +691,6 @@ function pluginPanelPlacement(record) {
 }
 
 function openPluginPanel(record) {
-    requestPluginPermissions(record);
     closePluginPanel();
 
     const placement = pluginPanelPlacement(record);

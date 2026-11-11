@@ -68,7 +68,6 @@ assert.ok(source.includes('watchPluginThemeAndLocale'), 'тема и язык т
 assert.ok(source.includes("case 'ui.openExternal'"), 'внешние ссылки открываются через хост');
 assert.ok(manifest.optional_permissions?.includes('bookmarks'), 'доступ к закладкам запрашивается опционально');
 assert.ok(source.includes('chrome.bookmarks.getTree'), 'хост читает дерево закладок');
-assert.ok(source.includes('requestPluginPermissions'), 'разрешение запрашивается по жесту');
 assert.ok(source.includes('requestBookmarksPermission'), 'есть явный запрос доступа к закладкам');
 assert.ok(source.includes('plugin-manager-grant'), 'в менеджере есть кнопка разрешения');
 assert.ok(source.includes('tabvale:bookmarks-permission'), 'хост принимает сообщение о выданном доступе');
