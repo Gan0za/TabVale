@@ -282,6 +282,7 @@
   "pluginRestore": { "message": "Ripristina estensioni incluse" },
   "pluginRemoveConfirm": { "message": "Rimuovere l’estensione $name$?", "placeholders": { "name": { "content": "$1" } } },
   "surfacePanel": { "message": "Pannello" },
+  "surfaceFloating": { "message": "Finestra flottante" },
   "surfaceTiles": { "message": "Riquadro" },
   "surfaceStripTop": { "message": "Sopra i segnalibri" },
   "surfaceStripBottom": { "message": "Sotto i segnalibri" },

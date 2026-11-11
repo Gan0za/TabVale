@@ -624,6 +624,53 @@ console.log('plugin tile:', { tileCount, tilePanel });
 await evaluate(`document.querySelector('.plugin-panel-close')?.click()`);
 await sleep(300);
 
+// Плавающее окно: появляется, перетаскивается, закрывается и возвращается из дока.
+await evaluate(`(async () => {
+  const select = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-surface');
+  select.value = 'floating';
+  select.dispatchEvent(new Event('change', { bubbles: true }));
+  await new Promise((resolve) => setTimeout(resolve, 800));
+})()`);
+const floatingStart = await evaluate(`(() => {
+  const root = document.querySelector('.plugin-floating[data-plugin-id="com.tabvale.clock"]');
+  if (!root) return null;
+  const rect = root.getBoundingClientRect();
+  return { x: rect.left, y: rect.top, w: rect.width, h: rect.height, hidden: root.hidden };
+})()`);
+const floatingText = await frameEval(/com\.tabvale\.clock \(floating\)/, 'document.body.textContent');
+const floatingMoved = await evaluate(`(() => {
+  const root = document.querySelector('.plugin-floating[data-plugin-id="com.tabvale.clock"]');
+  if (!root) return null;
+  const header = root.querySelector('.plugin-floating-header');
+  const rect = root.getBoundingClientRect();
+  const startX = rect.left + 40;
+  const startY = rect.top + 12;
+  header.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: startX, clientY: startY, pointerId: 1 }));
+  header.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientX: startX - 150, clientY: startY + 60, pointerId: 1 }));
+  header.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, clientX: startX - 150, clientY: startY + 60, pointerId: 1 }));
+  const moved = root.getBoundingClientRect();
+  return { left: moved.left, top: moved.top };
+})()`);
+await sleep(200);
+const floatingSaved = await evaluate(`(async () => {
+  const data = await new Promise((resolve) => chrome.storage.local.get('pluginPlacements', resolve));
+  return (data.pluginPlacements || []).find((item) => item.pluginId === 'com.tabvale.clock') || null;
+})()`);
+await evaluate(`document.querySelector('.plugin-floating[data-plugin-id="com.tabvale.clock"] .plugin-floating-close')?.click()`);
+await sleep(250);
+const floatingHidden = await evaluate(`document.querySelector('.plugin-floating[data-plugin-id="com.tabvale.clock"]')?.hidden === true`);
+await evaluate(`document.querySelector('.plugin-dock-button[data-plugin-id="com.tabvale.clock"]')?.click()`);
+await sleep(250);
+const floatingRestored = await evaluate(`document.querySelector('.plugin-floating[data-plugin-id="com.tabvale.clock"]')?.hidden === false`);
+const floatingWorks = !!floatingStart
+    && floatingStart.hidden === false
+    && /^\d{1,2}:\d{2}/.test(String(floatingText || '').trim())
+    && floatingStart.w > 0 && floatingStart.h > 0
+    && !!floatingMoved && Math.abs(floatingMoved.left - floatingStart.x) > 50
+    && floatingSaved?.surface === 'floating' && Number.isFinite(floatingSaved?.x)
+    && floatingHidden && floatingRestored;
+console.log('floating window:', { floatingStart, floatingMoved, saved: floatingSaved && { surface: floatingSaved.surface, x: floatingSaved.x, y: floatingSaved.y }, floatingHidden, floatingRestored, works: floatingWorks });
+
 // Панель импортёра без доступа ведёт прямо к менеджеру: кнопка внутри
 // кадра открывает настройки на вкладке плагинов и подсвечивает строку.
 await evaluate(`(() => {
@@ -791,6 +838,7 @@ const passed = dock.count > 0
     && pomodoroFits
     && appLauncherFits
     && tileWorks
+    && floatingWorks
     && panelToManager.clicked && panelToManager.open && panelToManager.pane && panelToManager.highlighted
     && grantRequested
     && errors.length === 0;

@@ -36,6 +36,7 @@ function initPlugins() {
         .then(() => {
             renderPluginDock();
             renderPluginStrip();
+            renderPluginFloating();
             renderPluginTiles();
             renderPluginManager();
         })
@@ -133,6 +134,13 @@ async function loadInstalledPlugins() {
     installedPluginCache = Array.isArray(records)
         ? records.filter((record) => record && record.enabled !== false && record.manifest)
         : [];
+    // Установленные раньше копии хранят манифест, нормализованный старой
+    // версией: без повторной нормализации новая зона (например, плавающее
+    // окно) не появилась бы до переустановки плагина.
+    for (const record of installedPluginCache) {
+        const surfaces = normalizeSurfaces(record.manifest.surfaces);
+        record.manifest = { ...record.manifest, surfaces };
+    }
     return installedPluginCache;
 }
 
@@ -152,9 +160,9 @@ function renderPluginDock() {
 
     for (const record of installedPluginCache) {
         const placement = placementFor(pluginPlacementsCache, record.id);
-        // Док — это поверхность «панель». Плагин в полосе живёт только
-        // в полосе, а «выкл.» не показывает его нигде.
-        if (!placement || placement.surface !== 'panel') continue;
+        // Док — это панель и плавающее окно: иконка открывает или
+        // показывает их. Полоса живёт отдельно, «выкл.» не виден нигде.
+        if (!placement || !['panel', 'floating'].includes(placement.surface)) continue;
 
         const button = document.createElement('button');
         button.type = 'button';
@@ -174,7 +182,10 @@ function renderPluginDock() {
             button.textContent = pluginDisplayName(record).slice(0, 1).toUpperCase();
         }
 
-        button.addEventListener('click', () => openPluginPanel(record));
+        button.addEventListener('click', () => {
+            if (placement.surface === 'floating') openFloatingWindow(record);
+            else openPluginPanel(record);
+        });
         dock.append(button);
     }
 
@@ -279,6 +290,136 @@ function renderPluginStrip() {
         strip.classList.remove('hidden');
         createPluginInstance(record, 'strip', item, frame, placement);
     }
+}
+
+// Плавающее окно: перетаскивается за заголовок, позиция запоминается.
+const PLUGIN_FLOATING_MARGIN = 12;
+
+function floatingGeometry(record, placement, index) {
+    const clamped = clampPlacement(record.manifest, {
+        surface: 'floating',
+        side: placement.side,
+        width: placement.width,
+        height: placement.height,
+    }) || {};
+    const width = clamped.width || record.manifest.surfaces?.floating?.width?.[0] || 320;
+    const height = clamped.height || record.manifest.surfaces?.floating?.height?.[0] || 280;
+    const maxX = Math.max(PLUGIN_FLOATING_MARGIN, window.innerWidth - width - PLUGIN_FLOATING_MARGIN);
+    const maxY = Math.max(PLUGIN_FLOATING_MARGIN, window.innerHeight - height - PLUGIN_FLOATING_MARGIN);
+    const side = clamped.side || 'right';
+    const defaultX = side === 'left' ? PLUGIN_FLOATING_MARGIN : maxX - index * 24;
+    const defaultY = PLUGIN_FLOATING_MARGIN + 56 + index * 24;
+    return {
+        width,
+        height,
+        x: Math.min(maxX, Math.max(PLUGIN_FLOATING_MARGIN, Number.isFinite(placement.x) ? placement.x : defaultX)),
+        y: Math.min(maxY, Math.max(PLUGIN_FLOATING_MARGIN, Number.isFinite(placement.y) ? placement.y : defaultY)),
+    };
+}
+
+function renderPluginFloating() {
+    for (const instance of Array.from(pluginInstances.values())) {
+        if (instance.surface !== 'floating') continue;
+        pluginInstances.delete(instance.id);
+        instance.root.remove();
+    }
+
+    let index = 0;
+    for (const placement of pluginPlacementsCache) {
+        if (placement.surface !== 'floating') continue;
+        const record = installedPluginCache.find((item) => item.id === placement.pluginId);
+        if (!record || !record.manifest.surfaces?.floating) continue;
+        createFloatingWindow(record, placement, index++);
+    }
+}
+
+function createFloatingWindow(record, placement, index) {
+    const geometry = floatingGeometry(record, placement, index);
+
+    const root = document.createElement('section');
+    root.className = 'plugin-floating';
+    root.dataset.pluginId = record.id;
+    root.style.left = `${geometry.x}px`;
+    root.style.top = `${geometry.y}px`;
+    root.style.width = `${geometry.width}px`;
+    root.style.height = `${geometry.height}px`;
+
+    const header = document.createElement('header');
+    header.className = 'plugin-floating-header';
+
+    const title = document.createElement('span');
+    title.className = 'plugin-floating-title';
+    title.textContent = pluginDisplayName(record);
+
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'plugin-floating-close';
+    close.setAttribute('aria-label', 'Закрыть плагин');
+    close.textContent = '✕';
+    close.addEventListener('click', () => { root.hidden = true; });
+
+    header.append(title, close);
+
+    const frame = document.createElement('iframe');
+    frame.className = 'plugin-floating-frame';
+    frame.title = `${pluginDisplayName(record)} (floating)`;
+    frame.src = chrome.runtime.getURL('sandbox/plugin-host.html');
+
+    root.append(header, frame);
+    document.body.append(root);
+
+    makeFloatingDraggable(record, root, header);
+    createPluginInstance(record, 'floating', root, frame, {
+        ...placement,
+        ...geometry,
+    });
+}
+
+/**
+ * Перетаскивание мышью и пальцем: позиция сохраняется в размещение,
+ * чтобы окно вернулось на место после перезагрузки вкладки.
+ */
+function makeFloatingDraggable(record, root, handle) {
+    handle.addEventListener('pointerdown', (event) => {
+        if (event.target.closest('button')) return;
+        const rect = root.getBoundingClientRect();
+        const offsetX = event.clientX - rect.left;
+        const offsetY = event.clientY - rect.top;
+        try { handle.setPointerCapture?.(event.pointerId); } catch { /* синтетическое событие */ }
+
+        const move = (moveEvent) => {
+            const maxX = Math.max(0, window.innerWidth - rect.width);
+            const maxY = Math.max(0, window.innerHeight - rect.height);
+            root.style.left = `${Math.min(maxX, Math.max(0, moveEvent.clientX - offsetX))}px`;
+            root.style.top = `${Math.min(maxY, Math.max(0, moveEvent.clientY - offsetY))}px`;
+        };
+        const up = () => {
+            handle.removeEventListener('pointermove', move);
+            handle.removeEventListener('pointerup', up);
+            const left = Math.round(root.getBoundingClientRect().left);
+            const top = Math.round(root.getBoundingClientRect().top);
+            pluginPlacementsCache = pluginPlacementsCache.map((item) => (
+                item.pluginId === record.id ? { ...item, x: left, y: top } : item
+            ));
+            storageLocalSet({ [PLUGIN_PLACEMENTS_KEY]: pluginPlacementsCache });
+        };
+        handle.addEventListener('pointermove', move);
+        handle.addEventListener('pointerup', up);
+        event.preventDefault();
+    });
+}
+
+/** Иконка в доке показывает окно, не меняя размещение. */
+function openFloatingWindow(record) {
+    const instance = Array.from(pluginInstances.values())
+        .find((item) => item.surface === 'floating' && item.record.id === record.id);
+    if (!instance) {
+        renderPluginFloating();
+        return;
+    }
+    instance.root.hidden = false;
+    // Перенос в конец поднимает окно над остальными.
+    document.body.append(instance.root);
 }
 
 function renderPluginTiles() {
@@ -478,6 +619,7 @@ function initPluginInstall() {
         await loadPluginPlacements();
         renderPluginDock();
         renderPluginStrip();
+        renderPluginFloating();
         renderPluginTiles();
         renderPluginManager();
     });
@@ -498,6 +640,16 @@ async function setPluginPlacement(record, value) {
         placements = withPlacement(placements, { pluginId: record.id, surface: 'off' });
     } else if (value === 'panel') {
         placements = withPlacement(placements, { pluginId: record.id, surface: 'panel', side: 'right' });
+    } else if (value === 'floating') {
+        placements = withPlacement(placements, {
+            pluginId: record.id,
+            surface: 'floating',
+            side: 'right',
+            width: previous?.width,
+            height: previous?.height,
+            x: previous?.x,
+            y: previous?.y,
+        });
     } else if (value === 'strip:top' || value === 'strip:bottom') {
         placements = withPlacement(placements, {
             pluginId: record.id,
@@ -520,6 +672,7 @@ async function setPluginPlacement(record, value) {
 
     renderPluginDock();
     renderPluginStrip();
+    renderPluginFloating();
     renderPluginTiles();
 }
 
@@ -535,6 +688,7 @@ async function removePlugin(record) {
     installedPluginCache = installedPluginCache.filter((item) => item.id !== record.id);
     renderPluginDock();
     renderPluginStrip();
+    renderPluginFloating();
     renderPluginTiles();
     renderPluginManager();
 }
@@ -569,6 +723,7 @@ function renderPluginManager() {
             await loadPluginPlacements();
             renderPluginDock();
             renderPluginStrip();
+            renderPluginFloating();
             renderPluginManager();
         });
         list.append(restore);
@@ -612,6 +767,7 @@ function renderPluginManager() {
         select.setAttribute('aria-label', t('pluginPlacementLabel', { name: pluginDisplayName(record) }));
         const options = [];
         if (record.manifest.surfaces?.panel) options.push(['panel', t('surfacePanel')]);
+        if (record.manifest.surfaces?.floating) options.push(['floating', t('surfaceFloating')]);
         if (record.manifest.surfaces?.tiles) options.push(['tiles', t('surfaceTiles')]);
         if (record.manifest.surfaces?.strip) {
             options.push(['strip:top', t('surfaceStripTop')]);

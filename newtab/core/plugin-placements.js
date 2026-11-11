@@ -35,6 +35,18 @@ function normalizePluginPlacement(raw) {
         placement.side = ['left', 'right', 'top', 'bottom'].includes(raw.side) ? raw.side : 'right';
     }
 
+    if (raw.surface === 'floating') {
+        placement.side = ['left', 'right'].includes(raw.side) ? raw.side : 'right';
+        // Позиция окна задаётся в пикселях от левого верхнего угла; при
+        // отсутствии хост подставит место по умолчанию. Размер зажат,
+        // чтобы окно не оказалось микроскопическим или огромным.
+        const clamp = (value, low, high) => Math.min(high, Math.max(low, Math.round(Number(value))));
+        if (Number.isFinite(Number(raw.x))) placement.x = clamp(raw.x, 0, 10000);
+        if (Number.isFinite(Number(raw.y))) placement.y = clamp(raw.y, 0, 10000);
+        if (Number.isFinite(Number(raw.width))) placement.width = clamp(raw.width, 160, 900);
+        if (Number.isFinite(Number(raw.height))) placement.height = clamp(raw.height, 120, 900);
+    }
+
     return placement;
 }
 

@@ -115,6 +115,10 @@ function normalizeSurfaces(raw) {
         const width = normalizeRange(source.floating.width, [240, 480], PLUGIN_LIMITS.floatingWidth);
         const height = normalizeRange(source.floating.height, [200, 600], PLUGIN_LIMITS.floatingHeight);
         if (sides.length && width && height) surfaces.floating = { sides, width, height };
+    } else if (surfaces.panel) {
+        // Плавающее окно доступно каждому плагину с панелью, как плитка:
+        // пользователь может вынести панель в отдельное окно.
+        surfaces.floating = { sides: ['left', 'right'], width: [280, 420], height: [240, 520] };
     }
 
     if (source.rail) {

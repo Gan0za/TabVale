@@ -94,7 +94,12 @@ assert.equal(strip.height, 120);
 const tiles = api.clampPlacement(good.manifest, { surface: 'tiles', span: 5 });
 assert.equal(tiles.span, 2);
 
-assert.equal(api.clampPlacement(good.manifest, { surface: 'floating' }), null, 'неразрешённая поверхность');
+assert.equal(api.clampPlacement(good.manifest, { surface: 'floating' }).surface, 'floating', 'панель даёт плавающее окно');
+const stripOnly = api.validatePluginManifest({
+    ...validManifest,
+    surfaces: { strip: validManifest.surfaces.strip },
+}).manifest;
+assert.equal(api.clampPlacement(stripOnly, { surface: 'floating' }), null, 'без панели плавающего окна нет');
 
 // 4. Сетевой allowlist: только https, свой хост, путь и порт
 assert.equal(api.pluginAllowsUrl(good.manifest, 'https://api.open-meteo.com/v1/forecast'), true);
@@ -127,5 +132,30 @@ assert.equal(api.parsePluginPackage('{').ok, false, 'битый JSON откло�
 assert.equal(api.parsePluginPackage(JSON.stringify({ manifest: validManifest })).ok, false, 'без кода отклонён');
 assert.deepEqual(Array.from(api.parsePluginPackage(JSON.stringify(validManifest)).errors), ['manifest-only'], 'сырой манифест распознан отдельно');
 assert.equal(api.parsePluginPackage(JSON.stringify({ manifest: { ...validManifest, id: 'bad' }, code: 'x' })).ok, false, 'плохой манифест отклонён');
+
+// 7. Плавающее окно: явное объявление и вывод из панели
+const explicitFloating = api.validatePluginManifest({
+    ...validManifest,
+    surfaces: {
+        ...validManifest.surfaces,
+        floating: { sides: ['left'], width: [300, 500], height: [200, 600] },
+    },
+});
+assert.ok(explicitFloating.ok, explicitFloating.errors.join('; '));
+assert.deepEqual(Array.from(explicitFloating.manifest.surfaces.floating.sides), ['left']);
+assert.deepEqual(Array.from(explicitFloating.manifest.surfaces.floating.width), [300, 500]);
+
+const fromPanel = api.validatePluginManifest({
+    ...validManifest,
+    surfaces: { panel: validManifest.surfaces.panel },
+});
+assert.ok(fromPanel.ok);
+assert.ok(fromPanel.manifest.surfaces.floating, 'панель даёт плавающее окно');
+assert.deepEqual(Array.from(fromPanel.manifest.surfaces.floating.sides), ['left', 'right']);
+
+const clampedFloating = api.clampPlacement(fromPanel.manifest, { surface: 'floating', side: 'left', width: 9999, height: 10 });
+assert.equal(clampedFloating.side, 'left', 'разрешённая сторона сохраняется');
+assert.equal(clampedFloating.width, 420, 'ширина зажата максимумом из выведенного диапазона');
+assert.equal(clampedFloating.height, 240, 'высота зажата минимумом');
 
 console.log('plugins.test.mjs: все проверки пройдены');

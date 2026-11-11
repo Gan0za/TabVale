@@ -282,6 +282,7 @@
   "pluginRestore": { "message": "Відновити вбудовані" },
   "pluginRemoveConfirm": { "message": "Видалити плагін $name$?", "placeholders": { "name": { "content": "$1" } } },
   "surfacePanel": { "message": "Панель" },
+  "surfaceFloating": { "message": "Плаваюче вікно" },
   "surfaceTiles": { "message": "Плитка" },
   "surfaceStripTop": { "message": "Над закладками" },
   "surfaceStripBottom": { "message": "Під закладками" },

@@ -213,6 +213,7 @@ function initSettings() {
                         await loadPluginPlacements();
                         renderPluginDock();
                         renderPluginStrip();
+                        renderPluginFloating();
                         renderPluginTiles();
                         renderPluginManager();
                     }

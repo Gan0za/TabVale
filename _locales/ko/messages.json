@@ -282,6 +282,7 @@
   "pluginRestore": { "message": "기본 플러그인 복원" },
   "pluginRemoveConfirm": { "message": "플러그인 $name$을(를) 제거할까요?", "placeholders": { "name": { "content": "$1" } } },
   "surfacePanel": { "message": "패널" },
+  "surfaceFloating": { "message": "플로팅 창" },
   "surfaceTiles": { "message": "타일" },
   "surfaceStripTop": { "message": "북마크 위" },
   "surfaceStripBottom": { "message": "북마크 아래" },

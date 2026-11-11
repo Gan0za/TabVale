@@ -40,6 +40,28 @@ assert.equal(list[0].pluginId, 'com.a');
 assert.equal(api.normalizePluginPlacement({ pluginId: 'com.a', surface: 'off' }).surface, 'off');
 assert.equal(api.normalizePluginPlacement({ pluginId: 'com.a', surface: 'tiles' }).surface, 'tiles');
 
+// 2.5. Плавающее окно хранит позицию и размер в допустимых пределах
+const floating = api.normalizePluginPlacement({
+    pluginId: 'com.example.notes',
+    surface: 'floating',
+    side: 'left',
+    x: -50,
+    y: 120,
+    width: 5000,
+    height: 100,
+});
+assert.equal(floating.surface, 'floating');
+assert.equal(floating.side, 'left');
+assert.equal(floating.x, 0, 'отрицательная позиция прижата к нулю');
+assert.equal(floating.y, 120, 'позиция сохраняется');
+assert.equal(floating.width, 900, 'ширина зажата максимумом');
+assert.equal(floating.height, 120, 'высота зажата минимумом');
+
+const floatingDefaults = api.normalizePluginPlacement({ pluginId: 'com.example.notes', surface: 'floating' });
+assert.equal(floatingDefaults.side, 'right', 'сторона по умолчанию — справа');
+assert.equal('x' in floatingDefaults, false, 'позицию подставит хост');
+assert.equal(api.normalizePluginPlacement({ pluginId: 'com.a', surface: 'floating', side: 'top' }).side, 'right');
+
 // 3. placementFor и withPlacement
 assert.equal(api.placementFor(list, 'com.a').pluginId, 'com.a');
 assert.equal(api.placementFor(list, 'com.b'), null);

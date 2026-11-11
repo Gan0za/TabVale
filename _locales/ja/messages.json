@@ -282,6 +282,7 @@
   "pluginRestore": { "message": "同梱プラグインを復元" },
   "pluginRemoveConfirm": { "message": "プラグイン $name$ を削除しますか？", "placeholders": { "name": { "content": "$1" } } },
   "surfacePanel": { "message": "パネル" },
+  "surfaceFloating": { "message": "フローティングウィンドウ" },
   "surfaceTiles": { "message": "タイル" },
   "surfaceStripTop": { "message": "ブックマークの上" },
   "surfaceStripBottom": { "message": "ブックマークの下" },

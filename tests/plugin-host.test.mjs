@@ -40,6 +40,10 @@ assert.ok(source.includes('instance.root.hidden = true'), 'закрытие stri
 assert.ok(source.includes("sandbox/plugin-host.html"), 'панель грузит sandbox-страницу');
 assert.ok(source.includes('renderPluginStrip'), 'есть рендер полосы плагинов');
 assert.ok(css.includes('.plugin-strip-item'), 'есть стили элемента полосы');
+assert.ok(source.includes('renderPluginFloating'), 'есть рендер плавающих окон');
+assert.ok(source.includes('openFloatingWindow'), 'док показывает плавающее окно');
+assert.ok(css.includes('.plugin-floating'), 'есть стили плавающего окна');
+assert.ok(source.includes("t('surfaceFloating')"), 'вариант зоны локализован');
 assert.ok(source.includes('renderPluginTiles'), 'есть рендер плиток плагинов');
 assert.ok(css.includes('.plugin-tile'), 'есть стили плитки плагина');
 assert.ok(html.includes('data-tab="plugins"'), 'есть вкладка плагинов');
