@@ -318,10 +318,21 @@ function zipEntries(buffer) {
 /** Имя в архиве могло получить общую папку — ищем по хвосту пути. */
 function archiveEntry(entries, name) {
     if (entries.has(name)) return entries.get(name);
+    // Если файлов с таким именем несколько, берём самый верхний:
+    // manifest.json в корне важнее вложенных копий.
+    let best = null;
+    let bestDepth = Infinity;
     for (const [entryName, entry] of entries) {
-        if (entryName.endsWith('/' + name)) return entry;
+        if (!entryName.endsWith('/' + name)) continue;
+        const depth = entryName.split('/').length;
+        if (depth < bestDepth) { best = entry; bestDepth = depth; }
     }
-    return null;
+    return best;
+}
+
+/** Поддерживаются только записи без сжатия (0) и deflate (8). */
+function zipMethodSupported(entry) {
+    return entry.method === 0 || entry.method === 8;
 }
 
 /** Текст записи: zip хранит данные без сжатия (0) или deflate (8). */
@@ -360,6 +371,9 @@ async function parsePluginArchive(buffer) {
     if (!manifestEntry) {
         return { ok: false, errors: ['manifest.json is missing'], manifest: null, code: '' };
     }
+    if (!zipMethodSupported(manifestEntry)) {
+        return { ok: false, errors: ['unsupported compression'], manifest: null, code: '' };
+    }
 
     let raw;
     try { raw = JSON.parse(await archiveEntryText(buffer, manifestEntry)); } catch {
@@ -374,6 +388,9 @@ async function parsePluginArchive(buffer) {
     const codeEntry = archiveEntry(entries, manifestResult.manifest.entry || 'plugin.js');
     if (!codeEntry) {
         return { ok: false, errors: ['code is missing'], manifest: null, code: '' };
+    }
+    if (!zipMethodSupported(codeEntry)) {
+        return { ok: false, errors: ['unsupported compression'], manifest: null, code: '' };
     }
     const code = await archiveEntryText(buffer, codeEntry);
     if (!code || !code.trim()) {

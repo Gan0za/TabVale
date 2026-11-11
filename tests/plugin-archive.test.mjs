@@ -48,8 +48,8 @@ function buildZip(files) {
         const name = Buffer.from(file.name, 'utf8');
         const data = Buffer.from(file.data, 'utf8');
         const stored = file.store === true;
-        const payload = stored ? data : zlib.deflateRawSync(data);
-        const method = stored ? 0 : 8;
+        const method = typeof file.method === 'number' ? file.method : (stored ? 0 : 8);
+        const payload = (stored || file.method !== undefined) ? data : zlib.deflateRawSync(data);
 
         const local = Buffer.alloc(30);
         local.writeUInt32LE(0x04034b50, 0);
@@ -133,7 +133,26 @@ assert.ok(notZip.errors.includes('invalid archive'), 'не-zip отклоняе�
 assert.equal(isPluginArchive(new Uint8Array([0x50, 0x4b])), false, 'слишком короткий файл не считается zip');
 assert.equal((await parsePluginArchive(new ArrayBuffer(0))).ok, false, 'пустой файл отклоняется');
 
-// 7. Слишком большой архив отклоняется до разбора
+// 7. Неподдерживаемое сжатие сообщается отдельно от пропавшего кода
+const bzip = await parsePluginArchive(buildZip([
+    { name: 'manifest.json', data: manifestJson },
+    { name: 'plugin.js', data: code, method: 12 },
+]));
+assert.equal(bzip.ok, false);
+assert.ok(bzip.errors.includes('unsupported compression'), 'неизвестный метод сжатия назван явно');
+
+// 8. Из двух manifest.json берётся верхний
+const deeper = { ...manifest, id: 'com.example.nested' };
+const duplicated = buildZip([
+    { name: 'manifest.json', data: manifestJson },
+    { name: 'nested/manifest.json', data: JSON.stringify(deeper) },
+    { name: 'plugin.js', data: code },
+]);
+const duplicatedResult = await parsePluginArchive(duplicated);
+assert.equal(duplicatedResult.ok, true);
+assert.equal(duplicatedResult.manifest.id, 'com.example.archive', 'верхний манифест важнее вложенного');
+
+// 9. Слишком большой архив отклоняется до разбора
 const huge = new Uint8Array(1024 * 1024 + 8);
 huge.set([0x50, 0x4b, 0x03, 0x04]);
 const hugeResult = await parsePluginArchive(huge.buffer);
