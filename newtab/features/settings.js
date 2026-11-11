@@ -65,7 +65,7 @@ function initSettings() {
             dbGetAllPlugins().then((records) => {
                 const plugins = (Array.isArray(records) ? records : [])
                     .filter((record) => record && record.source !== 'builtin')
-                    .map(({ manifest, code, enabled }) => ({ manifest, code, enabled }));
+                    .map(({ manifest, code, enabled, icon }) => ({ manifest, code, enabled, icon }));
 
                 storageLocalGet(null, (localAll) => {
                     const pluginData = {};
@@ -187,6 +187,7 @@ function initSettings() {
                             version: parsed.manifest.version,
                             manifest: parsed.manifest,
                             code: parsed.code,
+                            icon: parsed.icon || item.icon || '',
                             basePath: '',
                             source: 'imported',
                             enabled: item.enabled !== false,

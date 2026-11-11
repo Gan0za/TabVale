@@ -20,7 +20,7 @@ const source = [
 
 const { parsePluginArchive, isPluginArchive } = vm.runInNewContext(
     source + '\n;({ parsePluginArchive, isPluginArchive })',
-    { URL, console, TextDecoder, Blob, Response, DecompressionStream }
+    { URL, console, TextDecoder, Blob, Response, DecompressionStream, btoa }
 );
 
 const manifest = {
@@ -152,7 +152,29 @@ const duplicatedResult = await parsePluginArchive(duplicated);
 assert.equal(duplicatedResult.ok, true);
 assert.equal(duplicatedResult.manifest.id, 'com.example.archive', 'верхний манифест важнее вложенного');
 
-// 9. Слишком большой архив отклоняется до разбора
+// 9. Иконка едет внутри пакета как data:URL картинки
+const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"></svg>';
+const withIcon = buildZip([
+    { name: 'manifest.json', data: JSON.stringify({ ...manifest, icon: 'icon.svg' }) },
+    { name: 'plugin.js', data: code },
+    { name: 'icon.svg', data: svg },
+]);
+const iconResult = await parsePluginArchive(withIcon);
+assert.equal(iconResult.ok, true, iconResult.errors.join('; '));
+assert.ok(iconResult.icon.startsWith('data:image/svg+xml;base64,'), 'иконка упакована как data:URL');
+assert.equal(Buffer.from(iconResult.icon.split(',')[1], 'base64').toString('utf8'), svg, 'байты иконки совпадают');
+
+// 10. Слишком большая иконка не мешает установке — просто отбрасывается
+const bigIcon = buildZip([
+    { name: 'manifest.json', data: JSON.stringify({ ...manifest, icon: 'icon.svg' }) },
+    { name: 'plugin.js', data: code },
+    { name: 'icon.svg', data: 'x'.repeat(70 * 1024) },
+]);
+const bigIconResult = await parsePluginArchive(bigIcon);
+assert.equal(bigIconResult.ok, true, 'большая иконка не ломает пакет');
+assert.equal(bigIconResult.icon, '', 'иконка сверх лимита отброшена');
+
+// 11. Слишком большой архив отклоняется до разбора
 const huge = new Uint8Array(1024 * 1024 + 8);
 huge.set([0x50, 0x4b, 0x03, 0x04]);
 const hugeResult = await parsePluginArchive(huge.buffer);

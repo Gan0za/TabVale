@@ -150,9 +150,15 @@ async function loadInstalledPlugins() {
  * Один вид во всех местах — док, плитка, менеджер, заголовки.
  */
 function pluginIcon(record, className, size = 24) {
-    if (record.manifest.icon && record.basePath) {
+    // У встроенных иконка лежит файлом в пакете, у установленных из
+    // файла — data:URL внутри записи.
+    const source = record.icon
+        || (record.manifest.icon && record.basePath
+            ? chrome.runtime.getURL(record.basePath + record.manifest.icon)
+            : '');
+    if (source) {
         const image = document.createElement('img');
-        image.src = chrome.runtime.getURL(record.basePath + record.manifest.icon);
+        image.src = source;
         image.alt = '';
         image.className = className;
         image.width = size;
@@ -633,6 +639,7 @@ function initPluginInstall() {
             version: manifest.version,
             manifest,
             code: parsed.code,
+            icon: parsed.icon || '',
             basePath: '',
             source: 'imported',
             enabled: true,

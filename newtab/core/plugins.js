@@ -269,7 +269,14 @@ function parsePluginPackage(text) {
         return { ok: false, errors: ['code is missing'], manifest: null, code: '' };
     }
 
-    return { ok: true, errors: [], manifest: manifestResult.manifest, code };
+    // JSON-пакет может нести иконку как data:URL картинки.
+    const icon = typeof raw?.icon === 'string'
+        && /^data:image\/(svg\+xml|png|webp);base64,/.test(raw.icon)
+        && raw.icon.length <= PLUGIN_ICON_LIMIT
+        ? raw.icon
+        : '';
+
+    return { ok: true, errors: [], manifest: manifestResult.manifest, code, icon };
 }
 
 const PLUGIN_ARCHIVE_LIMIT = 1024 * 1024;
@@ -306,6 +313,7 @@ function zipEntries(buffer) {
         const entry = {
             method: uint16(cursor + 10),
             compressedSize: uint32(cursor + 20),
+            uncompressedSize: uint32(cursor + 24),
             localOffset: uint32(cursor + 42),
         };
         const nameLength = uint16(cursor + 28);
@@ -339,18 +347,45 @@ function zipMethodSupported(entry) {
     return entry.method === 0 || entry.method === 8;
 }
 
-/** Текст записи: zip хранит данные без сжатия (0) или deflate (8). */
-async function archiveEntryText(buffer, entry) {
+/** Байты записи: zip хранит данные без сжатия (0) или deflate (8). */
+async function archiveEntryBytes(buffer, entry) {
     const view = new DataView(buffer);
     if (view.getUint32(entry.localOffset, true) !== 0x04034b50) return null;
     const start = entry.localOffset + 30
         + view.getUint16(entry.localOffset + 26, true)
         + view.getUint16(entry.localOffset + 28, true);
     const bytes = new Uint8Array(buffer, start, entry.compressedSize);
-    if (entry.method === 0) return new TextDecoder().decode(bytes);
+    if (entry.method === 0) return bytes;
     if (entry.method !== 8) return null;
     const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
-    return new Response(stream).text();
+    return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+
+/** Текст записи. */
+async function archiveEntryText(buffer, entry) {
+    const bytes = await archiveEntryBytes(buffer, entry);
+    return bytes ? new TextDecoder().decode(bytes) : null;
+}
+
+const PLUGIN_ICON_LIMIT = 64 * 1024;
+
+/** Тип картинки по расширению: SVG и растровые форматы без скриптов. */
+function pluginIconMime(name) {
+    const lower = String(name || '').toLowerCase();
+    if (lower.endsWith('.svg')) return 'image/svg+xml';
+    if (lower.endsWith('.png')) return 'image/png';
+    if (lower.endsWith('.webp')) return 'image/webp';
+    return '';
+}
+
+/** data:URL картинки — так иконка едет внутри пакета. */
+function pluginIconDataUrl(bytes, mime) {
+    let binary = '';
+    const chunk = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+    }
+    return `data:${mime};base64,${btoa(binary)}`;
 }
 
 /**
@@ -404,7 +439,18 @@ async function parsePluginArchive(buffer) {
         return { ok: false, errors: ['package is too large'], manifest: null, code: '' };
     }
 
-    return { ok: true, errors: [], manifest: manifestResult.manifest, code };
+    // Иконка необязательна: без неё в интерфейсе остаётся буква.
+    let icon = '';
+    const iconName = manifestResult.manifest.icon;
+    const mime = pluginIconMime(iconName);
+    const iconEntry = iconName && mime ? archiveEntry(entries, iconName) : null;
+    if (iconEntry && zipMethodSupported(iconEntry)
+        && iconEntry.uncompressedSize > 0 && iconEntry.uncompressedSize <= PLUGIN_ICON_LIMIT) {
+        const bytes = await archiveEntryBytes(buffer, iconEntry);
+        if (bytes) icon = pluginIconDataUrl(bytes, mime);
+    }
+
+    return { ok: true, errors: [], manifest: manifestResult.manifest, code, icon };
 }
 
 function surfaceRange(manifest, surface, key) {

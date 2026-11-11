@@ -556,6 +556,7 @@ fs.writeFileSync(tvpPackage, zipBuffer([
       version: '1.0.0',
       apiVersion: 1,
       entry: 'plugin.js',
+      icon: 'icon.svg',
       permissions: { network: [], capabilities: [], storageKB: 16 },
       surfaces: {
         panel: { sides: ['right'], width: [280, 360], height: [200, 300], mode: ['overlay'] },
@@ -563,6 +564,7 @@ fs.writeFileSync(tvpPackage, zipBuffer([
     }),
   },
   { name: 'plugin.js', data: 'function mount(api) { document.body.textContent = "Zipped plugin"; api.ui.ready(); }' },
+  { name: 'icon.svg', data: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" fill="#4DB6E2"/></svg>' },
 ]));
 await send('DOM.setFileInputFiles', { files: [tvpPackage], nodeId: fileInput.nodeId });
 await sleep(1200);
@@ -571,6 +573,11 @@ const tvpInstalled = await evaluate(`({
   rows: document.querySelectorAll('.plugin-manager-item').length,
 })`);
 console.log('installed from tvp:', tvpInstalled);
+const tvpIcon = await evaluate(`(() => {
+  const image = document.querySelector('.plugin-manager-item[data-plugin-id="com.test.zipped"] img.plugin-manager-icon');
+  return image ? image.getAttribute('src') || '' : '';
+})()`);
+console.log('tvp icon source:', String(tvpIcon).slice(0, 30));
 // Код из архива должен не просто записаться, а исполниться в песочнице.
 await evaluate(`document.querySelector('.plugin-dock-button[data-plugin-id="com.test.zipped"]')?.click()`);
 await sleep(1000);
@@ -882,6 +889,7 @@ const passed = dock.count > 0
     && installed.dock === baselineDock + 1 && installed.rows === baselineRows + 1
     && cleaned.dock === baselineDock
     && tvpInstalled.dock === baselineDock + 1 && tvpInstalled.rows === baselineRows + 1
+    && String(tvpIcon).startsWith('data:image/svg+xml;base64,')
     && /Zipped plugin/.test(tvpFrameText || '')
     && tvpCleaned.dock === baselineDock
     && off.dock === baselineDock && off.strip === baselineStrip - 1
