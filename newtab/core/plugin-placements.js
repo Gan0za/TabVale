@@ -78,7 +78,11 @@ function ensureDefaultPlacement(record, placements) {
         .filter((placement) => placement.surface === 'strip').length;
     const surfaces = record.manifest?.surfaces || {};
 
-    if (surfaces.strip && stripCount < 3) {
+    // Полосу по умолчанию получают только плагины с явным default:true
+    // (часы, помодоро, погода). Остальные с панелью идут в панель, но
+    // пользователь может выбрать им полосу в менеджере.
+    const stripPreferred = surfaces.strip?.default === true || !surfaces.panel;
+    if (stripPreferred && surfaces.strip && stripCount < 3) {
         return {
             pluginId: record.id,
             surface: 'strip',

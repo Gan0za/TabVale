@@ -94,7 +94,10 @@ function normalizeSurfaces(raw) {
     if (source.strip) {
         const positions = normalizeSides(source.strip.positions, ['top', 'bottom']);
         const height = normalizeRange(source.strip.height, [64, 120], PLUGIN_LIMITS.stripHeight);
-        if (positions.length && height) surfaces.strip = { positions, height };
+        if (positions.length && height) {
+            surfaces.strip = { positions, height };
+            if (source.strip.default === true) surfaces.strip.default = true;
+        }
     }
 
     if (source.panel) {

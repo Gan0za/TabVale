@@ -581,10 +581,11 @@ async function onPluginMessage(event) {
     const data = event.data;
     if (!data || typeof data !== 'object' || data.type !== 'tabvale:rpc') return;
 
-    const reply = (result) => instance.frame.contentWindow.postMessage(
+    // Кадр мог быть закрыт или удалён, пока запрос выполнялся.
+    const reply = (result) => instance.frame.contentWindow?.postMessage(
         { type: 'tabvale:rpc-result', id: data.id, result }, '*'
     );
-    const fail = (message) => instance.frame.contentWindow.postMessage(
+    const fail = (message) => instance.frame.contentWindow?.postMessage(
         { type: 'tabvale:rpc-result', id: data.id, error: String(message) }, '*'
     );
 

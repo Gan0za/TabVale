@@ -41,7 +41,8 @@
       "height": [
         64,
         120
-      ]
+      ],
+      "default": true
     },
     "rail": {
       "positions": [

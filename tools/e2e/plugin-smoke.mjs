@@ -97,7 +97,8 @@ const logs = [];
 ws.addEventListener('message', (event) => {
   const msg = JSON.parse(event.data);
   if (msg.method === 'Runtime.exceptionThrown') {
-    errors.push(msg.params.exceptionDetails?.text || 'exception');
+    errors.push(msg.params.exceptionDetails?.exception?.description
+      || msg.params.exceptionDetails?.text || 'exception');
   }
   if (msg.method === 'Runtime.consoleAPICalled') {
     logs.push(msg.params.args.map((arg) => arg.value ?? arg.description ?? '').join(' '));
@@ -250,10 +251,13 @@ if (dock.count) {
 
   console.log('sandbox frames:', frameTexts.map((item) => ({
     title: item.title, text: item.text.slice(0, 40), color: item.color, bg: item.bg,
-    textVar: item.textVar, bgVar: item.bgVar,
+    textVar: item.textVar, bgVar: item.bgVar, scrollH: item.scrollH, clientH: item.clientH,
   })));
-  const stripEntry = frameTexts.find((item) => /\(strip\)/.test(item.title)) || frameTexts[0];
-  const panelEntry = frameTexts.find((item) => /\(panel\)/.test(item.title))
+  const stripEntry = frameTexts.find((item) => /com\.tabvale\.clock \(strip\)/.test(item.title))
+    || frameTexts.find((item) => /\(strip\)/.test(item.title))
+    || frameTexts[0];
+  const panelEntry = frameTexts.find((item) => /com\.tabvale\.layout \(panel\)/.test(item.title))
+    || frameTexts.find((item) => /\(panel\)/.test(item.title))
     || frameTexts.find((item) => item !== stripEntry);
   stripText = stripEntry?.text || '';
   panelText = panelEntry?.text || '';

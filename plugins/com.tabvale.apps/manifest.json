@@ -14,6 +14,7 @@
     "storageKB": 16
   },
   "surfaces": {
+    "strip": { "positions": ["top", "bottom"], "height": [64, 120] },
     "panel": {
       "sides": [
         "right",
