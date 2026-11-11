@@ -47,6 +47,12 @@
       "positions": [
         "top"
       ]
+    },
+    "tiles": {
+      "span": [
+        1,
+        1
+      ]
     }
   },
   "locales": {
