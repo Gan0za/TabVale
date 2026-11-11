@@ -239,6 +239,48 @@ const manager = await evaluate(`(() => {
 })()`);
 console.log('manager:', manager);
 
+const zone = await evaluate(`(async () => {
+  const select = document.querySelector('.plugin-manager-surface');
+  if (!select) return { top: 0, bottom: 0 };
+  select.value = 'strip:bottom';
+  select.dispatchEvent(new Event('change', { bubbles: true }));
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  return {
+    top: document.querySelectorAll('#plugin-strip-top .plugin-strip-item').length,
+    bottom: document.querySelectorAll('#plugin-strip-bottom .plugin-strip-item').length,
+  };
+})()`);
+console.log('zone:', zone);
+
+const removal = await evaluate(`(async () => {
+  window.confirm = () => true;
+  document.querySelector('.plugin-manager-remove')?.click();
+  await new Promise((resolve) => setTimeout(resolve, 600));
+  return {
+    rows: document.querySelectorAll('.plugin-manager-item').length,
+    dock: document.querySelectorAll('.plugin-dock-button').length,
+  };
+})()`);
+console.log('removal:', removal);
+
+await send('Page.reload');
+await sleep(2500);
+const afterReload = await evaluate(`({
+  dock: document.querySelectorAll('.plugin-dock-button').length,
+  strip: document.querySelectorAll('.plugin-strip-item').length,
+})`);
+console.log('after reload:', afterReload);
+
+const restored = await evaluate(`(async () => {
+  document.getElementById('settings-button')?.click();
+  const tab = [...document.querySelectorAll('.settings-tab')].find((item) => item.dataset.tab === 'plugins');
+  tab?.click();
+  document.querySelector('.plugin-manager-restore')?.click();
+  await new Promise((resolve) => setTimeout(resolve, 900));
+  return { dock: document.querySelectorAll('.plugin-dock-button').length };
+})()`);
+console.log('restored:', restored);
+
 console.log('logs:', logs.slice(-8));
 console.log('exceptions:', errors.slice(0, 5));
 ws.close();
@@ -251,6 +293,10 @@ const passed = dock.count > 0
     && timePattern.test(stripText.trim())
     && timePattern.test(panelText.trim())
     && manager.rows > 0
+    && zone.bottom === 1 && zone.top === 0
+    && removal.rows === 0 && removal.dock === 0
+    && afterReload.dock === 0
+    && restored.dock === 1
     && errors.length === 0;
 console.log(passed ? 'SMOKE PASS' : 'SMOKE FAIL');
 process.exit(passed ? 0 : 1);

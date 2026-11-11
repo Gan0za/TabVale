@@ -19,6 +19,8 @@ let installedPluginCache = [];
 let pluginPlacementsCache = [];
 const pluginInstances = new Map();
 let pluginInstanceSeq = 0;
+const PLUGIN_REMOVED_KEY = 'pluginRemovedBuiltins';
+let removedBuiltinIds = new Set();
 
 function initPlugins() {
     ensurePluginDock();
@@ -27,7 +29,8 @@ function initPlugins() {
         if (event.key === 'Escape' && pluginPanelInstance) closePluginPanel();
     });
 
-    installBuiltinPlugins()
+    loadRemovedBuiltins()
+        .then(installBuiltinPlugins)
         .then(loadInstalledPlugins)
         .then(loadPluginPlacements)
         .then(() => {
@@ -62,6 +65,16 @@ async function fetchPluginResource(path) {
     return response;
 }
 
+async function loadRemovedBuiltins() {
+    const stored = await new Promise((resolve) => storageLocalGet(PLUGIN_REMOVED_KEY, resolve));
+    const list = stored?.[PLUGIN_REMOVED_KEY];
+    removedBuiltinIds = new Set(Array.isArray(list) ? list.filter((id) => typeof id === 'string') : []);
+}
+
+async function saveRemovedBuiltins() {
+    await new Promise((resolve) => storageLocalSet({ [PLUGIN_REMOVED_KEY]: [...removedBuiltinIds] }, resolve));
+}
+
 async function installBuiltinPlugins() {
     let index;
     try {
@@ -72,6 +85,8 @@ async function installBuiltinPlugins() {
 
     const entries = normalizePluginRegistry(index);
     for (const entry of entries) {
+        // Удалённый пользователем встроенный плагин не возвращаем сами.
+        if (removedBuiltinIds.has(entry.id)) continue;
         const basePath = `plugins/${entry.path}`;
         try {
             const manifestRaw = await (await fetchPluginResource(basePath + 'manifest.json')).json();
@@ -281,6 +296,10 @@ async function setPluginPlacement(record, value) {
 
 async function removePlugin(record) {
     if (!window.confirm(`Remove ${record.manifest.name}?`)) return;
+    if (record.source === 'builtin') {
+        removedBuiltinIds.add(record.id);
+        await saveRemovedBuiltins();
+    }
     await dbDeletePlugin(record.id);
     pluginPlacementsCache = pluginPlacementsCache.filter((placement) => placement.pluginId !== record.id);
     await new Promise((resolve) => storageLocalSet({ [PLUGIN_PLACEMENTS_KEY]: pluginPlacementsCache }, resolve));
@@ -294,6 +313,23 @@ function renderPluginManager() {
     const list = document.getElementById('plugins-manager-list');
     if (!list) return;
     list.textContent = '';
+
+    if (removedBuiltinIds.size) {
+        const restore = document.createElement('button');
+        restore.type = 'button';
+        restore.className = 'btn plugin-manager-restore';
+        restore.textContent = 'Restore bundled plugins';
+        restore.addEventListener('click', async () => {
+            removedBuiltinIds.clear();
+            await saveRemovedBuiltins();
+            await installBuiltinPlugins();
+            await loadInstalledPlugins();
+            renderPluginDock();
+            renderPluginStrip();
+            renderPluginManager();
+        });
+        list.append(restore);
+    }
 
     if (!installedPluginCache.length) {
         const empty = document.createElement('p');
