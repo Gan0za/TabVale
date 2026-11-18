@@ -95,7 +95,7 @@ Returns a `data:` URL or an empty string when there is no icon. Only
 | Method | Effect |
 |---|---|
 | `api.ui.ready()` | Tells the host the plugin rendered |
-| `api.ui.close()` | Hides the strip widget; closes the panel |
+| `api.ui.close()` | Hides the strip widget or floating window; closes the panel |
 | `api.ui.resize({ width, height })` | Requests a size inside the manifest ranges (panel, strip height) |
 | `api.ui.notify(text, level)` | Writes a message to the host console |
 | `api.ui.openExternal(url)` | Opens `https`, `http`, `obsidian:` or `vscode:` links |
@@ -120,8 +120,9 @@ current theme from `api.theme` if you need it at mount time.
   timers inside the frame and clear them when the element is removed.
 - There is no background execution: when the new tab is closed, plugin code
   stops. Do not rely on long-running work.
-- Frames are recreated on placement change, on reinstall, after granting
-  bookmark access, and on language/theme changes that require a reload.
+- Frames are recreated on placement change, on reinstall and after bookmark
+  access is granted. Theme and language changes are delivered as events, not
+  by reloading the frame.
 - `mount` must not assume a specific size; read `document.documentElement`
   dimensions instead.
 

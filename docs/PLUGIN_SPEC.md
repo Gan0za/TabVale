@@ -41,7 +41,7 @@ oversized icon is dropped without failing the install.
 | `name` | string | yes | Up to 60 characters |
 | `version` | string | yes | `x.y.z`, semver |
 | `apiVersion` | number | yes | `1` |
-| `minAppVersion` | string | no | Semver; defaults to the current app version |
+| `minAppVersion` | string | no | Semver; defaults to `1.2.0` |
 | `entry` | string | yes | Safe relative path to `.js`/`.html` |
 | `icon` | string | no | Safe relative path to `.svg`/`.png` |
 | `description` | string | no | Up to 400 characters |
@@ -92,8 +92,9 @@ placement in the manager. Ranges are clamped to the manifest.
 | `floating` | Draggable window; derived from `panel` when not declared |
 | `rail` | Reserved for a side rail |
 
-`strip.default: true` asks for the strip on first install. Placing a plugin
-in `floating` keeps its position and size between sessions.
+`strip.default: true` asks for the strip on first install. A panel may also
+list `top` and `bottom` among its sides. Placing a plugin in `floating` keeps
+its position and size between sessions.
 
 ## Localization
 
