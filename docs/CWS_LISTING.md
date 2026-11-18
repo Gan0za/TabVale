@@ -61,6 +61,8 @@ Copy the texts from [CWS_REVIEW_NOTES.md](../CWS_REVIEW_NOTES.md):
 
 - `clipboardRead` — paste actions in the custom context menu.
 - `unlimitedStorage` — local background image files.
+- `favicon` — site icons from the browser's local favicon cache, so they stay
+  visible offline; no network requests are made for this.
 - Optional host permissions — reading a page title when adding a bookmark.
 
 ## Data usage answers

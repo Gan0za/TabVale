@@ -60,6 +60,21 @@ background would not be saved. The data never leaves the device.
 
 ---
 
+## Permission justification: `favicon`
+
+> Форма CWS → Permissions → favicon
+
+```
+TabVale shows the user's own bookmarks and search engines as tiles with site
+icons. The favicon permission lets the extension read icons from the browser's
+local favicon cache through the favicon API. The cache is local: no page
+requests are made, no network is used and nothing is transmitted. Caching the
+icon bytes in the extension's own IndexedDB keeps tiles recognizable when the
+site is unreachable or the user is offline.
+```
+
+---
+
 ## Permission justification: optional host permissions
 
 > Форма CWS → Permissions → optional host permissions
@@ -92,7 +107,8 @@ anywhere.
 
 > Форма CWS → "Does your extension contain remote code?" — **No**
 
-Обоснование на случай вопросов: расширение загружает только изображения
-(иконки сайтов, фоны) через `<img src>` — это не удалённый код в
-терминологии политики CWS. Весь исполняемый код входит в пакет:
+Обоснование на случай вопросов: расширение показывает только изображения
+(иконки сайтов, фоны) через `<img src>` и favicon-кэш браузера — это не
+удалённый код в терминологии политики CWS. Иконки сайтов кэшируются в
+IndexedDB, чтобы работать без сети. Весь исполняемый код входит в пакет:
 `background.js`, `newtab/app.js`, `newtab/core/*.js`, `newtab/features/*.js`.

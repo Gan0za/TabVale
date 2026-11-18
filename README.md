@@ -164,6 +164,8 @@ node tests/screens.test.mjs
 - `unlimitedStorage` — background files in `chrome.storage.local`.
 - `contextMenus` — the extension icon menu.
 - `clipboardRead` — paste actions in the custom context menu.
+- `favicon` — site icons from the browser's local favicon cache; they stay
+  visible offline and no network requests are made for this.
 - `optional_host_permissions` — requested per site, only to read a page
   `<title>` when adding a bookmark.
 

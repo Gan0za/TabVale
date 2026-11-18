@@ -77,7 +77,7 @@
 
   <main>
     <h1>Privacy Policy</h1>
-    <p class="muted">Last updated: 2026-11-09</p>
+    <p class="muted">Last updated: 2026-11-18</p>
 
     <p>
       TabVale does not collect, process or transmit personal data.
@@ -93,6 +93,7 @@
         <thead><tr><th>Data</th><th>Storage</th><th>Transmission</th></tr></thead>
         <tbody>
           <tr><td>Bookmarks (title, URL, icon)</td><td>chrome.storage.sync</td><td>None; browser sync only between the user's devices</td></tr>
+          <tr><td>Site icons (images)</td><td>IndexedDB <code>tabvale-icons</code></td><td>None; taken from the browser's local favicon cache</td></tr>
           <tr><td>Screens (title, order, bookmark membership)</td><td>chrome.storage.sync</td><td>None</td></tr>
           <tr><td>Active screen</td><td>chrome.storage.local</td><td>None; device-specific</td></tr>
           <tr><td>Backgrounds: URL, color or gradient</td><td>chrome.storage.sync</td><td>None</td></tr>
@@ -109,22 +110,25 @@
       <li><strong>unlimitedStorage</strong> — keep local background image files in <code>chrome.storage.local</code>.</li>
       <li><strong>contextMenus</strong> — add items to the extension icon menu.</li>
       <li><strong>clipboardRead</strong> — paste actions in the custom context menu. The clipboard is read once when that menu is opened on the extension's own new tab page, after an explicit user action. There is no background clipboard access.</li>
+      <li><strong>favicon</strong> — read site icons from the browser's local favicon cache so bookmark and search-engine icons stay visible without network access. No page requests are made for this.</li>
       <li><strong>optional host permissions</strong> — requested per site only when adding a bookmark, to read the page <code>&lt;title&gt;</code> as a suggested name. The user can deny the request; the extension then uses the hostname.</li>
     </ul>
 
     <h2>Network activity</h2>
     <p>
-      The extension has no server and does not send data anywhere. Site icons and
-      background images are loaded by the browser from addresses the user
-      entered. When adding a bookmark, the extension may ask the browser for
-      access to that specific site to read its title; without permission the
-      request is not made.
+      The extension has no server and does not send data anywhere. Site icons
+      are taken from the browser's local favicon cache and kept in IndexedDB so
+      they survive offline use. If a bookmark or search engine has its own icon
+      address, the browser loads the image from that address. Background images
+      are loaded by the browser from addresses the user entered. When adding a
+      bookmark, the extension may ask the browser for access to that specific
+      site to read its title; without permission the request is not made.
     </p>
 
     <h2>Export and deletion</h2>
     <ul>
       <li><strong>Export</strong> — the settings modal can save a JSON file with the user's data, including background files.</li>
-      <li><strong>Deletion</strong> — uninstalling the extension removes data from <code>chrome.storage.sync</code> and <code>chrome.storage.local</code>.</li>
+      <li><strong>Deletion</strong> — uninstalling the extension removes data from <code>chrome.storage.sync</code>, <code>chrome.storage.local</code> and the local icon cache in IndexedDB.</li>
     </ul>
 
     <h2>Contact</h2>
