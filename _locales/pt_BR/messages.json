@@ -275,35 +275,128 @@
   "tabScreens": {
     "message": "Telas"
   },
-  "tabPlugins": { "message": "Complementos" },
-  "pluginsEmpty": { "message": "Nenhum complemento instalado." },
-  "pluginOpen": { "message": "Abrir" },
-  "pluginRemove": { "message": "Remover" },
-  "pluginMenuConfigure": { "message": "Configurar plugin" },
-  "pluginMenuSettings": { "message": "Configurações de plugins" },
-  "pluginMenuDisable": { "message": "Desativar" },
-  "pluginMenuRemove": { "message": "Remover" },
-  "pluginRestore": { "message": "Restaurar complementos incluídos" },
-  "pluginRemoveConfirm": { "message": "Remover o complemento $name$?", "placeholders": { "name": { "content": "$1" } } },
-  "surfacePanel": { "message": "Painel" },
-  "surfaceFloating": { "message": "Janela flutuante" },
-  "surfaceTiles": { "message": "Bloco" },
-  "surfaceStripTop": { "message": "Acima dos favoritos" },
-  "surfaceStripBottom": { "message": "Abaixo dos favoritos" },
-  "surfaceOff": { "message": "Desativado" },
-  "pluginInstall": { "message": "Instalar de um arquivo…" },
-  "pluginInstallConfirm": { "message": "$name$ solicita: $permissions$. Instalar?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
-  "pluginInstallInvalid": { "message": "Arquivo de complemento inválido: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginInstallManifestOnly": { "message": "Isso é um manifesto, não um pacote. Use JSON {manifest, code}; os complementos incluídos voltam com «Restaurar complementos incluídos»." },
-  "pluginGrantBookmarks": { "message": "Permitir acesso aos favoritos" },
-  "pluginBookmarksGranted": { "message": "Acesso aos favoritos permitido" },
-  "pluginBookmarksDenied": { "message": "Acesso aos favoritos não concedido: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginGrantPending": { "message": "Aguardando confirmação no Chrome…" },
-  "pluginGrantHint": { "message": "Se a solicitação não apareceu, clique no ícone do TabVale na barra do navegador e permita o acesso aos favoritos." },
-  "pluginGrantReload": { "message": "O navegador não vê a permissão no manifesto. Recarregue a extensão na página de extensões e tente novamente." },
-  "pluginPermNetwork": { "message": "rede: $count$", "placeholders": { "count": { "content": "$1" } } },
-  "pluginPermStorage": { "message": "armazenamento: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
-  "pluginPlacementLabel": { "message": "Posição de $name$", "placeholders": { "name": { "content": "$1" } } },
+  "tabPlugins": {
+    "message": "Complementos"
+  },
+  "pluginsEmpty": {
+    "message": "Ainda não há plugins. Baixe um .tvp do site e instale como arquivo."
+  },
+  "pluginOpen": {
+    "message": "Abrir"
+  },
+  "pluginRemove": {
+    "message": "Remover"
+  },
+  "pluginMenuConfigure": {
+    "message": "Configurar plugin"
+  },
+  "pluginMenuSettings": {
+    "message": "Configurações de plugins"
+  },
+  "pluginMenuDisable": {
+    "message": "Desativar"
+  },
+  "pluginMenuRemove": {
+    "message": "Remover"
+  },
+  "pluginRemoveConfirm": {
+    "message": "Remover o complemento $name$?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "surfacePanel": {
+    "message": "Painel"
+  },
+  "surfaceFloating": {
+    "message": "Janela flutuante"
+  },
+  "surfaceTiles": {
+    "message": "Bloco"
+  },
+  "surfaceStripTop": {
+    "message": "Acima dos favoritos"
+  },
+  "surfaceStripBottom": {
+    "message": "Abaixo dos favoritos"
+  },
+  "surfaceOff": {
+    "message": "Desativado"
+  },
+  "pluginInstall": {
+    "message": "Instalar de um arquivo…"
+  },
+  "pluginInstallConfirm": {
+    "message": "$name$ solicita: $permissions$. Instalar?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "permissions": {
+        "content": "$2"
+      }
+    }
+  },
+  "pluginInstallInvalid": {
+    "message": "Arquivo de complemento inválido: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginInstallManifestOnly": {
+    "message": "Isso é um manifesto, não um pacote. Use JSON {manifest, code}; os complementos incluídos voltam com «Restaurar complementos incluídos»."
+  },
+  "pluginGrantBookmarks": {
+    "message": "Permitir acesso aos favoritos"
+  },
+  "pluginBookmarksGranted": {
+    "message": "Acesso aos favoritos permitido"
+  },
+  "pluginBookmarksDenied": {
+    "message": "Acesso aos favoritos não concedido: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginGrantPending": {
+    "message": "Aguardando confirmação no Chrome…"
+  },
+  "pluginGrantHint": {
+    "message": "Se a solicitação não apareceu, clique no ícone do TabVale na barra do navegador e permita o acesso aos favoritos."
+  },
+  "pluginGrantReload": {
+    "message": "O navegador não vê a permissão no manifesto. Recarregue a extensão na página de extensões e tente novamente."
+  },
+  "pluginPermNetwork": {
+    "message": "rede: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPermStorage": {
+    "message": "armazenamento: $kb$ KB",
+    "placeholders": {
+      "kb": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPlacementLabel": {
+    "message": "Posição de $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
   "screenLabel": {
     "message": "Tela"
   },
@@ -344,5 +437,8 @@
   },
   "mainScreenCannotDelete": {
     "message": "A tela Início não pode ser excluída. Renomeie-a ou exclua outra tela."
+  },
+  "pluginCatalog": {
+    "message": "Abrir catálogo de plugins"
   }
 }

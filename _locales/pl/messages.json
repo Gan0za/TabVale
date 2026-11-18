@@ -275,35 +275,128 @@
   "tabScreens": {
     "message": "Ekrany"
   },
-  "tabPlugins": { "message": "Wtyczki" },
-  "pluginsEmpty": { "message": "Brak zainstalowanych wtyczek." },
-  "pluginOpen": { "message": "Otwórz" },
-  "pluginRemove": { "message": "Usuń" },
-  "pluginMenuConfigure": { "message": "Skonfiguruj wtyczkę" },
-  "pluginMenuSettings": { "message": "Ustawienia wtyczek" },
-  "pluginMenuDisable": { "message": "Wyłącz" },
-  "pluginMenuRemove": { "message": "Usuń" },
-  "pluginRestore": { "message": "Przywróć dołączone wtyczki" },
-  "pluginRemoveConfirm": { "message": "Usunąć wtyczkę $name$?", "placeholders": { "name": { "content": "$1" } } },
-  "surfacePanel": { "message": "Panel" },
-  "surfaceFloating": { "message": "Okno pływające" },
-  "surfaceTiles": { "message": "Kafelek" },
-  "surfaceStripTop": { "message": "Nad zakładkami" },
-  "surfaceStripBottom": { "message": "Pod zakładkami" },
-  "surfaceOff": { "message": "Wył." },
-  "pluginInstall": { "message": "Zainstaluj z pliku…" },
-  "pluginInstallConfirm": { "message": "$name$ wymaga: $permissions$. Zainstalować?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
-  "pluginInstallInvalid": { "message": "Nieprawidłowy plik wtyczki: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginInstallManifestOnly": { "message": "To manifest, nie pakiet. Użyj JSON {manifest, code}; dołączone wtyczki wracają przez „Przywróć dołączone wtyczki”." },
-  "pluginGrantBookmarks": { "message": "Zezwól na dostęp do zakładek" },
-  "pluginBookmarksGranted": { "message": "Dostęp do zakładek przyznany" },
-  "pluginBookmarksDenied": { "message": "Nie przyznano dostępu do zakładek: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginGrantPending": { "message": "Oczekiwanie na potwierdzenie w Chrome…" },
-  "pluginGrantHint": { "message": "Jeśli prośba się nie pojawiła, kliknij ikonę TabVale na pasku przeglądarki i zezwól na dostęp do zakładek." },
-  "pluginGrantReload": { "message": "Przeglądarka nie widzi uprawnienia w manifeście. Przeładuj rozszerzenie na stronie rozszerzeń i spróbuj ponownie." },
-  "pluginPermNetwork": { "message": "sieć: $count$", "placeholders": { "count": { "content": "$1" } } },
-  "pluginPermStorage": { "message": "pamięć: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
-  "pluginPlacementLabel": { "message": "Umiejscowienie $name$", "placeholders": { "name": { "content": "$1" } } },
+  "tabPlugins": {
+    "message": "Wtyczki"
+  },
+  "pluginsEmpty": {
+    "message": "Nie ma jeszcze wtyczek. Pobierz plik .tvp ze strony i zainstaluj go z pliku."
+  },
+  "pluginOpen": {
+    "message": "Otwórz"
+  },
+  "pluginRemove": {
+    "message": "Usuń"
+  },
+  "pluginMenuConfigure": {
+    "message": "Skonfiguruj wtyczkę"
+  },
+  "pluginMenuSettings": {
+    "message": "Ustawienia wtyczek"
+  },
+  "pluginMenuDisable": {
+    "message": "Wyłącz"
+  },
+  "pluginMenuRemove": {
+    "message": "Usuń"
+  },
+  "pluginRemoveConfirm": {
+    "message": "Usunąć wtyczkę $name$?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "surfacePanel": {
+    "message": "Panel"
+  },
+  "surfaceFloating": {
+    "message": "Okno pływające"
+  },
+  "surfaceTiles": {
+    "message": "Kafelek"
+  },
+  "surfaceStripTop": {
+    "message": "Nad zakładkami"
+  },
+  "surfaceStripBottom": {
+    "message": "Pod zakładkami"
+  },
+  "surfaceOff": {
+    "message": "Wył."
+  },
+  "pluginInstall": {
+    "message": "Zainstaluj z pliku…"
+  },
+  "pluginInstallConfirm": {
+    "message": "$name$ wymaga: $permissions$. Zainstalować?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "permissions": {
+        "content": "$2"
+      }
+    }
+  },
+  "pluginInstallInvalid": {
+    "message": "Nieprawidłowy plik wtyczki: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginInstallManifestOnly": {
+    "message": "To manifest, nie pakiet. Użyj JSON {manifest, code}; dołączone wtyczki wracają przez „Przywróć dołączone wtyczki”."
+  },
+  "pluginGrantBookmarks": {
+    "message": "Zezwól na dostęp do zakładek"
+  },
+  "pluginBookmarksGranted": {
+    "message": "Dostęp do zakładek przyznany"
+  },
+  "pluginBookmarksDenied": {
+    "message": "Nie przyznano dostępu do zakładek: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginGrantPending": {
+    "message": "Oczekiwanie na potwierdzenie w Chrome…"
+  },
+  "pluginGrantHint": {
+    "message": "Jeśli prośba się nie pojawiła, kliknij ikonę TabVale na pasku przeglądarki i zezwól na dostęp do zakładek."
+  },
+  "pluginGrantReload": {
+    "message": "Przeglądarka nie widzi uprawnienia w manifeście. Przeładuj rozszerzenie na stronie rozszerzeń i spróbuj ponownie."
+  },
+  "pluginPermNetwork": {
+    "message": "sieć: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPermStorage": {
+    "message": "pamięć: $kb$ KB",
+    "placeholders": {
+      "kb": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPlacementLabel": {
+    "message": "Umiejscowienie $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
   "screenLabel": {
     "message": "Ekran"
   },
@@ -344,5 +437,8 @@
   },
   "mainScreenCannotDelete": {
     "message": "Nie można usunąć ekranu Główna. Zmień jego nazwę lub usuń inny ekran."
+  },
+  "pluginCatalog": {
+    "message": "Otwórz katalog wtyczek"
   }
 }

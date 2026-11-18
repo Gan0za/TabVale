@@ -275,35 +275,128 @@
   "tabScreens": {
     "message": "画面"
   },
-  "tabPlugins": { "message": "プラグイン" },
-  "pluginsEmpty": { "message": "プラグインがインストールされていません。" },
-  "pluginOpen": { "message": "開く" },
-  "pluginRemove": { "message": "削除" },
-  "pluginMenuConfigure": { "message": "プラグインを設定" },
-  "pluginMenuSettings": { "message": "プラグイン設定" },
-  "pluginMenuDisable": { "message": "オフにする" },
-  "pluginMenuRemove": { "message": "削除" },
-  "pluginRestore": { "message": "同梱プラグインを復元" },
-  "pluginRemoveConfirm": { "message": "プラグイン $name$ を削除しますか？", "placeholders": { "name": { "content": "$1" } } },
-  "surfacePanel": { "message": "パネル" },
-  "surfaceFloating": { "message": "フローティングウィンドウ" },
-  "surfaceTiles": { "message": "タイル" },
-  "surfaceStripTop": { "message": "ブックマークの上" },
-  "surfaceStripBottom": { "message": "ブックマークの下" },
-  "surfaceOff": { "message": "オフ" },
-  "pluginInstall": { "message": "ファイルからインストール…" },
-  "pluginInstallConfirm": { "message": "$name$ の要求: $permissions$。インストールしますか？", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
-  "pluginInstallInvalid": { "message": "プラグイン ファイルが無効です: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginInstallManifestOnly": { "message": "これはマニフェストで、プラグイン パッケージではありません。JSON {manifest, code} を使用してください。同梱プラグインは「同梱プラグインを復元」で戻ります。" },
-  "pluginGrantBookmarks": { "message": "ブックマークへのアクセスを許可" },
-  "pluginBookmarksGranted": { "message": "ブックマークへのアクセスを許可済み" },
-  "pluginBookmarksDenied": { "message": "ブックマークへのアクセスが許可されませんでした: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginGrantPending": { "message": "Chrome での確認を待っています…" },
-  "pluginGrantHint": { "message": "リクエストが表示されない場合は、ブラウザのツールバーにある TabVale アイコンをクリックし、ブックマークへのアクセスを許可してください。" },
-  "pluginGrantReload": { "message": "ブラウザがマニフェストに権限を見つけられません。拡張機能ページで拡張機能を再読み込みしてから、もう一度お試しください。" },
-  "pluginPermNetwork": { "message": "ネットワーク: $count$", "placeholders": { "count": { "content": "$1" } } },
-  "pluginPermStorage": { "message": "ストレージ: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
-  "pluginPlacementLabel": { "message": "$name$ の配置", "placeholders": { "name": { "content": "$1" } } },
+  "tabPlugins": {
+    "message": "プラグイン"
+  },
+  "pluginsEmpty": {
+    "message": "プラグインはまだありません。サイトから .tvp をダウンロードし、ファイルからインストールしてください。"
+  },
+  "pluginOpen": {
+    "message": "開く"
+  },
+  "pluginRemove": {
+    "message": "削除"
+  },
+  "pluginMenuConfigure": {
+    "message": "プラグインを設定"
+  },
+  "pluginMenuSettings": {
+    "message": "プラグイン設定"
+  },
+  "pluginMenuDisable": {
+    "message": "オフにする"
+  },
+  "pluginMenuRemove": {
+    "message": "削除"
+  },
+  "pluginRemoveConfirm": {
+    "message": "プラグイン $name$ を削除しますか？",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "surfacePanel": {
+    "message": "パネル"
+  },
+  "surfaceFloating": {
+    "message": "フローティングウィンドウ"
+  },
+  "surfaceTiles": {
+    "message": "タイル"
+  },
+  "surfaceStripTop": {
+    "message": "ブックマークの上"
+  },
+  "surfaceStripBottom": {
+    "message": "ブックマークの下"
+  },
+  "surfaceOff": {
+    "message": "オフ"
+  },
+  "pluginInstall": {
+    "message": "ファイルからインストール…"
+  },
+  "pluginInstallConfirm": {
+    "message": "$name$ の要求: $permissions$。インストールしますか？",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "permissions": {
+        "content": "$2"
+      }
+    }
+  },
+  "pluginInstallInvalid": {
+    "message": "プラグイン ファイルが無効です: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginInstallManifestOnly": {
+    "message": "これはマニフェストで、プラグイン パッケージではありません。JSON {manifest, code} を使用してください。同梱プラグインは「同梱プラグインを復元」で戻ります。"
+  },
+  "pluginGrantBookmarks": {
+    "message": "ブックマークへのアクセスを許可"
+  },
+  "pluginBookmarksGranted": {
+    "message": "ブックマークへのアクセスを許可済み"
+  },
+  "pluginBookmarksDenied": {
+    "message": "ブックマークへのアクセスが許可されませんでした: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginGrantPending": {
+    "message": "Chrome での確認を待っています…"
+  },
+  "pluginGrantHint": {
+    "message": "リクエストが表示されない場合は、ブラウザのツールバーにある TabVale アイコンをクリックし、ブックマークへのアクセスを許可してください。"
+  },
+  "pluginGrantReload": {
+    "message": "ブラウザがマニフェストに権限を見つけられません。拡張機能ページで拡張機能を再読み込みしてから、もう一度お試しください。"
+  },
+  "pluginPermNetwork": {
+    "message": "ネットワーク: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPermStorage": {
+    "message": "ストレージ: $kb$ KB",
+    "placeholders": {
+      "kb": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPlacementLabel": {
+    "message": "$name$ の配置",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
   "screenLabel": {
     "message": "画面"
   },
@@ -344,5 +437,8 @@
   },
   "mainScreenCannotDelete": {
     "message": "ホーム画面は削除できません。名前を変更するか、別の画面を削除してください。"
+  },
+  "pluginCatalog": {
+    "message": "プラグインカタログを開く"
   }
 }

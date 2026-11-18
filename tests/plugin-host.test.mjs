@@ -62,8 +62,10 @@ assert.ok(html.includes('.tvp'), 'диалог выбора файла прин�
 assert.ok(source.includes('renderPluginManager'), 'есть рендер менеджера');
 assert.ok(source.includes('setPluginPlacement'), 'размещение меняется из менеджера');
 assert.ok(source.includes('removePlugin'), 'плагин можно удалить');
-assert.ok(source.includes('pluginRemovedBuiltins'), 'удалённые встроенные запоминаются');
-assert.ok(source.includes("t('pluginRestore')"), 'есть восстановление встроенных');
+assert.ok(!source.includes('installBuiltinPlugins'), 'встроенные не ставятся автоматически');
+assert.ok(!source.includes('pluginRemovedBuiltins'), 'нет списка удалённых встроенных');
+assert.ok(source.includes("t('pluginCatalog')"), 'пустой менеджер ведёт в каталог');
+assert.ok(source.includes('PLUGIN_CATALOG_URL'), 'адрес каталога задан');
 assert.ok(source.includes("t('pluginOpen')"), 'кнопки менеджера локализованы');
 assert.ok(source.includes("t('pluginRemoveConfirm'"), 'подтверждение удаления локализовано');
 assert.ok(css.includes('.plugin-manager-item'), 'есть стили менеджера');

@@ -59,12 +59,13 @@ function initSettings() {
             });
         });
 
-        // Встроенные плагины восстанавливаются из CWS, поэтому в бэкап
-        // попадают только установленные из файла пакеты.
+        // Плагинов по умолчанию больше нет: в бэкап входит всё, что
+        // установлено, — иначе после переноса на другое устройство их
+        // пришлось бы ставить заново.
         function finishExport(backgrounds, theme) {
             dbGetAllPlugins().then((records) => {
                 const plugins = (Array.isArray(records) ? records : [])
-                    .filter((record) => record && record.source !== 'builtin')
+                    .filter((record) => record && record.manifest && typeof record.code === 'string')
                     .map(({ manifest, code, enabled, icon }) => ({ manifest, code, enabled, icon }));
 
                 storageLocalGet(null, (localAll) => {

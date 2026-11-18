@@ -275,35 +275,128 @@
   "tabScreens": {
     "message": "Schermate"
   },
-  "tabPlugins": { "message": "Estensioni" },
-  "pluginsEmpty": { "message": "Nessuna estensione installata." },
-  "pluginOpen": { "message": "Apri" },
-  "pluginRemove": { "message": "Rimuovi" },
-  "pluginMenuConfigure": { "message": "Configura il plugin" },
-  "pluginMenuSettings": { "message": "Impostazioni plugin" },
-  "pluginMenuDisable": { "message": "Disattiva" },
-  "pluginMenuRemove": { "message": "Rimuovi" },
-  "pluginRestore": { "message": "Ripristina estensioni incluse" },
-  "pluginRemoveConfirm": { "message": "Rimuovere l’estensione $name$?", "placeholders": { "name": { "content": "$1" } } },
-  "surfacePanel": { "message": "Pannello" },
-  "surfaceFloating": { "message": "Finestra flottante" },
-  "surfaceTiles": { "message": "Riquadro" },
-  "surfaceStripTop": { "message": "Sopra i segnalibri" },
-  "surfaceStripBottom": { "message": "Sotto i segnalibri" },
-  "surfaceOff": { "message": "Disattivato" },
-  "pluginInstall": { "message": "Installa da file…" },
-  "pluginInstallConfirm": { "message": "$name$ richiede: $permissions$. Installare?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
-  "pluginInstallInvalid": { "message": "File di estensione non valido: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginInstallManifestOnly": { "message": "È un manifest, non un pacchetto. Usa JSON {manifest, code}; le estensioni incluse tornano con «Ripristina estensioni incluse»." },
-  "pluginGrantBookmarks": { "message": "Consenti accesso ai segnalibri" },
-  "pluginBookmarksGranted": { "message": "Accesso ai segnalibri consentito" },
-  "pluginBookmarksDenied": { "message": "Accesso ai segnalibri non concesso: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginGrantPending": { "message": "In attesa di conferma in Chrome…" },
-  "pluginGrantHint": { "message": "Se la richiesta non è comparsa, fai clic sull'icona TabVale nella barra del browser e consenti l'accesso ai segnalibri." },
-  "pluginGrantReload": { "message": "Il browser non vede l'autorizzazione nel manifest. Ricarica l'estensione dalla pagina delle estensioni e riprova." },
-  "pluginPermNetwork": { "message": "rete: $count$", "placeholders": { "count": { "content": "$1" } } },
-  "pluginPermStorage": { "message": "archivio: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
-  "pluginPlacementLabel": { "message": "Posizione di $name$", "placeholders": { "name": { "content": "$1" } } },
+  "tabPlugins": {
+    "message": "Estensioni"
+  },
+  "pluginsEmpty": {
+    "message": "Nessun plugin ancora. Scarica un .tvp dal sito e installalo come file."
+  },
+  "pluginOpen": {
+    "message": "Apri"
+  },
+  "pluginRemove": {
+    "message": "Rimuovi"
+  },
+  "pluginMenuConfigure": {
+    "message": "Configura il plugin"
+  },
+  "pluginMenuSettings": {
+    "message": "Impostazioni plugin"
+  },
+  "pluginMenuDisable": {
+    "message": "Disattiva"
+  },
+  "pluginMenuRemove": {
+    "message": "Rimuovi"
+  },
+  "pluginRemoveConfirm": {
+    "message": "Rimuovere l’estensione $name$?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "surfacePanel": {
+    "message": "Pannello"
+  },
+  "surfaceFloating": {
+    "message": "Finestra flottante"
+  },
+  "surfaceTiles": {
+    "message": "Riquadro"
+  },
+  "surfaceStripTop": {
+    "message": "Sopra i segnalibri"
+  },
+  "surfaceStripBottom": {
+    "message": "Sotto i segnalibri"
+  },
+  "surfaceOff": {
+    "message": "Disattivato"
+  },
+  "pluginInstall": {
+    "message": "Installa da file…"
+  },
+  "pluginInstallConfirm": {
+    "message": "$name$ richiede: $permissions$. Installare?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "permissions": {
+        "content": "$2"
+      }
+    }
+  },
+  "pluginInstallInvalid": {
+    "message": "File di estensione non valido: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginInstallManifestOnly": {
+    "message": "È un manifest, non un pacchetto. Usa JSON {manifest, code}; le estensioni incluse tornano con «Ripristina estensioni incluse»."
+  },
+  "pluginGrantBookmarks": {
+    "message": "Consenti accesso ai segnalibri"
+  },
+  "pluginBookmarksGranted": {
+    "message": "Accesso ai segnalibri consentito"
+  },
+  "pluginBookmarksDenied": {
+    "message": "Accesso ai segnalibri non concesso: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginGrantPending": {
+    "message": "In attesa di conferma in Chrome…"
+  },
+  "pluginGrantHint": {
+    "message": "Se la richiesta non è comparsa, fai clic sull'icona TabVale nella barra del browser e consenti l'accesso ai segnalibri."
+  },
+  "pluginGrantReload": {
+    "message": "Il browser non vede l'autorizzazione nel manifest. Ricarica l'estensione dalla pagina delle estensioni e riprova."
+  },
+  "pluginPermNetwork": {
+    "message": "rete: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPermStorage": {
+    "message": "archivio: $kb$ KB",
+    "placeholders": {
+      "kb": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPlacementLabel": {
+    "message": "Posizione di $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
   "screenLabel": {
     "message": "Schermata"
   },
@@ -344,5 +437,8 @@
   },
   "mainScreenCannotDelete": {
     "message": "La schermata Home non può essere eliminata. Rinominarla o eliminare un'altra schermata."
+  },
+  "pluginCatalog": {
+    "message": "Apri il catalogo dei plugin"
   }
 }

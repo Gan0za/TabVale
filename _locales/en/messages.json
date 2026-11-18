@@ -5,144 +5,440 @@
   "appDescription": {
     "message": "New tab page with search, bookmarks and background switching"
   },
-
-  "pageTitle": { "message": "New Tab" },
-  "searchPlaceholder": { "message": "Search..." },
-  "searchButton": { "message": "Search" },
-  "bookmarksSection": { "message": "Bookmarks" },
-
-  "themeAuto": { "message": "Auto" },
-  "themeLight": { "message": "Light" },
-  "themeDark": { "message": "Dark" },
-  "themeToggleAria": { "message": "Change theme" },
-
-  "settingsTitle": { "message": "Settings" },
-  "tabBookmarks": { "message": "Bookmarks" },
-  "tabBackgrounds": { "message": "Backgrounds" },
-  "tabSearchEngines": { "message": "Search engines" },
-
-  "generalSection": { "message": "General" },
-  "languageLabel": { "message": "Language" },
-  "langAuto": { "message": "Auto (browser language)" },
-  "themeLabel": { "message": "Theme" },
-
-  "addButton": { "message": "＋ Add" },
-  "addButtonShort": { "message": "Add" },
-  "saveButton": { "message": "Save" },
-  "cancelButton": { "message": "Cancel" },
-  "importButton": { "message": "Import (JSON)" },
-  "exportButton": { "message": "Export (JSON)" },
-  "resetButton": { "message": "Reset settings" },
-  "resetConfirm": { "message": "Delete all bookmarks, backgrounds and search engines and restore defaults?" },
-  "resetDone": { "message": "Settings have been reset." },
-  "closeButton": { "message": "Close" },
-
-  "bookmarkTitlePlaceholder": { "message": "Title" },
-  "bookmarkUrlPlaceholder": { "message": "URL" },
-  "iconUrlPlaceholder": { "message": "Icon URL (optional)" },
-  "refreshIcon": { "message": "Refresh icon from URL" },
-  "bgTitlePlaceholder": { "message": "Background name" },
-  "bgUrlPlaceholder": { "message": "Image URL (empty — default)" },
-  "bgTypeUrl": { "message": "Link" },
-  "bgTypeFile": { "message": "Device" },
-  "bgTypeColor": { "message": "Color" },
-  "bgTypeGradient": { "message": "Gradient" },
-  "bgPositionLabel": { "message": "Placement" },
-  "bgPositionCover": { "message": "Stretch" },
-  "bgPositionContain": { "message": "Fit" },
-  "bgPositionTile": { "message": "Tile" },
-  "bgPositionCenter": { "message": "1:1 centered" },
-  "gradientAngle": { "message": "Gradient angle" },
-  "fileBackground": { "message": "Image from device" },
-  "errNoFile": { "message": "Choose an image file." },
-  "errFileTooBig": { "message": "Could not save the image: browser storage quota exceeded." },
-  "engineNamePlaceholder": { "message": "Name" },
-  "engineUrlPlaceholder": { "message": "URL with %s (e.g. https://www.google.com/search?q=%s)" },
-
-  "edit": { "message": "Edit" },
-  "editShort": { "message": "Edit" },
-  "delete": { "message": "Delete" },
-  "select": { "message": "Select" },
-  "openInNewTab": { "message": "Open in new tab" },
-  "copyLink": { "message": "Copy link" },
-  "settings": { "message": "Settings" },
-  "nextBackground": { "message": "Next background" },
-  "backgroundSettings": { "message": "Background settings" },
-  "pasteAndSearch": { "message": "Paste and search" },
-  "paste": { "message": "Paste" },
-  "copy": { "message": "Copy" },
-  "cut": { "message": "Cut" },
-  "clear": { "message": "Clear" },
-  "searchEngineSettings": { "message": "Search engine settings" },
-  "createBookmark": { "message": "Create bookmark" },
-  "pasteAndCreate": { "message": "Paste and create" },
-  "sortAsc": { "message": "Sort A-Z" },
-  "sortDesc": { "message": "Sort Z-A" },
-  "emptyList": { "message": "List is empty." },
-  "noImage": { "message": "None" },
-
-  "importSuccess": { "message": "Settings imported" },
+  "pageTitle": {
+    "message": "New Tab"
+  },
+  "searchPlaceholder": {
+    "message": "Search..."
+  },
+  "searchButton": {
+    "message": "Search"
+  },
+  "bookmarksSection": {
+    "message": "Bookmarks"
+  },
+  "themeAuto": {
+    "message": "Auto"
+  },
+  "themeLight": {
+    "message": "Light"
+  },
+  "themeDark": {
+    "message": "Dark"
+  },
+  "themeToggleAria": {
+    "message": "Change theme"
+  },
+  "settingsTitle": {
+    "message": "Settings"
+  },
+  "tabBookmarks": {
+    "message": "Bookmarks"
+  },
+  "tabBackgrounds": {
+    "message": "Backgrounds"
+  },
+  "tabSearchEngines": {
+    "message": "Search engines"
+  },
+  "generalSection": {
+    "message": "General"
+  },
+  "languageLabel": {
+    "message": "Language"
+  },
+  "langAuto": {
+    "message": "Auto (browser language)"
+  },
+  "themeLabel": {
+    "message": "Theme"
+  },
+  "addButton": {
+    "message": "＋ Add"
+  },
+  "addButtonShort": {
+    "message": "Add"
+  },
+  "saveButton": {
+    "message": "Save"
+  },
+  "cancelButton": {
+    "message": "Cancel"
+  },
+  "importButton": {
+    "message": "Import (JSON)"
+  },
+  "exportButton": {
+    "message": "Export (JSON)"
+  },
+  "resetButton": {
+    "message": "Reset settings"
+  },
+  "resetConfirm": {
+    "message": "Delete all bookmarks, backgrounds and search engines and restore defaults?"
+  },
+  "resetDone": {
+    "message": "Settings have been reset."
+  },
+  "closeButton": {
+    "message": "Close"
+  },
+  "bookmarkTitlePlaceholder": {
+    "message": "Title"
+  },
+  "bookmarkUrlPlaceholder": {
+    "message": "URL"
+  },
+  "iconUrlPlaceholder": {
+    "message": "Icon URL (optional)"
+  },
+  "refreshIcon": {
+    "message": "Refresh icon from URL"
+  },
+  "bgTitlePlaceholder": {
+    "message": "Background name"
+  },
+  "bgUrlPlaceholder": {
+    "message": "Image URL (empty — default)"
+  },
+  "bgTypeUrl": {
+    "message": "Link"
+  },
+  "bgTypeFile": {
+    "message": "Device"
+  },
+  "bgTypeColor": {
+    "message": "Color"
+  },
+  "bgTypeGradient": {
+    "message": "Gradient"
+  },
+  "bgPositionLabel": {
+    "message": "Placement"
+  },
+  "bgPositionCover": {
+    "message": "Stretch"
+  },
+  "bgPositionContain": {
+    "message": "Fit"
+  },
+  "bgPositionTile": {
+    "message": "Tile"
+  },
+  "bgPositionCenter": {
+    "message": "1:1 centered"
+  },
+  "gradientAngle": {
+    "message": "Gradient angle"
+  },
+  "fileBackground": {
+    "message": "Image from device"
+  },
+  "errNoFile": {
+    "message": "Choose an image file."
+  },
+  "errFileTooBig": {
+    "message": "Could not save the image: browser storage quota exceeded."
+  },
+  "engineNamePlaceholder": {
+    "message": "Name"
+  },
+  "engineUrlPlaceholder": {
+    "message": "URL with %s (e.g. https://www.google.com/search?q=%s)"
+  },
+  "edit": {
+    "message": "Edit"
+  },
+  "editShort": {
+    "message": "Edit"
+  },
+  "delete": {
+    "message": "Delete"
+  },
+  "select": {
+    "message": "Select"
+  },
+  "openInNewTab": {
+    "message": "Open in new tab"
+  },
+  "copyLink": {
+    "message": "Copy link"
+  },
+  "settings": {
+    "message": "Settings"
+  },
+  "nextBackground": {
+    "message": "Next background"
+  },
+  "backgroundSettings": {
+    "message": "Background settings"
+  },
+  "pasteAndSearch": {
+    "message": "Paste and search"
+  },
+  "paste": {
+    "message": "Paste"
+  },
+  "copy": {
+    "message": "Copy"
+  },
+  "cut": {
+    "message": "Cut"
+  },
+  "clear": {
+    "message": "Clear"
+  },
+  "searchEngineSettings": {
+    "message": "Search engine settings"
+  },
+  "createBookmark": {
+    "message": "Create bookmark"
+  },
+  "pasteAndCreate": {
+    "message": "Paste and create"
+  },
+  "sortAsc": {
+    "message": "Sort A-Z"
+  },
+  "sortDesc": {
+    "message": "Sort Z-A"
+  },
+  "emptyList": {
+    "message": "List is empty."
+  },
+  "noImage": {
+    "message": "None"
+  },
+  "importSuccess": {
+    "message": "Settings imported"
+  },
   "importSkipped": {
     "message": "Settings imported. Skipped invalid items: $count$",
-    "placeholders": { "count": { "content": "$1" } }
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
   },
   "importError": {
     "message": "Import error: $error$",
-    "placeholders": { "error": { "content": "$1" } }
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
   },
-  "errTitleAndUrl": { "message": "Enter a title and URL." },
-  "errInvalidUrl": { "message": "Enter a valid URL." },
-  "errBookmarkUrl": { "message": "Enter the bookmark URL." },
-  "errTitle": { "message": "Enter a title." },
-  "errNameAndUrl": { "message": "Enter a name and a URL with %s." },
-  "errEngineUrl": { "message": "Enter a URL with %s." },
-  "copyFailed": { "message": "Failed to copy text." },
-  "cutFailed": { "message": "Failed to cut text." },
-  "defaultBackground": { "message": "Default" },
-  "defaultScreen": { "message": "Home" },
-  "screenName": { "message": "Screen $n$", "placeholders": { "n": { "content": "$1" } } },
-  "emptyScreen": { "message": "No bookmarks on this screen yet." },
-  "emptyScreenAdd": { "message": "Add bookmark" },
-  "tabScreens": { "message": "Screens" },
-  "tabPlugins": { "message": "Plugins" },
-  "pluginsEmpty": { "message": "No plugins installed." },
-  "pluginOpen": { "message": "Open" },
-  "pluginRemove": { "message": "Remove" },
-  "pluginMenuConfigure": { "message": "Configure plugin" },
-  "pluginMenuSettings": { "message": "Plugin settings" },
-  "pluginMenuDisable": { "message": "Turn off" },
-  "pluginMenuRemove": { "message": "Remove" },
-  "pluginRestore": { "message": "Restore bundled plugins" },
-  "pluginRemoveConfirm": { "message": "Remove plugin $name$?", "placeholders": { "name": { "content": "$1" } } },
-  "surfacePanel": { "message": "Panel" },
-  "surfaceFloating": { "message": "Floating window" },
-  "surfaceTiles": { "message": "Tile" },
-  "surfaceStripTop": { "message": "Above bookmarks" },
-  "surfaceStripBottom": { "message": "Below bookmarks" },
-  "surfaceOff": { "message": "Off" },
-  "pluginInstall": { "message": "Install from file…" },
-  "pluginInstallConfirm": { "message": "$name$ requests: $permissions$. Install?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
-  "pluginInstallInvalid": { "message": "Invalid plugin file: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginInstallManifestOnly": { "message": "That is a plugin manifest, not a package. Use JSON {manifest, code}; bundled plugins come back with Restore bundled plugins." },
-  "pluginGrantBookmarks": { "message": "Allow bookmark access" },
-  "pluginBookmarksGranted": { "message": "Bookmark access granted" },
-  "pluginBookmarksDenied": { "message": "Bookmark access was not granted: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginGrantPending": { "message": "Waiting for confirmation in Chrome…" },
-  "pluginGrantHint": { "message": "If the request did not appear, click the TabVale icon in the browser toolbar and allow bookmark access." },
-  "pluginGrantReload": { "message": "The browser does not see the permission in the manifest. Reload the extension on the extensions page and try again." },
-  "pluginPermNetwork": { "message": "network: $count$", "placeholders": { "count": { "content": "$1" } } },
-  "pluginPermStorage": { "message": "storage: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
-  "pluginPlacementLabel": { "message": "Placement for $name$", "placeholders": { "name": { "content": "$1" } } },
-  "screenLabel": { "message": "Screen" },
-  "addScreen": { "message": "＋ Add screen" },
-  "screenTitlePlaceholder": { "message": "Screen name" },
-  "deleteScreenTitle": { "message": "Delete screen?" },
-  "moveToHome": { "message": "Move to Home" },
-  "deleteWithScreen": { "message": "Delete with screen" },
-  "moveToScreenTitle": { "message": "Move to screen" },
-  "moveToScreen": { "message": "Move to screen…" },
-  "bookmarksCount": { "message": "$n$ bookmarks", "placeholders": { "n": { "content": "$1" } } },
-  "moveLeft": { "message": "Move left" },
-  "moveRight": { "message": "Move right" },
-  "mainScreenCannotDelete": { "message": "The Home screen cannot be deleted. Rename it or delete another screen." }
+  "errTitleAndUrl": {
+    "message": "Enter a title and URL."
+  },
+  "errInvalidUrl": {
+    "message": "Enter a valid URL."
+  },
+  "errBookmarkUrl": {
+    "message": "Enter the bookmark URL."
+  },
+  "errTitle": {
+    "message": "Enter a title."
+  },
+  "errNameAndUrl": {
+    "message": "Enter a name and a URL with %s."
+  },
+  "errEngineUrl": {
+    "message": "Enter a URL with %s."
+  },
+  "copyFailed": {
+    "message": "Failed to copy text."
+  },
+  "cutFailed": {
+    "message": "Failed to cut text."
+  },
+  "defaultBackground": {
+    "message": "Default"
+  },
+  "defaultScreen": {
+    "message": "Home"
+  },
+  "screenName": {
+    "message": "Screen $n$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyScreen": {
+    "message": "No bookmarks on this screen yet."
+  },
+  "emptyScreenAdd": {
+    "message": "Add bookmark"
+  },
+  "tabScreens": {
+    "message": "Screens"
+  },
+  "tabPlugins": {
+    "message": "Plugins"
+  },
+  "pluginsEmpty": {
+    "message": "No plugins yet. Download a .tvp from the site and install it as a file."
+  },
+  "pluginOpen": {
+    "message": "Open"
+  },
+  "pluginRemove": {
+    "message": "Remove"
+  },
+  "pluginMenuConfigure": {
+    "message": "Configure plugin"
+  },
+  "pluginMenuSettings": {
+    "message": "Plugin settings"
+  },
+  "pluginMenuDisable": {
+    "message": "Turn off"
+  },
+  "pluginMenuRemove": {
+    "message": "Remove"
+  },
+  "pluginRemoveConfirm": {
+    "message": "Remove plugin $name$?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "surfacePanel": {
+    "message": "Panel"
+  },
+  "surfaceFloating": {
+    "message": "Floating window"
+  },
+  "surfaceTiles": {
+    "message": "Tile"
+  },
+  "surfaceStripTop": {
+    "message": "Above bookmarks"
+  },
+  "surfaceStripBottom": {
+    "message": "Below bookmarks"
+  },
+  "surfaceOff": {
+    "message": "Off"
+  },
+  "pluginInstall": {
+    "message": "Install from file…"
+  },
+  "pluginInstallConfirm": {
+    "message": "$name$ requests: $permissions$. Install?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "permissions": {
+        "content": "$2"
+      }
+    }
+  },
+  "pluginInstallInvalid": {
+    "message": "Invalid plugin file: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginInstallManifestOnly": {
+    "message": "That is a plugin manifest, not a package. Use JSON {manifest, code}; bundled plugins come back with Restore bundled plugins."
+  },
+  "pluginGrantBookmarks": {
+    "message": "Allow bookmark access"
+  },
+  "pluginBookmarksGranted": {
+    "message": "Bookmark access granted"
+  },
+  "pluginBookmarksDenied": {
+    "message": "Bookmark access was not granted: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginGrantPending": {
+    "message": "Waiting for confirmation in Chrome…"
+  },
+  "pluginGrantHint": {
+    "message": "If the request did not appear, click the TabVale icon in the browser toolbar and allow bookmark access."
+  },
+  "pluginGrantReload": {
+    "message": "The browser does not see the permission in the manifest. Reload the extension on the extensions page and try again."
+  },
+  "pluginPermNetwork": {
+    "message": "network: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPermStorage": {
+    "message": "storage: $kb$ KB",
+    "placeholders": {
+      "kb": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPlacementLabel": {
+    "message": "Placement for $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "screenLabel": {
+    "message": "Screen"
+  },
+  "addScreen": {
+    "message": "＋ Add screen"
+  },
+  "screenTitlePlaceholder": {
+    "message": "Screen name"
+  },
+  "deleteScreenTitle": {
+    "message": "Delete screen?"
+  },
+  "moveToHome": {
+    "message": "Move to Home"
+  },
+  "deleteWithScreen": {
+    "message": "Delete with screen"
+  },
+  "moveToScreenTitle": {
+    "message": "Move to screen"
+  },
+  "moveToScreen": {
+    "message": "Move to screen…"
+  },
+  "bookmarksCount": {
+    "message": "$n$ bookmarks",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveLeft": {
+    "message": "Move left"
+  },
+  "moveRight": {
+    "message": "Move right"
+  },
+  "mainScreenCannotDelete": {
+    "message": "The Home screen cannot be deleted. Rename it or delete another screen."
+  },
+  "pluginCatalog": {
+    "message": "Open plugin catalog"
+  }
 }

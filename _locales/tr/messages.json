@@ -275,35 +275,128 @@
   "tabScreens": {
     "message": "Ekranlar"
   },
-  "tabPlugins": { "message": "Eklentiler" },
-  "pluginsEmpty": { "message": "Yüklü eklenti yok." },
-  "pluginOpen": { "message": "Aç" },
-  "pluginRemove": { "message": "Kaldır" },
-  "pluginMenuConfigure": { "message": "Eklentiyi yapılandır" },
-  "pluginMenuSettings": { "message": "Eklenti ayarları" },
-  "pluginMenuDisable": { "message": "Kapat" },
-  "pluginMenuRemove": { "message": "Kaldır" },
-  "pluginRestore": { "message": "Paket eklentileri geri yükle" },
-  "pluginRemoveConfirm": { "message": "$name$ eklentisi kaldırılsın mı?", "placeholders": { "name": { "content": "$1" } } },
-  "surfacePanel": { "message": "Panel" },
-  "surfaceFloating": { "message": "Yüzen pencere" },
-  "surfaceTiles": { "message": "Kutucuk" },
-  "surfaceStripTop": { "message": "Yer imlerinin üstünde" },
-  "surfaceStripBottom": { "message": "Yer imlerinin altında" },
-  "surfaceOff": { "message": "Kapalı" },
-  "pluginInstall": { "message": "Dosyadan yükle…" },
-  "pluginInstallConfirm": { "message": "$name$ şunları istiyor: $permissions$. Yüklensin mi?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
-  "pluginInstallInvalid": { "message": "Geçersiz eklenti dosyası: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginInstallManifestOnly": { "message": "Bu bir manifest, paket değil. JSON {manifest, code} kullanın; paket eklentiler «Paket eklentileri geri yükle» ile döner." },
-  "pluginGrantBookmarks": { "message": "Yer imi erişimine izin ver" },
-  "pluginBookmarksGranted": { "message": "Yer imi erişimi verildi" },
-  "pluginBookmarksDenied": { "message": "Yer imi erişimi verilmedi: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginGrantPending": { "message": "Chrome'da onay bekleniyor…" },
-  "pluginGrantHint": { "message": "İstek görünmediyse tarayıcı araç çubuğundaki TabVale simgesine tıklayın ve yer imi erişimine izin verin." },
-  "pluginGrantReload": { "message": "Tarayıcı izni manifestte görmüyor. Uzantılar sayfasından uzantıyı yeniden yükleyip tekrar deneyin." },
-  "pluginPermNetwork": { "message": "ağ: $count$", "placeholders": { "count": { "content": "$1" } } },
-  "pluginPermStorage": { "message": "depolama: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
-  "pluginPlacementLabel": { "message": "$name$ konumu", "placeholders": { "name": { "content": "$1" } } },
+  "tabPlugins": {
+    "message": "Eklentiler"
+  },
+  "pluginsEmpty": {
+    "message": "Henüz eklenti yok. Siteden bir .tvp indirip dosya olarak yükleyin."
+  },
+  "pluginOpen": {
+    "message": "Aç"
+  },
+  "pluginRemove": {
+    "message": "Kaldır"
+  },
+  "pluginMenuConfigure": {
+    "message": "Eklentiyi yapılandır"
+  },
+  "pluginMenuSettings": {
+    "message": "Eklenti ayarları"
+  },
+  "pluginMenuDisable": {
+    "message": "Kapat"
+  },
+  "pluginMenuRemove": {
+    "message": "Kaldır"
+  },
+  "pluginRemoveConfirm": {
+    "message": "$name$ eklentisi kaldırılsın mı?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "surfacePanel": {
+    "message": "Panel"
+  },
+  "surfaceFloating": {
+    "message": "Yüzen pencere"
+  },
+  "surfaceTiles": {
+    "message": "Kutucuk"
+  },
+  "surfaceStripTop": {
+    "message": "Yer imlerinin üstünde"
+  },
+  "surfaceStripBottom": {
+    "message": "Yer imlerinin altında"
+  },
+  "surfaceOff": {
+    "message": "Kapalı"
+  },
+  "pluginInstall": {
+    "message": "Dosyadan yükle…"
+  },
+  "pluginInstallConfirm": {
+    "message": "$name$ şunları istiyor: $permissions$. Yüklensin mi?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "permissions": {
+        "content": "$2"
+      }
+    }
+  },
+  "pluginInstallInvalid": {
+    "message": "Geçersiz eklenti dosyası: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginInstallManifestOnly": {
+    "message": "Bu bir manifest, paket değil. JSON {manifest, code} kullanın; paket eklentiler «Paket eklentileri geri yükle» ile döner."
+  },
+  "pluginGrantBookmarks": {
+    "message": "Yer imi erişimine izin ver"
+  },
+  "pluginBookmarksGranted": {
+    "message": "Yer imi erişimi verildi"
+  },
+  "pluginBookmarksDenied": {
+    "message": "Yer imi erişimi verilmedi: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginGrantPending": {
+    "message": "Chrome'da onay bekleniyor…"
+  },
+  "pluginGrantHint": {
+    "message": "İstek görünmediyse tarayıcı araç çubuğundaki TabVale simgesine tıklayın ve yer imi erişimine izin verin."
+  },
+  "pluginGrantReload": {
+    "message": "Tarayıcı izni manifestte görmüyor. Uzantılar sayfasından uzantıyı yeniden yükleyip tekrar deneyin."
+  },
+  "pluginPermNetwork": {
+    "message": "ağ: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPermStorage": {
+    "message": "depolama: $kb$ KB",
+    "placeholders": {
+      "kb": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPlacementLabel": {
+    "message": "$name$ konumu",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
   "screenLabel": {
     "message": "Ekran"
   },
@@ -344,5 +437,8 @@
   },
   "mainScreenCannotDelete": {
     "message": "Ana Sayfa ekranı silinemez. Yeniden adlandırın veya başka bir ekranı silin."
+  },
+  "pluginCatalog": {
+    "message": "Eklenti kataloğunu aç"
   }
 }
