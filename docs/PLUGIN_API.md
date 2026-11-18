@@ -78,6 +78,18 @@ const result = await api.bookmarks.import(screenId, items);
 `import` accepts `[{ title, url }]`, keeps safe web URLs only, deduplicates
 by URL and adds at most 300 bookmarks.
 
+## Site icons
+
+```js
+const dataUrl = await api.icon.favicon('https://example.com');
+```
+
+Reads the site icon from the browser's favicon cache — the same source the
+bookmark tiles use. It works without network access and also covers `http`
+and self-signed internal sites; the browser must have seen the site before.
+Returns a `data:` URL or an empty string when there is no icon. Only
+`http`/`https` addresses are accepted; other schemes reject.
+
 ## UI
 
 | Method | Effect |

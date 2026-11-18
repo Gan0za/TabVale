@@ -38,6 +38,7 @@ function pluginMethodAllowed(manifest, method) {
         case 'ui.notify':
         case 'ui.openExternal':
         case 'ui.openManager':
+        case 'icon.favicon':
             return true;
         case 'fetch':
             return Array.isArray(manifest?.permissions?.network)

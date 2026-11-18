@@ -1009,6 +1009,15 @@ async function onPluginMessage(event) {
                 reply(true);
                 break;
             }
+            case 'icon.favicon': {
+                // Иконка берётся из favicon-кэша браузера, без сети и без
+                // доступа к чужим страницам. Нет иконки — пустая строка.
+                let pageUrl;
+                try { pageUrl = new URL(String(params.url || '')); } catch { throw new Error('invalid url'); }
+                if (!/^https?:$/.test(pageUrl.protocol)) throw new Error('only http and https have favicons');
+                reply(await fetchFaviconDataUrl(pageUrl.href));
+                break;
+            }
             case 'ui.openManager': {
                 // Кнопка внутри панели ведёт к строке менеджера: сам запрос
                 // прав делает кнопка там, где клик — настоящий жест.

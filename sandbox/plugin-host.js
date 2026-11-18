@@ -78,6 +78,10 @@
                 remove: (key) => rpc('storage.remove', { key }),
             },
             fetch: (url, options) => rpc('fetch', { url, options }),
+            // Иконка сайта из кэша браузера: data:URL или пустая строка.
+            icon: {
+                favicon: (url) => rpc('icon.favicon', { url }),
+            },
             bookmarks: {
                 tree: () => rpc('bookmarks.tree'),
                 import: (screenId, items) => rpc('bookmarks.import', { screenId, items }),
