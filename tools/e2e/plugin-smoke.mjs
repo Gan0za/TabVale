@@ -782,6 +782,28 @@ const languageMenu = await evaluate(`(async () => {
   return result;
 })()`);
 console.log('language menu:', languageMenu);
+
+// То же меню в низком окне: список должен уместиться и прокручиваться.
+await send('Emulation.setDeviceMetricsOverride', { width: 1000, height: 420, deviceScaleFactor: 1, mobile: false });
+await sleep(300);
+const languageMenuSmall = await evaluate(`(async () => {
+  const toggle = document.getElementById('language-toggle');
+  const menu = document.getElementById('language-menu');
+  toggle?.click();
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  const rect = menu.getBoundingClientRect();
+  const result = {
+    open: !menu.classList.contains('hidden'),
+    top: Math.round(rect.top),
+    bottom: Math.round(rect.bottom),
+    viewport: window.innerHeight,
+    scrollable: menu.scrollHeight > menu.clientHeight,
+  };
+  toggle?.click();
+  return result;
+})()`);
+await send('Emulation.clearDeviceMetricsOverride');
+console.log('language menu, 420px:', languageMenuSmall);
 await evaluate(`document.querySelector('.plugin-panel-close')?.click()`);
 await sleep(300);
 
@@ -1069,6 +1091,8 @@ const passed = dock.count > 0
     && tilesAfterSwitch === 1
     && tileOrder?.firstIsBookmark === true && tileOrder?.lastIsTile === true && tileOrder?.tiles === 1
     && languageMenu?.open === true && languageMenu?.bottom <= languageMenu?.viewport + 1 && languageMenu?.buttons >= 13
+    && languageMenuSmall?.open === true && languageMenuSmall?.top >= -1
+    && languageMenuSmall?.bottom <= languageMenuSmall?.viewport + 1
     && pluginMenu?.open === true && /Настройки плагинов/.test(pluginMenu.text)
     && outsideClose === 'closed'
     && floatingWorks
