@@ -46,6 +46,13 @@ function initPlugins() {
     document.addEventListener('click', (event) => {
         const tab = event.target.closest?.('.settings-tab');
         if (tab && tab.dataset.tab === 'plugins') renderPluginManager();
+
+        // Клик вне панели закрывает её. Док, плитка и настройки не
+        // считаются «вне»: из дока и плитки панель как раз открывают,
+        // а настройки рисуются поверх. Плавающие окна не трогаем.
+        if (!pluginPanelInstance) return;
+        if (event.target.closest?.('.plugin-panel, .plugin-dock, .plugin-tile, .modal')) return;
+        closePluginPanel();
     });
 
     initPluginInstall();
@@ -949,7 +956,20 @@ async function onPluginMessage(event) {
     const instance = findPluginInstance(event.source);
     if (!instance || !instance.frame.contentWindow) return;
     const data = event.data;
-    if (!data || typeof data !== 'object' || data.type !== 'tabvale:rpc') return;
+    if (!data || typeof data !== 'object') return;
+
+    // Правый клик внутри strip-виджета: координаты кадра переводим в
+    // координаты страницы и открываем меню плагина.
+    if (data.type === 'tabvale:context-menu') {
+        const rect = instance.frame.getBoundingClientRect();
+        const x = rect.left + Math.min(rect.width, Math.max(0, Number(data.x) || 0));
+        const y = rect.top + Math.min(rect.height, Math.max(0, Number(data.y) || 0));
+        contextMenuData = { pluginId: instance.record.id, surface: instance.surface };
+        openContextMenu(x, y, getContextMenuItems('plugin', contextMenuData));
+        return;
+    }
+
+    if (data.type !== 'tabvale:rpc') return;
 
     // Кадр мог быть закрыт или удалён, пока запрос выполнялся.
     const reply = (result) => instance.frame.contentWindow?.postMessage(

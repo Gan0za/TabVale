@@ -154,7 +154,9 @@ const send = (method, params = {}) => new Promise((resolve, reject) => {
 });
 const evaluate = async (expression, contextId) => {
   const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true, contextId });
-  if (r.exceptionDetails) throw new Error(r.exceptionDetails.text);
+  if (r.exceptionDetails) {
+    throw new Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text);
+  }
   return r.result.value;
 };
 
@@ -469,6 +471,33 @@ localizedManagerName = await evaluate(`(async () => {
 })()`);
 console.log('localized manager name:', localizedManagerName);
 
+// Меню плагина по правому клику на заголовке панели; клик вне панели её закрывает.
+// Настройки на время проверки прячем: оверлей перекрывает панель.
+await evaluate(`(() => {
+  document.getElementById('settings-modal')?.classList.add('hidden');
+  document.getElementById('overlay')?.classList.add('hidden');
+  document.querySelector('.plugin-dock-button[data-plugin-id="com.tabvale.layout"]')?.click();
+})()`);
+await sleep(700);
+const pluginMenu = await evaluate(`(() => {
+  const header = document.querySelector('.plugin-panel-header');
+  if (!header) return null;
+  const overlayHidden = document.getElementById('overlay').classList.contains('hidden');
+  header.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, clientX: 240, clientY: 240 }));
+  const menu = document.getElementById('custom-context-menu');
+  return { overlayHidden, open: !menu.classList.contains('hidden'), text: menu.textContent };
+})()`);
+console.log('plugin menu:', pluginMenu);
+await evaluate(`closeContextMenu()`);
+const outsideClose = await evaluate(`(() => {
+  if (!document.querySelector('.plugin-panel')) return 'not-open';
+  document.getElementById('main-container').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  return document.querySelector('.plugin-panel') ? 'open' : 'closed';
+})()`);
+console.log('outside click:', outsideClose);
+await evaluate(`openSettingsModal('plugins')`);
+await sleep(300);
+
 const openByManager = await evaluate(`(async () => {
   document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-open')?.click();
   await new Promise((resolve) => setTimeout(resolve, 800));
@@ -672,6 +701,16 @@ await sleep(800);
 const tilePanel = await evaluate(`!!document.querySelector('.plugin-panel')`);
 tileWorks = tileCount === 1 && tilePanel;
 console.log('plugin tile:', { tileCount, tilePanel });
+// Плитки не исчезают при переключении экрана: renderBookmarks чистит контейнер.
+const tilesAfterSwitch = await evaluate(`(() => {
+  const first = currentState.currentScreenId;
+  currentState.screens.push({ id: 'smoke-tiles', title: 'Smoke tiles', bookmarks: [] });
+  switchScreen('smoke-tiles');
+  const count = document.querySelectorAll('.plugin-tile').length;
+  switchScreen(first);
+  return count;
+})()`);
+console.log('tiles after screen switch:', tilesAfterSwitch);
 await evaluate(`document.querySelector('.plugin-panel-close')?.click()`);
 await sleep(300);
 
@@ -953,6 +992,9 @@ const passed = dock.count > 0
     && pomodoroFits
     && appLauncherFits
     && tileWorks
+    && tilesAfterSwitch === 1
+    && pluginMenu?.open === true && /Настройки плагинов/.test(pluginMenu.text)
+    && outsideClose === 'closed'
     && floatingWorks
     && panelToManager.clicked && panelToManager.open && panelToManager.pane && panelToManager.highlighted
     && grantRequested

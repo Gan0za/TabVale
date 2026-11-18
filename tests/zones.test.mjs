@@ -97,4 +97,13 @@ assert.deepEqual(
     'меню фона: следующий фон, редактировать, настройки фонов, настройки'
 );
 
+// --- Меню плагина: четыре действия для любой поверхности ---
+const pluginMenu = getContextMenuItems('plugin', { pluginId: 'com.tabvale.clock', surface: 'tiles' });
+assert.deepEqual(
+    Array.from(pluginMenu.filter(i => !i.separator).map(i => i.action)),
+    ['pluginConfigure', 'pluginManager', 'pluginDisable', 'pluginRemove'],
+    'меню плагина: настроить, настройки, выключить, удалить'
+);
+assert.equal(pluginMenu[0].label, ruMessages.pluginMenuConfigure.message, 'подпись берётся из словаря');
+
 console.log('zones.test.mjs: все проверки пройдены');

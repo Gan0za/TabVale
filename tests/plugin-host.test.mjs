@@ -41,6 +41,11 @@ assert.ok(source.includes("sandbox/plugin-host.html"), 'панель грузи�
 assert.ok(source.includes('renderPluginStrip'), 'есть рендер полосы плагинов');
 assert.ok(css.includes('.plugin-strip-item'), 'есть стили элемента полосы');
 assert.ok(source.includes('renderPluginFloating'), 'есть рендер плавающих окон');
+assert.ok(source.includes('tabvale:context-menu'), 'правый клик в полосе доходит до хоста');
+assert.ok(read('sandbox/plugin-host.js').includes('tabvale:context-menu'), 'sandbox передаёт правый клик');
+assert.ok(read('newtab/core/render.js').includes("case 'plugin':"), 'есть меню плагина');
+assert.ok(read('newtab/features/context-menu.js').includes('pluginConfigure'), 'пункт «Настроить плагин» работает');
+assert.ok(source.includes('.plugin-panel, .plugin-dock, .plugin-tile, .modal'), 'клик вне панели её закрывает');
 assert.ok(source.includes('openFloatingWindow'), 'док показывает плавающее окно');
 assert.ok(source.includes('clampFloatingWindows'), 'позиция окна пересчитывается при ресайзе');
 assert.ok(css.includes('.plugin-floating'), 'есть стили плавающего окна');
