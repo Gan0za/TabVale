@@ -1,7 +1,7 @@
 [
   {
     "id": "com.tabvale.clock",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "path": "com.tabvale.clock/"
   },
   {
@@ -11,7 +11,7 @@
   },
   {
     "id": "com.tabvale.layout",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "path": "com.tabvale.layout/"
   },
   {

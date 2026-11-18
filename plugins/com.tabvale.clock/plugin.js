@@ -2,10 +2,10 @@
 // поэтому document — это DOM панели, а не страницы новой вкладки.
 function mount(api) {
     const root = document.createElement('div');
-    root.style.cssText = 'display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;gap:6px;padding:18px;text-align:center';
+    root.style.cssText = 'display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;gap:6px;padding:6px;text-align:center';
 
     const time = document.createElement('div');
-    time.style.cssText = 'font-size:44px;font-weight:600;letter-spacing:-1px;font-variant-numeric:tabular-nums';
+    time.style.cssText = 'font-size:40px;font-weight:600;letter-spacing:-1px;font-variant-numeric:tabular-nums';
 
     const date = document.createElement('div');
     date.style.cssText = 'font-size:14px;color:var(--tabvale-muted)';

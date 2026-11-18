@@ -1,6 +1,6 @@
 function mount(api) {
-    const EN = '`qwertyuiop[]asdfghjkl;\'zxcvbnm,./~!@#$%^&*()_+{}|:"<>?';
-    const RU = 'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё!"№;%:?*()_+/ХЪЖЭБЮ,';
+    const EN = '`qwertyuiop[]asdfghjkl;\'zxcvbnm,./~!@#$%^&*()_+{}|:"<>?QWERTYUIOPASDFGHJKLZXCVBNM';
+    const RU = 'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё!"№;%:?*()_+/ХЪЖЭБЮ,ЙЦУКЕНГШЩЗФЫВАПРОЛДЯЧСМИТЬ';
 
     function convert(text, toRussian) {
         const from = toRussian ? EN : RU;
