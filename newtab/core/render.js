@@ -246,7 +246,9 @@ function buildManagerListItem({ buttons, selected, imageUrl, emptyImageText, tit
     if (imageUrl) {
         imageEl = document.createElement('img');
         setImageSource(imageEl, imageUrl, '');
-        if (rowType === 'bookmark' && subtitle) applyCachedIcon(imageEl, subtitle);
+        if ((rowType === 'bookmark' || rowType === 'searchEngine') && subtitle) {
+            applyCachedIcon(imageEl, subtitle);
+        }
     } else {
         imageEl = document.createElement('div');
         imageEl.className = 'no-preview no-logo';

@@ -148,9 +148,10 @@ const contextActions = {
         currentState.bookmarks.push({
             title: hostname,
             url,
-            icon: `https://${hostname}/favicon.ico`,
+            icon: defaultIconUrl(url),
         });
         saveState({ bookmarks: currentState.bookmarks });
+        refreshIconCache(url);
         refreshUI();
     },
 
