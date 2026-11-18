@@ -297,10 +297,10 @@
   {
     "id": "com.tabvale.github",
     "name": "GitHub stats",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "file": "com.tabvale.github.tvp",
     "icon": "com.tabvale.github.svg",
-    "description": "Stars, forks and open issues of a public repository.",
+    "description": "Stars, forks and issues for the repositories you choose.",
     "locales": {
       "ru": {
         "name": "Статистика GitHub"
@@ -346,10 +346,10 @@
   {
     "id": "com.tabvale.apps",
     "name": "App launcher",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "file": "com.tabvale.apps.tvp",
     "icon": "com.tabvale.apps.svg",
-    "description": "Opens Obsidian and VS Code through their URL schemes.",
+    "description": "Launch your own applications from the new tab.",
     "locales": {
       "ru": {
         "name": "Запуск приложений"

@@ -14,23 +14,32 @@ const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 
 function makeElement(tag) {
-    return {
+    const element = {
         tagName: tag,
         type: '',
         style: {},
         children: [],
         listeners: {},
         attrs: {},
-        textContent: '',
         value: '',
         placeholder: '',
         min: '',
         max: '',
+        _text: '',
         append(...children) { this.children.push(...children); },
         addEventListener(type, fn) { this.listeners[type] = fn; },
         setAttribute(name, value) { this.attrs[name] = String(value); },
         focus() {},
     };
+    // Как в DOM: установка текста заменяет детей, пустая строка очищает.
+    Object.defineProperty(element, 'textContent', {
+        get() { return this._text; },
+        set(value) {
+            this._text = String(value);
+            if (this._text === '') this.children.length = 0;
+        },
+    });
+    return element;
 }
 
 const documentStub = {
@@ -41,7 +50,7 @@ const documentStub = {
 
 function mountPlugin(file, { api, documentOverride = documentStub } = {}) {
     const source = read(file);
-    const mount = vm.runInNewContext(`${source}\n;mount`, { document: documentOverride, console, api });
+    const mount = vm.runInNewContext(`${source}\n;mount`, { document: documentOverride, console, api, URL });
     mount(api);
     return documentOverride.body.children.at(-1);
 }
@@ -154,27 +163,115 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
     assert.equal(failingWrap.children[1].textContent, 'Нет связи с Open-Meteo', 'ошибка названа понятно');
 }
 
-// ---- Приложения: у каждой кнопки есть иконка, клик открывает приложение ----
+// ---- Приложения: свои записи, favicon из кэша, открытие и удаление ----
 {
+    const stored = {};
     const opened = [];
+    let faviconCalls = 0;
     const api = {
         locale: 'ru',
         surface: 'panel',
-        ui: { ready() {}, openExternal: (url) => opened.push(url) },
-        storage: { get: async () => null, set: async () => {} },
+        ui: { ready() {}, openExternal: (url) => { opened.push(url); return Promise.resolve(true); } },
+        storage: {
+            get: async (key) => stored[key] ?? null,
+            set: async (key, value) => { stored[key] = value; },
+        },
+        icon: {
+            favicon: async () => { faviconCalls += 1; return 'data:image/png;base64,AAA'; },
+        },
     };
     const sandboxDocument = { ...documentStub, body: makeElement('body') };
     const wrap = mountPlugin('plugins/com.tabvale.apps/plugin.js', { api, documentOverride: sandboxDocument });
+    await flush();
 
-    assert.equal(wrap.children.length, 2, 'две кнопки приложений');
-    for (const button of wrap.children) {
-        const icon = button.children.at(-1);
-        assert.equal(icon.tagName, 'svg', 'иконка приложения есть');
-        assert.equal(icon.children.length, 2, 'иконка нарисована из двух контуров');
-    }
-    wrap.children[0].listeners.click();
-    wrap.children[1].listeners.click();
-    assert.deepEqual(opened, ['obsidian://open', 'vscode://'], 'клики открывают приложения');
+    const list = wrap.children[0];
+    const addRow = wrap.children[1];
+    assert.equal(list.children.length, 2, 'два приложения по умолчанию');
+    list.children[0].listeners.click();
+    assert.deepEqual(opened, ['obsidian://open'], 'клик открывает приложение');
+
+    const [urlInput, titleInput, descInput, addButton] = addRow.children;
+    urlInput.value = 'https://example.com/app';
+    titleInput.value = 'Example';
+    descInput.value = 'Демо';
+    addButton.listeners.click();
+    await flush();
+    await flush();
+
+    assert.equal(stored.apps.length, 3, 'приложение сохранено');
+    assert.equal(stored.apps[2].title, 'Example');
+    assert.equal(stored.apps[2].description, 'Демо');
+    assert.equal(list.children.length, 3, 'строка появилась в списке');
+    assert.ok(faviconCalls >= 1, 'для http-ссылки запрошена иконка сайта');
+
+    const custom = list.children[2];
+    const iconBox = custom.children.at(-2);
+    assert.equal(iconBox.children[0]?.tagName, 'img', 'подставлен favicon');
+    assert.equal(iconBox.children[0]?.src, 'data:image/png;base64,AAA');
+
+    const remove = custom.children.at(-1);
+    remove.listeners.click({ stopPropagation() {} });
+    await flush();
+    assert.equal(stored.apps.length, 2, 'приложение удалено');
+    assert.equal(list.children.length, 2, 'строка исчезла');
+
+    const failing = { ...api };
+    const failDoc = { ...documentStub, body: makeElement('body') };
+    const failWrap = mountPlugin('plugins/com.tabvale.apps/plugin.js', { api: { ...failing, surface: 'panel' }, documentOverride: failDoc });
+    await flush();
+    const failAdd = failWrap.children[1];
+    const [badUrl, badTitle, , badButton] = failAdd.children;
+    badUrl.value = 'ftp://example.com';
+    badTitle.value = 'FTP';
+    badButton.listeners.click();
+    await flush();
+    assert.ok(String(failAdd.children.at(-1).textContent).includes('Поддерживаются'), 'чужая схема отклоняется');
+}
+
+// ---- GitHub: список своих репозиториев в панели, звёзды в полосе ----
+{
+    const stored = {};
+    const api = {
+        locale: 'ru',
+        surface: 'panel',
+        ui: { ready() {} },
+        storage: {
+            get: async (key) => stored[key] ?? null,
+            set: async (key, value) => { stored[key] = value; },
+        },
+        fetch: async (url) => ({
+            ok: true,
+            text: JSON.stringify({
+                stargazers_count: url.includes('foo/bar') ? 7 : 12,
+                forks_count: 3,
+                open_issues_count: 1,
+            }),
+        }),
+    };
+    const sandboxDocument = { ...documentStub, body: makeElement('body') };
+    const wrap = mountPlugin('plugins/com.tabvale.github/plugin.js', { api, documentOverride: sandboxDocument });
+    await flush();
+    await flush();
+
+    const [summary, list, addRow] = wrap.children;
+    assert.ok(summary.textContent.includes('Репозитории: 1'), 'сводка по умолчанию');
+    assert.ok(list.children[0].children[1].textContent.includes('★ 12'), 'статистика репозитория');
+
+    const [input, addButton] = addRow.children;
+    input.value = 'https://github.com/foo/bar';
+    addButton.listeners.click();
+    await flush();
+    await flush();
+
+    assert.deepEqual(Array.from(stored.repos), ['Gan0za/TabVale', 'foo/bar'], 'репозиторий сохранён');
+    assert.equal(list.children.length, 2, 'две строки в списке');
+    assert.ok(summary.textContent.includes('Репозитории: 2'));
+
+    const stripApi = { ...api, surface: 'strip' };
+    const stripDocument = { ...documentStub, body: makeElement('body') };
+    const stripWrap = mountPlugin('plugins/com.tabvale.github/plugin.js', { api: stripApi, documentOverride: stripDocument });
+    await flush();
+    assert.equal(stripWrap.children[0].textContent, '★ 12', 'в полосе только звёзды');
 }
 
 console.log('plugin-widgets.test.mjs: все проверки пройдены');
