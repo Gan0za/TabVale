@@ -1,0 +1,493 @@
+[
+  {
+    "id": "com.tabvale.clock",
+    "name": "Clock",
+    "version": "1.0.3",
+    "file": "com.tabvale.clock.tvp",
+    "icon": "com.tabvale.clock.svg",
+    "description": "A calm clock and date for the side panel.",
+    "locales": {
+      "ru": {
+        "name": "Часы",
+        "description": "Спокойные часы и дата в боковой панели."
+      },
+      "de": {
+        "name": "Uhr",
+        "description": "Ruhige Uhr mit Datum für die Seitenleiste."
+      },
+      "fr": {
+        "name": "Horloge",
+        "description": "Une horloge calme avec la date dans le panneau latéral."
+      },
+      "es": {
+        "name": "Reloj",
+        "description": "Un reloj tranquilo con la fecha en el panel lateral."
+      },
+      "pt-BR": {
+        "name": "Relógio"
+      },
+      "it": {
+        "name": "Orologio"
+      },
+      "pl": {
+        "name": "Zegar"
+      },
+      "tr": {
+        "name": "Saat"
+      },
+      "uk": {
+        "name": "Годинник"
+      },
+      "zh-CN": {
+        "name": "时钟"
+      },
+      "ja": {
+        "name": "時計"
+      },
+      "ko": {
+        "name": "시계"
+      }
+    }
+  },
+  {
+    "id": "com.tabvale.notes",
+    "name": "Quick notes",
+    "version": "1.0.2",
+    "file": "com.tabvale.notes.tvp",
+    "icon": "com.tabvale.notes.svg",
+    "description": "A small scratchpad that saves as you type.",
+    "locales": {
+      "ru": {
+        "name": "Быстрые заметки"
+      },
+      "en": {
+        "name": "Quick notes"
+      },
+      "de": {
+        "name": "Notizen"
+      },
+      "fr": {
+        "name": "Notes rapides"
+      },
+      "es": {
+        "name": "Notas rápidas"
+      },
+      "pt-BR": {
+        "name": "Notas rápidas"
+      },
+      "it": {
+        "name": "Note rapide"
+      },
+      "pl": {
+        "name": "Szybkie notatki"
+      },
+      "tr": {
+        "name": "Hızlı notlar"
+      },
+      "uk": {
+        "name": "Швидкі нотатки"
+      },
+      "zh-CN": {
+        "name": "快速笔记"
+      },
+      "ja": {
+        "name": "クイックメモ"
+      },
+      "ko": {
+        "name": "빠른 메모"
+      }
+    }
+  },
+  {
+    "id": "com.tabvale.layout",
+    "name": "Layout converter",
+    "version": "1.0.4",
+    "file": "com.tabvale.layout.tvp",
+    "icon": "com.tabvale.layout.svg",
+    "description": "Converts text typed in the wrong keyboard layout.",
+    "locales": {
+      "ru": {
+        "name": "Конвертер раскладок"
+      },
+      "en": {
+        "name": "Layout converter"
+      },
+      "de": {
+        "name": "Tastaturlayout"
+      },
+      "fr": {
+        "name": "Convertisseur"
+      },
+      "es": {
+        "name": "Convertidor"
+      },
+      "pt-BR": {
+        "name": "Conversor"
+      },
+      "it": {
+        "name": "Convertitore"
+      },
+      "pl": {
+        "name": "Konwerter"
+      },
+      "tr": {
+        "name": "Düzen dönüştürücü"
+      },
+      "uk": {
+        "name": "Конвертер розкладок"
+      },
+      "zh-CN": {
+        "name": "键盘布局转换器"
+      },
+      "ja": {
+        "name": "キーボード配列変換"
+      },
+      "ko": {
+        "name": "키보드 배열 변환"
+      }
+    }
+  },
+  {
+    "id": "com.tabvale.pomodoro",
+    "name": "Timer",
+    "version": "1.0.3",
+    "file": "com.tabvale.pomodoro.tvp",
+    "icon": "com.tabvale.pomodoro.svg",
+    "description": "A countdown timer for the minutes you choose.",
+    "locales": {
+      "ru": {
+        "name": "Таймер"
+      },
+      "en": {
+        "name": "Timer"
+      },
+      "de": {
+        "name": "Timer"
+      },
+      "fr": {
+        "name": "Minuteur"
+      },
+      "es": {
+        "name": "Temporizador"
+      },
+      "pt-BR": {
+        "name": "Temporizador"
+      },
+      "it": {
+        "name": "Timer"
+      },
+      "pl": {
+        "name": "Minutnik"
+      },
+      "tr": {
+        "name": "Zamanlayıcı"
+      },
+      "uk": {
+        "name": "Таймер"
+      },
+      "zh-CN": {
+        "name": "计时器"
+      },
+      "ja": {
+        "name": "タイマー"
+      },
+      "ko": {
+        "name": "타이머"
+      }
+    }
+  },
+  {
+    "id": "com.tabvale.passwords",
+    "name": "Password generator",
+    "version": "1.0.2",
+    "file": "com.tabvale.passwords.tvp",
+    "icon": "com.tabvale.passwords.svg",
+    "description": "Generates random passwords locally, without any permissions.",
+    "locales": {
+      "ru": {
+        "name": "Генератор паролей"
+      },
+      "en": {
+        "name": "Password generator"
+      },
+      "de": {
+        "name": "Passwortgenerator"
+      },
+      "fr": {
+        "name": "Générateur de mots de passe"
+      },
+      "es": {
+        "name": "Generador de contraseñas"
+      },
+      "pt-BR": {
+        "name": "Gerador de senhas"
+      },
+      "it": {
+        "name": "Generatore di password"
+      },
+      "pl": {
+        "name": "Generator haseł"
+      },
+      "tr": {
+        "name": "Parola oluşturucu"
+      },
+      "uk": {
+        "name": "Генератор паролів"
+      },
+      "zh-CN": {
+        "name": "密码生成器"
+      },
+      "ja": {
+        "name": "パスワード生成"
+      },
+      "ko": {
+        "name": "비밀번호 생성기"
+      }
+    }
+  },
+  {
+    "id": "com.tabvale.weather",
+    "name": "Weather",
+    "version": "1.0.3",
+    "file": "com.tabvale.weather.tvp",
+    "icon": "com.tabvale.weather.svg",
+    "description": "Current weather from Open-Meteo.",
+    "locales": {
+      "ru": {
+        "name": "Погода"
+      },
+      "en": {
+        "name": "Weather"
+      },
+      "de": {
+        "name": "Wetter"
+      },
+      "fr": {
+        "name": "Météo"
+      },
+      "es": {
+        "name": "Tiempo"
+      },
+      "pt-BR": {
+        "name": "Tempo"
+      },
+      "it": {
+        "name": "Meteo"
+      },
+      "pl": {
+        "name": "Pogoda"
+      },
+      "tr": {
+        "name": "Hava durumu"
+      },
+      "uk": {
+        "name": "Погода"
+      },
+      "zh-CN": {
+        "name": "天气"
+      },
+      "ja": {
+        "name": "天気"
+      },
+      "ko": {
+        "name": "날씨"
+      }
+    }
+  },
+  {
+    "id": "com.tabvale.github",
+    "name": "GitHub stats",
+    "version": "1.0.2",
+    "file": "com.tabvale.github.tvp",
+    "icon": "com.tabvale.github.svg",
+    "description": "Stars, forks and open issues of a public repository.",
+    "locales": {
+      "ru": {
+        "name": "Статистика GitHub"
+      },
+      "en": {
+        "name": "GitHub stats"
+      },
+      "de": {
+        "name": "GitHub-Statistiken"
+      },
+      "fr": {
+        "name": "Statistiques GitHub"
+      },
+      "es": {
+        "name": "Estadísticas de GitHub"
+      },
+      "pt-BR": {
+        "name": "Estatísticas do GitHub"
+      },
+      "it": {
+        "name": "Statistiche GitHub"
+      },
+      "pl": {
+        "name": "Statystyki GitHub"
+      },
+      "tr": {
+        "name": "GitHub istatistikleri"
+      },
+      "uk": {
+        "name": "Статистика GitHub"
+      },
+      "zh-CN": {
+        "name": "GitHub 统计"
+      },
+      "ja": {
+        "name": "GitHub 統計"
+      },
+      "ko": {
+        "name": "GitHub 통계"
+      }
+    }
+  },
+  {
+    "id": "com.tabvale.apps",
+    "name": "App launcher",
+    "version": "1.0.3",
+    "file": "com.tabvale.apps.tvp",
+    "icon": "com.tabvale.apps.svg",
+    "description": "Opens Obsidian and VS Code through their URL schemes.",
+    "locales": {
+      "ru": {
+        "name": "Запуск приложений"
+      },
+      "en": {
+        "name": "App launcher"
+      },
+      "de": {
+        "name": "App-Starter"
+      },
+      "fr": {
+        "name": "Lanceur d’applications"
+      },
+      "es": {
+        "name": "Lanzador de aplicaciones"
+      },
+      "pt-BR": {
+        "name": "Iniciador de aplicativos"
+      },
+      "it": {
+        "name": "Avvio app"
+      },
+      "pl": {
+        "name": "Uruchamianie aplikacji"
+      },
+      "tr": {
+        "name": "Uygulama başlatıcı"
+      },
+      "uk": {
+        "name": "Запуск застосунків"
+      },
+      "zh-CN": {
+        "name": "应用启动器"
+      },
+      "ja": {
+        "name": "アプリ起動"
+      },
+      "ko": {
+        "name": "앱 실행기"
+      }
+    }
+  },
+  {
+    "id": "com.tabvale.rss",
+    "name": "RSS reader",
+    "version": "1.0.2",
+    "file": "com.tabvale.rss.tvp",
+    "icon": "com.tabvale.rss.svg",
+    "description": "Top stories from Habr's RSS feed.",
+    "locales": {
+      "ru": {
+        "name": "RSS-ридер"
+      },
+      "en": {
+        "name": "RSS reader"
+      },
+      "de": {
+        "name": "RSS-Reader"
+      },
+      "fr": {
+        "name": "Lecteur RSS"
+      },
+      "es": {
+        "name": "Lector RSS"
+      },
+      "pt-BR": {
+        "name": "Leitor RSS"
+      },
+      "it": {
+        "name": "Lettore RSS"
+      },
+      "pl": {
+        "name": "Czytnik RSS"
+      },
+      "tr": {
+        "name": "RSS okuyucu"
+      },
+      "uk": {
+        "name": "RSS-рідер"
+      },
+      "zh-CN": {
+        "name": "RSS 阅读器"
+      },
+      "ja": {
+        "name": "RSS リーダー"
+      },
+      "ko": {
+        "name": "RSS 리더"
+      }
+    }
+  },
+  {
+    "id": "com.tabvale.bookmarks",
+    "name": "Bookmark importer",
+    "version": "1.0.3",
+    "file": "com.tabvale.bookmarks.tvp",
+    "icon": "com.tabvale.bookmarks.svg",
+    "description": "Moves bookmarks from the browser into the active screen.",
+    "locales": {
+      "ru": {
+        "name": "Импорт закладок"
+      },
+      "en": {
+        "name": "Bookmark importer"
+      },
+      "de": {
+        "name": "Lesezeichen-Import"
+      },
+      "fr": {
+        "name": "Importateur de favoris"
+      },
+      "es": {
+        "name": "Importador de marcadores"
+      },
+      "pt-BR": {
+        "name": "Importador de favoritos"
+      },
+      "it": {
+        "name": "Importatore segnalibri"
+      },
+      "pl": {
+        "name": "Importer zakładek"
+      },
+      "tr": {
+        "name": "Yer imi içe aktarıcı"
+      },
+      "uk": {
+        "name": "Імпорт закладок"
+      },
+      "zh-CN": {
+        "name": "书签导入"
+      },
+      "ja": {
+        "name": "ブックマーク取り込み"
+      },
+      "ko": {
+        "name": "북마크 가져오기"
+      }
+    }
+  }
+]
