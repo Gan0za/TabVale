@@ -98,7 +98,8 @@ Returns a `data:` URL or an empty string when there is no icon. Only
 | `api.ui.close()` | Hides the strip widget or floating window; closes the panel |
 | `api.ui.resize({ width, height })` | Requests a size inside the manifest ranges (panel, strip height) |
 | `api.ui.notify(text, level)` | Writes a message to the host console |
-| `api.ui.openExternal(url)` | Opens `https`, `http`, `obsidian:` or `vscode:` links |
+| `api.ui.openExternal(url)` | Opens a link with any scheme except `javascript:`, `data:`, `blob:`, `vbscript:` and `file:` |
+| `api.ui.openPanel()` | Opens this plugin's own panel, e.g. from a strip widget |
 | `api.ui.openManager()` | Opens the plugin manager on this plugin's row |
 
 Use `openExternal` for launchers: the sandbox cannot navigate the top page.

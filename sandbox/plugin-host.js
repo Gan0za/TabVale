@@ -92,6 +92,8 @@
                 resize: (size) => rpc('ui.resize', size || {}),
                 notify: (text, level) => rpc('ui.notify', { text, level }),
                 openExternal: (url) => rpc('ui.openExternal', { url }),
+                // Открывает панель этого плагина — полный список вместо полосы.
+                openPanel: () => rpc('ui.openPanel'),
                 // Открывает менеджер плагинов на строке этого плагина —
                 // оттуда пользователь выдаёт доступ к закладкам.
                 openManager: () => rpc('ui.openManager'),

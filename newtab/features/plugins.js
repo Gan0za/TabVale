@@ -997,8 +997,11 @@ async function onPluginMessage(event) {
                 const raw = String(params.url || '');
                 let parsed;
                 try { parsed = new URL(raw); } catch { throw new Error('invalid url'); }
-                const allowed = ['https:', 'http:', 'obsidian:', 'vscode:'];
-                if (!allowed.includes(parsed.protocol)) throw new Error('scheme is not allowed');
+                // Разрешаем приложения с собственными протоколами
+                // (obsidian:, vscode:, steam: и т. п.). Блокируем только
+                // схемы, которые исполняют код или подставляют данные.
+                const blocked = ['javascript:', 'data:', 'blob:', 'vbscript:', 'file:'];
+                if (blocked.includes(parsed.protocol)) throw new Error('scheme is not allowed');
                 const link = document.createElement('a');
                 link.href = raw;
                 link.target = '_blank';
@@ -1016,6 +1019,14 @@ async function onPluginMessage(event) {
                 try { pageUrl = new URL(String(params.url || '')); } catch { throw new Error('invalid url'); }
                 if (!/^https?:$/.test(pageUrl.protocol)) throw new Error('only http and https have favicons');
                 reply(await fetchFaviconDataUrl(pageUrl.href));
+                break;
+            }
+            case 'ui.openPanel': {
+                // Полный список вместо тесной полосы. Панель есть в
+                // манифесте у всех плагинов, которым она нужна.
+                if (!instance.record.manifest.surfaces?.panel) throw new Error('panel is not available');
+                openPluginPanel(instance.record);
+                reply(true);
                 break;
             }
             case 'ui.openManager': {
