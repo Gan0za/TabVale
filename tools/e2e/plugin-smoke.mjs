@@ -340,6 +340,7 @@ let localizedManagerName = '';
 let pomodoroFits = false;
 let appLauncherFits = false;
 let tileWorks = false;
+let layoutModes = false;
 if (dock.count) {
   await evaluate(`document.querySelector('.plugin-dock-button[data-plugin-id="com.tabvale.layout"]').click()`);
   await sleep(1500);
@@ -413,6 +414,8 @@ if (dock.count) {
   stripText = stripEntry?.text || '';
   panelText = panelEntry?.text || '';
   sandboxText = stripText || panelText;
+  // Плагин раскладки: два поля и три режима, как на allcalc.
+  layoutModes = ['На русский', 'На латиницу', 'Смешанный'].every((label) => panelText.includes(label));
 
   const pomodoroEntry = frameTexts.find((item) => /com\.tabvale\.pomodoro \(strip\)/.test(item.title));
   pomodoroFits = !!pomodoroEntry && pomodoroEntry.scrollH <= pomodoroEntry.clientH + 1;
@@ -918,6 +921,7 @@ const timePattern = /^\d{1,2}:\d{2}/;
 const passed = dock.count > 0
     && strip.count > 0
     && panel?.open === true && panel.headingIcon === true
+    && layoutModes
     && icons.dock > 0 && icons.dock === icons.dockWithImage
     && icons.rows > 0 && icons.rows === icons.rowsWithImage
     && floatingStart?.headerIcon === true
