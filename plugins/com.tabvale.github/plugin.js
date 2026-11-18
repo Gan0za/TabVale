@@ -11,7 +11,8 @@ function mount(api) {
 
     const summary = document.createElement('div');
     summary.style.cssText = compact
-        ? 'font-size:24px;font-weight:600;color:var(--tabvale-accent)'
+        ? 'display:flex;align-items:center;justify-content:center;gap:8px;' +
+          'font-size:20px;font-weight:600;color:var(--tabvale-accent)'
         : 'font-size:13px;color:var(--tabvale-muted)';
 
     const list = document.createElement('div');
@@ -115,14 +116,28 @@ function mount(api) {
 
     function render() {
         if (compact) {
-            if (!repos.length) {
+            // В полосе помещаются два репозитория; остальные — в панели.
+            summary.textContent = '';
+            const shown = repos.slice(0, 2);
+            if (!shown.length) {
                 summary.textContent = '—';
                 return;
             }
-            loadRepo(repos[0]).then((repo) => {
-                summary.textContent = `★ ${repo.stargazers_count ?? 0}`;
-            }).catch(() => {
-                summary.textContent = '—';
+            shown.forEach((slug, index) => {
+                if (index) {
+                    const separator = document.createElement('span');
+                    separator.textContent = '·';
+                    separator.style.opacity = '0.6';
+                    summary.append(separator);
+                }
+                const badge = document.createElement('span');
+                badge.textContent = '★ …';
+                summary.append(badge);
+                loadRepo(slug).then((repo) => {
+                    badge.textContent = `★ ${repo.stargazers_count ?? 0}`;
+                }).catch(() => {
+                    badge.textContent = '—';
+                });
             });
             return;
         }

@@ -3,7 +3,7 @@
   "name": "__MSG_appName__",
   "description": "__MSG_appDescription__",
   "default_locale": "ru",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "Ivan Verevkin",
   "homepage_url": "https://github.com/Gan0za/TabVale",
   "minimum_chrome_version": "107",
@@ -30,7 +30,9 @@
     "service_worker": "background.js"
   },
   "sandbox": {
-    "pages": ["sandbox/plugin-host.html"]
+    "pages": [
+      "sandbox/plugin-host.html"
+    ]
   },
   "content_security_policy": {
     "sandbox": "sandbox allow-scripts; script-src 'self' 'unsafe-eval' 'unsafe-inline'; connect-src 'none'"

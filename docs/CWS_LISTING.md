@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Name | TabVale |
-| Version | 1.2.0 |
+| Version | 1.2.1 |
 | Category | Productivity |
 | Language | English |
 | Homepage | `https://github.com/Gan0za/TabVale` |
@@ -97,7 +97,7 @@ code is stored locally in IndexedDB and executed only inside the sandboxed
 
 ## Release checklist
 
-- [x] Version 1.2.0 in `manifest.json`
+- [x] Version 1.2.1 in `manifest.json`
 - [x] `bash package.sh` / `.\package.ps1` builds `dist/tabvale_v1.2.0.zip`
 - [x] 12 source screenshots, 5 selected for CWS
 - [x] Permission justifications and single purpose text

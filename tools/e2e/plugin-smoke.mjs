@@ -722,11 +722,12 @@ await evaluate(`(async () => {
 })()`);
 const launcherFrames = await readSandboxFrames();
 const launcherFrame = launcherFrames.find((item) => /com\.tabvale\.apps \(strip\)/.test(item.docTitle));
+// В полосе только значки: два приложения и кнопка оконного режима.
+const launcherButtons = await frameEval(/com\.tabvale\.apps \(strip\)/, 'document.querySelectorAll("button").length');
 appLauncherFits = !!launcherFrame
-    && /Obsidian/.test(launcherFrame.text)
-    && /VS Code/.test(launcherFrame.text)
+    && launcherButtons === 3
     && launcherFrame.scrollH <= launcherFrame.clientH + 1;
-console.log('app launcher strip:', launcherFrame, 'fits:', appLauncherFits);
+console.log('app launcher strip:', launcherFrame, 'buttons:', launcherButtons, 'fits:', appLauncherFits);
 
 await evaluate(`(async () => {
   const select = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-surface');
