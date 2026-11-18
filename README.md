@@ -173,6 +173,24 @@ A single test:
 node tests/screens.test.mjs
 ```
 
+## Plugin development
+
+Plugins are `.tvp` packages: a zip with `manifest.json`, the entry file and
+an optional icon. They run in a sandbox and reach the browser only through
+the host API.
+
+- [Package format and manifest](docs/PLUGIN_SPEC.md)
+- [Plugin API](docs/PLUGIN_API.md)
+- [Writing your first plugin](docs/PLUGIN_GUIDE.md)
+
+Pack a plugin folder into an installable file:
+
+```bash
+node tools/pack-plugin.mjs path/to/plugin
+```
+
+Then install it in Settings → Plugins → *Install from file…*.
+
 ## Permissions
 
 - `storage` — bookmarks, screens, backgrounds, search engines, theme.
