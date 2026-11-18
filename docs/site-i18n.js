@@ -694,29 +694,73 @@
   function init() {
     captureOriginals();
 
-    const select = document.getElementById('site-lang');
-    if (select) {
-      const auto = document.createElement('option');
-      auto.value = 'auto';
-      auto.textContent = 'Auto';
-      select.append(auto);
-      LANGUAGES.forEach(([code, name]) => {
-        const option = document.createElement('option');
-        option.value = code;
-        option.textContent = name;
-        select.append(option);
-      });
-      select.addEventListener('change', () => {
-        const value = select.value;
-        try { localStorage.setItem(STORAGE_KEY, value); } catch { /* приватный режим */ }
-        applyLang(value === 'auto' ? detectLang() : value);
-      });
-    }
+    // Свой список вместо нативного <select>: системный popup в Edge
+    // рисовал светлый список поверх тёмной страницы, и языки терялись.
+    const button = document.getElementById('site-lang');
+    const list = document.getElementById('site-lang-list');
+    const entries = [['auto', 'Auto'], ...LANGUAGES];
 
     let stored = 'auto';
     try { stored = localStorage.getItem(STORAGE_KEY) || 'auto'; } catch { /* приватный режим */ }
-    if (select) select.value = stored;
-    applyLang(stored === 'auto' ? detectLang() : stored);
+
+    const labelFor = (value) => (entries.find(([code]) => code === value) || entries[0])[1];
+
+    const closeList = () => {
+      if (!list) return;
+      list.hidden = true;
+      button?.setAttribute('aria-expanded', 'false');
+    };
+
+    const choose = (value) => {
+      stored = value;
+      try { localStorage.setItem(STORAGE_KEY, value); } catch { /* приватный режим */ }
+      applyLang(value === 'auto' ? detectLang() : value);
+      if (button) button.textContent = labelFor(value);
+      if (list) {
+        list.querySelectorAll('button').forEach((item) => {
+          item.setAttribute('aria-selected', String(item.dataset.value === value));
+        });
+      }
+      closeList();
+    };
+
+    if (button && list) {
+      for (const [code, name] of entries) {
+        const item = document.createElement('li');
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.dataset.value = code;
+        option.setAttribute('role', 'option');
+        option.textContent = name;
+        option.addEventListener('click', () => choose(code));
+        item.append(option);
+        list.append(item);
+      }
+
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const open = list.hidden;
+        if (!open) { closeList(); return; }
+        list.hidden = false;
+        button.setAttribute('aria-expanded', 'true');
+        list.querySelector('button[aria-selected="true"]')?.focus();
+      });
+
+      document.addEventListener('click', (event) => {
+        if (list.hidden) return;
+        if (list.contains(event.target)) return;
+        closeList();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !list.hidden) {
+          closeList();
+          button.focus();
+        }
+      });
+    }
+
+    choose(stored);
   }
 
   if (document.readyState === 'loading') {
