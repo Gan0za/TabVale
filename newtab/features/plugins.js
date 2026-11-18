@@ -19,7 +19,7 @@ let installedPluginCache = [];
 let pluginPlacementsCache = [];
 const pluginInstances = new Map();
 let pluginInstanceSeq = 0;
-const PLUGIN_CATALOG_URL = 'https://gan0za.github.io/TabVale/plugins/';
+const PLUGIN_CATALOG_URL = 'https://gan0za.github.io/TabVale/#plugins';
 
 function initPlugins() {
     ensurePluginDock();
