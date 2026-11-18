@@ -122,6 +122,13 @@
     .card h3 { margin: 14px 0 6px; font-size: 17px; letter-spacing: -.1px; }
     .card p { margin: 0; color: #b9ccd8; font-size: 14.5px; }
 
+    .plugin-card { display: flex; flex-direction: column; align-items: flex-start; }
+    .plugin-card img { width: 32px; height: 32px; border-radius: 8px; margin-bottom: 10px; }
+    .plugin-card .plugin-version { margin: 2px 0 8px; color: var(--muted); font-size: 12px; }
+    .plugin-card .btn { margin-top: 12px; min-height: 38px; padding: 0 14px; font-size: 14px; }
+    .plugin-cards { margin-bottom: 14px; }
+    .plugin-install { margin: 0; color: var(--muted); font-size: 14px; }
+
     .switch { display: inline-flex; padding: 4px; gap: 4px; border: 1px solid var(--line); border-radius: 11px; background: rgba(255, 255, 255, 0.04); }
     .switch button {
       min-height: 36px; padding: 0 14px; border: 0; border-radius: 8px;
@@ -175,6 +182,7 @@
       <nav class="nav-links" aria-label="Main">
         <a href="#features" data-i18n="navFeatures">Features</a>
         <a href="#screenshots" data-i18n="navScreenshots">Screenshots</a>
+        <a href="#plugins" data-i18n="pluginsNav">Plugins</a>
         <a href="privacy.html" data-i18n="navPrivacy">Privacy</a>
         <a class="keep" href="https://github.com/Gan0za/TabVale">GitHub</a>
       </nav>
@@ -253,6 +261,17 @@
             <p data-i18n="cardLanguagesText">English, Russian, German, French, Spanish, Portuguese, Italian, Polish, Turkish, Ukrainian, Chinese, Japanese and Korean.</p>
           </article>
         </div>
+      </section>
+
+      <section id="plugins" aria-labelledby="plugins-title">
+        <div class="section-head">
+          <div>
+            <h2 id="plugins-title" data-i18n="pluginsTitle">Plugins</h2>
+            <p data-i18n="pluginsLead">Nothing is installed by default: download a plugin only if you want it and install it from a file in settings.</p>
+          </div>
+        </div>
+        <div id="plugin-catalog" class="cards plugin-cards"></div>
+        <p class="plugin-install" data-i18n="pluginsInstall">Install: Settings → Plugins → “Install from file…”.</p>
       </section>
 
       <section id="screenshots" aria-labelledby="shots-title">
