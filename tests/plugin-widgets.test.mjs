@@ -467,4 +467,31 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
     assert.equal(opened, true, 'клик открывает панель');
 }
 
+// ---- Цитаты: панель и полоса, кнопка меняет цитату ----
+{
+    const api = {
+        locale: 'ru',
+        surface: 'panel',
+        ui: { ready() {} },
+        storage: { get: async () => null, set: async () => {} },
+    };
+    const sandboxDocument = { ...documentStub, body: makeElement('body') };
+    const wrap = mountPlugin('plugins/com.tabvale.quotes/plugin.js', { api, documentOverride: sandboxDocument });
+    await flush();
+
+    const [quote, next] = wrap.children;
+    const first = quote.textContent;
+    assert.ok(first.length > 3, 'панель показывает цитату');
+    next.listeners.click();
+    assert.notEqual(quote.textContent, first, 'кнопка меняет цитату');
+
+    const stripApi = { ...api, surface: 'strip' };
+    const stripDocument = { ...documentStub, body: makeElement('body') };
+    const strip = mountPlugin('plugins/com.tabvale.quotes/plugin.js', { api: stripApi, documentOverride: stripDocument });
+    const stripFirst = strip.textContent;
+    assert.ok(stripFirst.length > 3, 'полоса показывает цитату');
+    strip.listeners.click();
+    assert.notEqual(strip.textContent, stripFirst, 'клик в полосе меняет цитату');
+}
+
 console.log('plugin-widgets.test.mjs: все проверки пройдены');
