@@ -2,45 +2,54 @@
 
 **Read in:** [English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Français](README.fr.md) · [Español](README.es.md) · [Português (Brasil)](README.pt-BR.md) · [Italiano](README.it.md) · [Polski](README.pl.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) · [中文](README.zh.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-> Tradução curta. O README em inglês é a fonte da verdade. Tradução feita por
-> um não nativo; correções são bem-vindas via GitHub Issues.
+> Tradução curta. O README em inglês é a fonte da verdade. Tradução feita por um não nativo; correções são bem-vindas via GitHub Issues.
 
-Extensão para Chrome e Microsoft Edge que substitui a página de nova aba por
-um painel personalizável: pesquisa, várias telas de favoritos e planos de
-fundo.
+Uma extensão para Chrome e Microsoft Edge que substitui a nova aba por um
+painel personalizável: busca, várias telas de favoritos, fundos e plugins
+opcionais.
 
 ## Recursos
 
-- Pesquisa com mecanismo selecionável; a lista é editável.
-- Várias telas de favoritos: troca por pontos, deslize em área vazia e
-  `Alt+←/→`.
-- Favoritos com ícones e ordenação por arrastar e soltar; movimentação entre
-  telas.
-- Planos de fundo: URL, arquivo local, cor ou gradiente.
-- Temas (automático/claro/escuro) e 13 idiomas da interface.
-- Importação e exportação de configurações em JSON.
+- Busca com mecanismo selecionável; a lista é editável e cada um tem seu ícone.
+- Várias telas de favoritos: pontos, deslize em área vazia, `Alt+←/→`; mover favoritos entre telas.
+- Favoritos com ícones (em cache local), ordenação por arrastar, edição e exclusão.
+- Fundos: URL, arquivo local, cor ou gradiente.
+- Temas automático/claro/escuro e 13 idiomas de interface.
+- Plugins — apenas os que você instalar: relógio, notas, teclado, timer, senhas, clima, estatísticas do GitHub, inicializador de aplicativos, RSS, importação de favoritos.
+- Importação e exportação de ajustes em JSON.
 
 ## Instalação
 
 1. Abra `chrome://extensions` ou `edge://extensions`.
-2. Ative o modo de desenvolvedor.
-3. Clique em «Carregar sem compactação» e selecione a raiz do projeto.
+2. Ative o modo desenvolvedor.
+3. «Carregar sem compactação» e escolha a pasta do projeto.
 4. Abra uma nova aba.
 
-## Capturas de tela
+## Plugins
 
-[Início](docs/screenshots/01-main-dark.png) · [Todas as capturas](docs/screenshots/)
+Nenhum plugin é instalado por padrão. Os pacotes `.tvp` estão na
+[seção «Plugins» do site](https://gan0za.github.io/TabVale/#plugins) e em
+`docs/plugins/`. Baixe o arquivo e instale: Configurações → Plugins →
+«Instalar do arquivo…». O gerenciador escolhe a zona — painel, faixa acima ou
+abaixo dos favoritos, bloco, janela flutuante; o menu de contexto do plugin abre
+sua linha, desativa ou remove.
 
-A interface das capturas está em inglês.
+## Desenvolvimento de plugins (breve)
+
+Um plugin é um zip `.tvp` com `manifest.json`, arquivo de código e ícone
+opcional. O código define `mount(api)` e roda em sandbox sem `chrome.*`: dados
+com `api.storage`, rede com `api.fetch` conforme a lista do manifesto,
+interface com `api.ui`, ícones de sites com `api.icon.favicon`.
+Empacotamento: `node tools/pack-plugin.mjs path/to/plugin`.
+
+Detalhes em inglês: [formato](docs/PLUGIN_SPEC.md), [API](docs/PLUGIN_API.md),
+[guia](docs/PLUGIN_GUIDE.md).
 
 ## Privacidade e permissões
 
-Os dados ficam em `chrome.storage` e não são enviados a servidores.
-Detalhes: [PRIVACY.md](PRIVACY.md) (em inglês).
-
-## Para desenvolvedores
-
-Estrutura, build e testes: veja o [README em inglês](README.md).
+Favoritos, telas, fundos e ajustes ficam em `chrome.storage`; os ícones de sites
+no IndexedDB local e não saem do dispositivo. Detalhes: [PRIVACY.md](PRIVACY.md)
+(inglês).
 
 ## Licença
 

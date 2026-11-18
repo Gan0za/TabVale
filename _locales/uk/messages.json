@@ -275,31 +275,128 @@
   "tabScreens": {
     "message": "Екрани"
   },
-  "tabPlugins": { "message": "Плагіни" },
-  "pluginsEmpty": { "message": "Плагіни не встановлено." },
-  "pluginOpen": { "message": "Відкрити" },
-  "pluginRemove": { "message": "Видалити" },
-  "pluginRestore": { "message": "Відновити вбудовані" },
-  "pluginRemoveConfirm": { "message": "Видалити плагін $name$?", "placeholders": { "name": { "content": "$1" } } },
-  "surfacePanel": { "message": "Панель" },
-  "surfaceFloating": { "message": "Плаваюче вікно" },
-  "surfaceTiles": { "message": "Плитка" },
-  "surfaceStripTop": { "message": "Над закладками" },
-  "surfaceStripBottom": { "message": "Під закладками" },
-  "surfaceOff": { "message": "Вимк." },
-  "pluginInstall": { "message": "Установити з файлу…" },
-  "pluginInstallConfirm": { "message": "$name$ запитує: $permissions$. Встановити?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
-  "pluginInstallInvalid": { "message": "Некоректний файл плагіна: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginInstallManifestOnly": { "message": "Це маніфест, а не пакет. Потрібен JSON {manifest, code}; вбудовані повертаються кнопкою «Відновити вбудовані»." },
-  "pluginGrantBookmarks": { "message": "Дозволити доступ до закладок" },
-  "pluginBookmarksGranted": { "message": "Доступ до закладок надано" },
-  "pluginBookmarksDenied": { "message": "Доступ до закладок не надано: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginGrantPending": { "message": "Очікуємо підтвердження в Chrome…" },
-  "pluginGrantHint": { "message": "Якщо запит не з'явився, натисніть іконку TabVale на панелі браузера й дозвольте доступ до закладок." },
-  "pluginGrantReload": { "message": "Браузер не бачить дозволу в маніфесті. Перезавантажте розширення на сторінці розширень і спробуйте ще раз." },
-  "pluginPermNetwork": { "message": "мережа: $count$", "placeholders": { "count": { "content": "$1" } } },
-  "pluginPermStorage": { "message": "сховище: $kb$ КБ", "placeholders": { "kb": { "content": "$1" } } },
-  "pluginPlacementLabel": { "message": "Розміщення плагіна $name$", "placeholders": { "name": { "content": "$1" } } },
+  "tabPlugins": {
+    "message": "Плагіни"
+  },
+  "pluginsEmpty": {
+    "message": "Плагінів поки немає. Завантажте .tvp на сайті й установіть файлом."
+  },
+  "pluginOpen": {
+    "message": "Відкрити"
+  },
+  "pluginRemove": {
+    "message": "Видалити"
+  },
+  "pluginMenuConfigure": {
+    "message": "Налаштувати плагін"
+  },
+  "pluginMenuSettings": {
+    "message": "Налаштування плагінів"
+  },
+  "pluginMenuDisable": {
+    "message": "Вимкнути"
+  },
+  "pluginMenuRemove": {
+    "message": "Видалити"
+  },
+  "pluginRemoveConfirm": {
+    "message": "Видалити плагін $name$?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "surfacePanel": {
+    "message": "Панель"
+  },
+  "surfaceFloating": {
+    "message": "Плаваюче вікно"
+  },
+  "surfaceTiles": {
+    "message": "Плитка"
+  },
+  "surfaceStripTop": {
+    "message": "Над закладками"
+  },
+  "surfaceStripBottom": {
+    "message": "Під закладками"
+  },
+  "surfaceOff": {
+    "message": "Вимк."
+  },
+  "pluginInstall": {
+    "message": "Установити з файлу…"
+  },
+  "pluginInstallConfirm": {
+    "message": "$name$ запитує: $permissions$. Встановити?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "permissions": {
+        "content": "$2"
+      }
+    }
+  },
+  "pluginInstallInvalid": {
+    "message": "Некоректний файл плагіна: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginInstallManifestOnly": {
+    "message": "Це маніфест, а не пакет. Потрібен JSON {manifest, code}; вбудовані повертаються кнопкою «Відновити вбудовані»."
+  },
+  "pluginGrantBookmarks": {
+    "message": "Дозволити доступ до закладок"
+  },
+  "pluginBookmarksGranted": {
+    "message": "Доступ до закладок надано"
+  },
+  "pluginBookmarksDenied": {
+    "message": "Доступ до закладок не надано: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginGrantPending": {
+    "message": "Очікуємо підтвердження в Chrome…"
+  },
+  "pluginGrantHint": {
+    "message": "Якщо запит не з'явився, натисніть іконку TabVale на панелі браузера й дозвольте доступ до закладок."
+  },
+  "pluginGrantReload": {
+    "message": "Браузер не бачить дозволу в маніфесті. Перезавантажте розширення на сторінці розширень і спробуйте ще раз."
+  },
+  "pluginPermNetwork": {
+    "message": "мережа: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPermStorage": {
+    "message": "сховище: $kb$ КБ",
+    "placeholders": {
+      "kb": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPlacementLabel": {
+    "message": "Розміщення плагіна $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
   "screenLabel": {
     "message": "Екран"
   },
@@ -340,5 +437,8 @@
   },
   "mainScreenCannotDelete": {
     "message": "Екран «Головна» видалити не можна. Перейменуйте його або видаліть інший екран."
+  },
+  "pluginCatalog": {
+    "message": "Відкрити каталог плагінів"
   }
 }

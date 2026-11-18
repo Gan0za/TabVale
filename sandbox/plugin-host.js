@@ -17,6 +17,18 @@
     const pending = new Map();
     const handlers = new Map();
     let sequence = 0;
+    let activeContext = null;
+
+    // Правый клик по содержимому плагина приходит сюда, а не в хост.
+    // В полосе меню плагина нужно всегда; в панели и окне — только вне
+    // полей ввода, чтобы в них осталось нативное меню копирования.
+    document.addEventListener('contextmenu', (event) => {
+        if (!activeContext) return;
+        const editable = event.target.closest?.('input, textarea, [contenteditable="true"]');
+        if (editable && activeContext.surface !== 'strip') return;
+        event.preventDefault();
+        post({ type: 'tabvale:context-menu', x: event.clientX, y: event.clientY });
+    });
 
     function post(message) {
         parent.postMessage(message, '*');
@@ -66,6 +78,10 @@
                 remove: (key) => rpc('storage.remove', { key }),
             },
             fetch: (url, options) => rpc('fetch', { url, options }),
+            // Иконка сайта из кэша браузера: data:URL или пустая строка.
+            icon: {
+                favicon: (url) => rpc('icon.favicon', { url }),
+            },
             bookmarks: {
                 tree: () => rpc('bookmarks.tree'),
                 import: (screenId, items) => rpc('bookmarks.import', { screenId, items }),
@@ -94,6 +110,7 @@
             return;
         }
 
+        activeContext = context;
         document.title = `${context.pluginId || 'plugin'} (${context.surface || 'panel'})`;
         applyTheme(context.theme);
         const api = buildApi(context);

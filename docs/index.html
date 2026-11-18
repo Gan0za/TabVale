@@ -57,12 +57,28 @@
     .nav-links { display: flex; align-items: center; gap: 22px; font-size: 14.5px; }
     .nav-links a { color: var(--muted); text-decoration: none; }
     .nav-links a:hover { color: var(--text); }
-    .lang-select {
-      min-height: 34px; padding: 0 8px; border-radius: 9px;
+    .lang { position: relative; }
+    .lang-button {
+      min-height: 34px; padding: 0 10px; border-radius: 9px;
       border: 1px solid var(--line); background: rgba(255, 255, 255, 0.06);
       color: var(--text); font: inherit; font-size: 13.5px; cursor: pointer;
     }
-    .lang-select option { background: #0e3348; color: var(--text); }
+    .lang-button:hover { background: rgba(255, 255, 255, 0.1); }
+    .lang-list {
+      position: absolute; right: 0; top: calc(100% + 6px); z-index: 20;
+      min-width: 190px; max-height: min(60vh, 420px); overflow: auto;
+      margin: 0; padding: 6px; list-style: none;
+      border: 1px solid var(--line); border-radius: 12px;
+      background: #0e3348; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+    }
+    .lang-list button {
+      display: block; width: 100%; padding: 8px 10px; border: 0; border-radius: 8px;
+      background: transparent; color: var(--text); font: inherit; font-size: 14px;
+      text-align: left; cursor: pointer;
+    }
+    .lang-list button:hover,
+    .lang-list button:focus-visible { background: rgba(77, 182, 226, 0.18); }
+    .lang-list button[aria-selected="true"] { color: var(--accent); }
 
     .hero { display: grid; grid-template-columns: 1.02fr .98fr; gap: 44px; align-items: center; padding: 64px 0 48px; }
     .eyebrow { margin: 0 0 14px; color: var(--accent); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
@@ -105,6 +121,13 @@
     .card svg { width: 24px; height: 24px; color: var(--accent); }
     .card h3 { margin: 14px 0 6px; font-size: 17px; letter-spacing: -.1px; }
     .card p { margin: 0; color: #b9ccd8; font-size: 14.5px; }
+
+    .plugin-card { display: flex; flex-direction: column; align-items: flex-start; }
+    .plugin-card img { width: 32px; height: 32px; border-radius: 8px; margin-bottom: 10px; }
+    .plugin-card .plugin-version { margin: 2px 0 8px; color: var(--muted); font-size: 12px; }
+    .plugin-card .btn { margin-top: 12px; min-height: 38px; padding: 0 14px; font-size: 14px; }
+    .plugin-cards { margin-bottom: 14px; }
+    .plugin-install { margin: 0; color: var(--muted); font-size: 14px; }
 
     .switch { display: inline-flex; padding: 4px; gap: 4px; border: 1px solid var(--line); border-radius: 11px; background: rgba(255, 255, 255, 0.04); }
     .switch button {
@@ -159,10 +182,14 @@
       <nav class="nav-links" aria-label="Main">
         <a href="#features" data-i18n="navFeatures">Features</a>
         <a href="#screenshots" data-i18n="navScreenshots">Screenshots</a>
+        <a href="#plugins" data-i18n="pluginsNav">Plugins</a>
         <a href="privacy.html" data-i18n="navPrivacy">Privacy</a>
         <a class="keep" href="https://github.com/Gan0za/TabVale">GitHub</a>
       </nav>
-      <select id="site-lang" class="lang-select" aria-label="Language"></select>
+      <div class="lang">
+        <button id="site-lang" class="lang-button" type="button" aria-haspopup="listbox" aria-expanded="false">Auto</button>
+        <ul id="site-lang-list" class="lang-list" role="listbox" aria-label="Language" hidden></ul>
+      </div>
     </div>
   </header>
 
@@ -234,6 +261,20 @@
             <p data-i18n="cardLanguagesText">English, Russian, German, French, Spanish, Portuguese, Italian, Polish, Turkish, Ukrainian, Chinese, Japanese and Korean.</p>
           </article>
         </div>
+      </section>
+
+      <section id="plugins" aria-labelledby="plugins-title">
+        <div class="section-head">
+          <div>
+            <h2 id="plugins-title" data-i18n="pluginsTitle">Plugins</h2>
+            <p data-i18n="pluginsLead">Nothing is installed by default: download a plugin only if you want it and install it from a file in settings.</p>
+          </div>
+        </div>
+        <div id="plugin-catalog" class="cards plugin-cards"></div>
+        <p class="plugin-install" data-i18n="pluginsInstall">Install: Settings → Plugins → “Install from file…”.</p>
+        <p class="plugin-install">
+          <a href="https://github.com/Gan0za/TabVale/blob/master/docs/PLUGIN_GUIDE.md" data-i18n="pluginDocs">Writing your own plugin</a>
+        </p>
       </section>
 
       <section id="screenshots" aria-labelledby="shots-title">

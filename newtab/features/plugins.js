@@ -19,8 +19,7 @@ let installedPluginCache = [];
 let pluginPlacementsCache = [];
 const pluginInstances = new Map();
 let pluginInstanceSeq = 0;
-const PLUGIN_REMOVED_KEY = 'pluginRemovedBuiltins';
-let removedBuiltinIds = new Set();
+const PLUGIN_CATALOG_URL = 'https://gan0za.github.io/TabVale/#plugins';
 
 function initPlugins() {
     ensurePluginDock();
@@ -30,9 +29,7 @@ function initPlugins() {
         if (event.key === 'Escape' && pluginPanelInstance) closePluginPanel();
     });
 
-    loadRemovedBuiltins()
-        .then(installBuiltinPlugins)
-        .then(loadInstalledPlugins)
+    loadInstalledPlugins()
         .then(loadPluginPlacements)
         .then(() => {
             renderPluginDock();
@@ -46,6 +43,13 @@ function initPlugins() {
     document.addEventListener('click', (event) => {
         const tab = event.target.closest?.('.settings-tab');
         if (tab && tab.dataset.tab === 'plugins') renderPluginManager();
+
+        // Клик вне панели закрывает её. Док, плитка и настройки не
+        // считаются «вне»: из дока и плитки панель как раз открывают,
+        // а настройки рисуются поверх. Плавающие окна не трогаем.
+        if (!pluginPanelInstance) return;
+        if (event.target.closest?.('.plugin-panel, .plugin-dock, .plugin-tile, .modal')) return;
+        closePluginPanel();
     });
 
     initPluginInstall();
@@ -72,62 +76,6 @@ function ensurePluginDock() {
         document.body.append(pluginDockElement);
     }
     return pluginDockElement;
-}
-
-async function fetchPluginResource(path) {
-    const response = await fetch(chrome.runtime.getURL(path));
-    if (!response.ok) throw new Error(`Не удалось прочитать ${path}`);
-    return response;
-}
-
-async function loadRemovedBuiltins() {
-    const stored = await new Promise((resolve) => storageLocalGet(PLUGIN_REMOVED_KEY, resolve));
-    const list = stored?.[PLUGIN_REMOVED_KEY];
-    removedBuiltinIds = new Set(Array.isArray(list) ? list.filter((id) => typeof id === 'string') : []);
-}
-
-async function saveRemovedBuiltins() {
-    await new Promise((resolve) => storageLocalSet({ [PLUGIN_REMOVED_KEY]: [...removedBuiltinIds] }, resolve));
-}
-
-async function installBuiltinPlugins() {
-    let index;
-    try {
-        index = await (await fetchPluginResource(BUILTIN_PLUGIN_INDEX)).json();
-    } catch {
-        return;
-    }
-
-    const entries = normalizePluginRegistry(index);
-    for (const entry of entries) {
-        // Удалённый пользователем встроенный плагин не возвращаем сами.
-        if (removedBuiltinIds.has(entry.id)) continue;
-        const basePath = `plugins/${entry.path}`;
-        try {
-            const manifestRaw = await (await fetchPluginResource(basePath + 'manifest.json')).json();
-            const result = validatePluginManifest(manifestRaw);
-            if (!result.ok) {
-                console.warn('Плагин пропущен:', entry.id, result.errors.join('; '));
-                continue;
-            }
-            const existing = await dbGetPlugin(entry.id);
-            if (existing && existing.version === entry.version) continue;
-
-            const code = await (await fetchPluginResource(basePath + result.manifest.entry)).text();
-            await dbPutPlugin({
-                id: result.manifest.id,
-                version: result.manifest.version,
-                manifest: result.manifest,
-                code,
-                basePath,
-                source: 'builtin',
-                enabled: true,
-                installedAt: Date.now(),
-            });
-        } catch (error) {
-            console.warn('Не удалось установить плагин:', entry.id, error);
-        }
-    }
 }
 
 async function loadInstalledPlugins() {
@@ -708,10 +656,6 @@ async function setPluginPlacement(record, value) {
 
 async function removePlugin(record) {
     if (!window.confirm(t('pluginRemoveConfirm', { name: record.manifest.name }))) return;
-    if (record.source === 'builtin') {
-        removedBuiltinIds.add(record.id);
-        await saveRemovedBuiltins();
-    }
     await dbDeletePlugin(record.id);
     pluginPlacementsCache = pluginPlacementsCache.filter((placement) => placement.pluginId !== record.id);
     await new Promise((resolve) => storageLocalSet({ [PLUGIN_PLACEMENTS_KEY]: pluginPlacementsCache }, resolve));
@@ -740,30 +684,19 @@ function renderPluginManager() {
     if (!list) return;
     list.textContent = '';
 
-    if (removedBuiltinIds.size) {
-        const restore = document.createElement('button');
-        restore.type = 'button';
-        restore.className = 'btn plugin-manager-restore';
-        restore.textContent = t('pluginRestore');
-        restore.addEventListener('click', async () => {
-            removedBuiltinIds.clear();
-            await saveRemovedBuiltins();
-            await installBuiltinPlugins();
-            await loadInstalledPlugins();
-            await loadPluginPlacements();
-            renderPluginDock();
-            renderPluginStrip();
-            renderPluginFloating();
-            renderPluginManager();
-        });
-        list.append(restore);
-    }
-
     if (!installedPluginCache.length) {
         const empty = document.createElement('p');
         empty.className = 'plugin-manager-empty';
         empty.textContent = t('pluginsEmpty');
-        list.append(empty);
+
+        const catalog = document.createElement('a');
+        catalog.className = 'btn plugin-manager-catalog';
+        catalog.href = PLUGIN_CATALOG_URL;
+        catalog.target = '_blank';
+        catalog.rel = 'noopener';
+        catalog.textContent = t('pluginCatalog');
+
+        list.append(empty, catalog);
         return;
     }
 
@@ -949,7 +882,20 @@ async function onPluginMessage(event) {
     const instance = findPluginInstance(event.source);
     if (!instance || !instance.frame.contentWindow) return;
     const data = event.data;
-    if (!data || typeof data !== 'object' || data.type !== 'tabvale:rpc') return;
+    if (!data || typeof data !== 'object') return;
+
+    // Правый клик внутри strip-виджета: координаты кадра переводим в
+    // координаты страницы и открываем меню плагина.
+    if (data.type === 'tabvale:context-menu') {
+        const rect = instance.frame.getBoundingClientRect();
+        const x = rect.left + Math.min(rect.width, Math.max(0, Number(data.x) || 0));
+        const y = rect.top + Math.min(rect.height, Math.max(0, Number(data.y) || 0));
+        contextMenuData = { pluginId: instance.record.id, surface: instance.surface };
+        openContextMenu(x, y, getContextMenuItems('plugin', contextMenuData));
+        return;
+    }
+
+    if (data.type !== 'tabvale:rpc') return;
 
     // Кадр мог быть закрыт или удалён, пока запрос выполнялся.
     const reply = (result) => instance.frame.contentWindow?.postMessage(
@@ -1061,6 +1007,15 @@ async function onPluginMessage(event) {
                 link.click();
                 link.remove();
                 reply(true);
+                break;
+            }
+            case 'icon.favicon': {
+                // Иконка берётся из favicon-кэша браузера, без сети и без
+                // доступа к чужим страницам. Нет иконки — пустая строка.
+                let pageUrl;
+                try { pageUrl = new URL(String(params.url || '')); } catch { throw new Error('invalid url'); }
+                if (!/^https?:$/.test(pageUrl.protocol)) throw new Error('only http and https have favicons');
+                reply(await fetchFaviconDataUrl(pageUrl.href));
                 break;
             }
             case 'ui.openManager': {

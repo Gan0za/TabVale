@@ -31,13 +31,15 @@ Features:
 - Light, dark and automatic themes.
 - English, Russian, German, French, Spanish, Portuguese (Brazil), Italian, Polish, Turkish, Ukrainian, Chinese, Japanese and Korean UI.
 - Context menus for bookmarks, the page background, the search field and settings rows.
+- Optional plugins (clock, notes, layout converter, timer, weather, GitHub stats, app launcher, RSS reader, bookmark importer) installed from a `.tvp` file; nothing is installed by default.
 - JSON import and export.
 - Responsive layout for narrow windows.
 
 Privacy:
-- Bookmarks, screens, backgrounds and settings stay in chrome.storage.
+- Bookmarks, screens, backgrounds and settings stay in chrome.storage; site icons are cached locally in IndexedDB.
 - No analytics, tracking, advertising or remote servers.
 - Optional site access is requested only to read a page <title> when adding a bookmark.
+- Plugin packages are chosen by the user; the extension never downloads plugin code.
 
 Source code and documentation: https://github.com/Gan0za/TabVale
 ```
@@ -89,6 +91,10 @@ TabVale replaces the browser's new tab page with a user-customizable dashboard: 
 Answer: **No**. All executable code is packaged in `background.js`,
 `newtab/app.js`, `newtab/core/*.js` and `newtab/features/*.js`.
 
+Plugin packages (`.tvp`) are files the user selects from their own disk. Their
+code is stored locally in IndexedDB and executed only inside the sandboxed
+`plugin-host.html` page; the extension never downloads plugin code.
+
 ## Release checklist
 
 - [x] Version 1.2.0 in `manifest.json`
@@ -96,7 +102,7 @@ Answer: **No**. All executable code is packaged in `background.js`,
 - [x] 12 source screenshots, 5 selected for CWS
 - [x] Permission justifications and single purpose text
 - [x] Privacy policy text
-- [ ] Public privacy policy URL (GitHub Pages)
-- [ ] GitHub repository and homepage URL
+- [x] Public privacy policy URL (GitHub Pages)
+- [x] GitHub repository and homepage URL
 - [ ] Upload the zip to CWS
 - [ ] Publish and add the store link to README

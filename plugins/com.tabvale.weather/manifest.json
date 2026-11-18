@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "com.tabvale.weather",
   "name": "Weather",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "apiVersion": 1,
   "minAppVersion": "1.2.0",
   "entry": "plugin.js",
@@ -11,7 +11,8 @@
   "author": "TabVale",
   "permissions": {
     "network": [
-      "https://api.open-meteo.com/*"
+      "https://api.open-meteo.com/*",
+      "https://geocoding-api.open-meteo.com/*"
     ],
     "capabilities": [],
     "storageKB": 16

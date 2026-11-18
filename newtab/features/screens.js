@@ -34,6 +34,9 @@ function switchScreen(id) {
     if (!setActiveScreen(id)) return;
     renderScreens();
     if (bookmarksContainer) renderBookmarks(bookmarksContainer, currentState.bookmarks);
+    // renderBookmarks очищает контейнер целиком — плитки плагинов надо
+    // вернуть, иначе они исчезают до следующего refreshUI.
+    if (typeof renderPluginTiles === 'function') renderPluginTiles();
 }
 
 function renderScreens() {

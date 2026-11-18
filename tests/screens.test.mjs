@@ -155,4 +155,10 @@ assert.equal(api.canDeleteScreen([{ id: 'main' }, { id: 'work' }], 'main'), fals
 assert.equal(api.canDeleteScreen([{ id: 'main' }, { id: 'work' }], 'work'), true, 'обычный экран удаляется');
 assert.equal(api.canDeleteScreen([{ id: 'main' }], 'main'), false, 'последний экран защищён');
 
+// 9. Переключение экрана возвращает плитки плагинов: renderBookmarks
+// очищает контейнер целиком, без повторного рендера плитки исчезают
+vm.runInContext('globalThis.__tilesRendered = 0; renderPluginTiles = () => { globalThis.__tilesRendered += 1; };', ctx);
+vm.runInContext('switchScreen("main")', ctx);
+assert.equal(vm.runInContext('globalThis.__tilesRendered', ctx), 1, 'после переключения плитки перерисованы');
+
 console.log('screens.test.mjs: все проверки пройдены');

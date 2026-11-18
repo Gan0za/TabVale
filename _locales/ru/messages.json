@@ -5,140 +5,440 @@
   "appDescription": {
     "message": "Новая вкладка с поиском, закладками и сменой фона"
   },
-
-  "pageTitle": { "message": "Новая вкладка" },
-  "searchPlaceholder": { "message": "Поиск..." },
-  "searchButton": { "message": "Найти" },
-  "bookmarksSection": { "message": "Закладки" },
-
-  "themeAuto": { "message": "Авто" },
-  "themeLight": { "message": "Светлая" },
-  "themeDark": { "message": "Тёмная" },
-  "themeToggleAria": { "message": "Сменить тему" },
-
-  "settingsTitle": { "message": "Настройки" },
-  "tabBookmarks": { "message": "Закладки" },
-  "tabBackgrounds": { "message": "Фоны" },
-  "tabSearchEngines": { "message": "Поисковые системы" },
-
-  "generalSection": { "message": "Общие" },
-  "languageLabel": { "message": "Язык" },
-  "langAuto": { "message": "Авто (язык браузера)" },
-  "themeLabel": { "message": "Тема" },
-
-  "addButton": { "message": "＋ Добавить" },
-  "addButtonShort": { "message": "Добавить" },
-  "saveButton": { "message": "Сохранить" },
-  "cancelButton": { "message": "Отмена" },
-  "importButton": { "message": "Импорт (JSON)" },
-  "exportButton": { "message": "Экспорт (JSON)" },
-  "resetButton": { "message": "Сбросить настройки" },
-  "resetConfirm": { "message": "Удалить все закладки, фоны и поисковые системы и вернуть настройки по умолчанию?" },
-  "resetDone": { "message": "Настройки сброшены." },
-  "closeButton": { "message": "Закрыть" },
-
-  "bookmarkTitlePlaceholder": { "message": "Название" },
-  "bookmarkUrlPlaceholder": { "message": "URL" },
-  "iconUrlPlaceholder": { "message": "URL логотипа (опционально)" },
-  "refreshIcon": { "message": "Обновить иконку по URL" },
-  "bgTitlePlaceholder": { "message": "Название фона" },
-  "bgUrlPlaceholder": { "message": "URL изображения (пусто — по умолчанию)" },
-  "bgTypeUrl": { "message": "Ссылка" },
-  "bgTypeFile": { "message": "Устройство" },
-  "bgTypeColor": { "message": "Цвет" },
-  "bgTypeGradient": { "message": "Градиент" },
-  "bgPositionLabel": { "message": "Положение" },
-  "bgPositionCover": { "message": "Растянуть" },
-  "bgPositionContain": { "message": "Вписать" },
-  "bgPositionTile": { "message": "Замостить" },
-  "bgPositionCenter": { "message": "1:1 по центру" },
-  "gradientAngle": { "message": "Угол градиента" },
-  "fileBackground": { "message": "Картинка с устройства" },
-  "errNoFile": { "message": "Выберите файл изображения." },
-  "errFileTooBig": { "message": "Не удалось сохранить картинку: недостаточно места в хранилище браузера." },
-  "engineNamePlaceholder": { "message": "Название" },
-  "engineUrlPlaceholder": { "message": "URL с %s (например https://www.google.com/search?q=%s)" },
-
-  "edit": { "message": "Редактировать" },
-  "editShort": { "message": "Ред." },
-  "delete": { "message": "Удалить" },
-  "select": { "message": "Выбрать" },
-  "openInNewTab": { "message": "Открыть в новой вкладке" },
-  "copyLink": { "message": "Копировать ссылку" },
-  "settings": { "message": "Настройки" },
-  "nextBackground": { "message": "Следующий фон" },
-  "backgroundSettings": { "message": "Настройки фонов" },
-  "pasteAndSearch": { "message": "Вставить и искать" },
-  "paste": { "message": "Вставить" },
-  "copy": { "message": "Копировать" },
-  "cut": { "message": "Вырезать" },
-  "clear": { "message": "Очистить" },
-  "searchEngineSettings": { "message": "Настройки поисковиков" },
-  "createBookmark": { "message": "Создать закладку" },
-  "pasteAndCreate": { "message": "Вставить и создать" },
-  "sortAsc": { "message": "Сортировать А-Я" },
-  "sortDesc": { "message": "Сортировать Я-А" },
-  "emptyList": { "message": "Список пуст." },
-  "noImage": { "message": "Нет" },
-
-  "importSuccess": { "message": "Настройки импортированы" },
+  "pageTitle": {
+    "message": "Новая вкладка"
+  },
+  "searchPlaceholder": {
+    "message": "Поиск..."
+  },
+  "searchButton": {
+    "message": "Найти"
+  },
+  "bookmarksSection": {
+    "message": "Закладки"
+  },
+  "themeAuto": {
+    "message": "Авто"
+  },
+  "themeLight": {
+    "message": "Светлая"
+  },
+  "themeDark": {
+    "message": "Тёмная"
+  },
+  "themeToggleAria": {
+    "message": "Сменить тему"
+  },
+  "settingsTitle": {
+    "message": "Настройки"
+  },
+  "tabBookmarks": {
+    "message": "Закладки"
+  },
+  "tabBackgrounds": {
+    "message": "Фоны"
+  },
+  "tabSearchEngines": {
+    "message": "Поисковые системы"
+  },
+  "generalSection": {
+    "message": "Общие"
+  },
+  "languageLabel": {
+    "message": "Язык"
+  },
+  "langAuto": {
+    "message": "Авто (язык браузера)"
+  },
+  "themeLabel": {
+    "message": "Тема"
+  },
+  "addButton": {
+    "message": "＋ Добавить"
+  },
+  "addButtonShort": {
+    "message": "Добавить"
+  },
+  "saveButton": {
+    "message": "Сохранить"
+  },
+  "cancelButton": {
+    "message": "Отмена"
+  },
+  "importButton": {
+    "message": "Импорт (JSON)"
+  },
+  "exportButton": {
+    "message": "Экспорт (JSON)"
+  },
+  "resetButton": {
+    "message": "Сбросить настройки"
+  },
+  "resetConfirm": {
+    "message": "Удалить все закладки, фоны и поисковые системы и вернуть настройки по умолчанию?"
+  },
+  "resetDone": {
+    "message": "Настройки сброшены."
+  },
+  "closeButton": {
+    "message": "Закрыть"
+  },
+  "bookmarkTitlePlaceholder": {
+    "message": "Название"
+  },
+  "bookmarkUrlPlaceholder": {
+    "message": "URL"
+  },
+  "iconUrlPlaceholder": {
+    "message": "URL логотипа (опционально)"
+  },
+  "refreshIcon": {
+    "message": "Обновить иконку по URL"
+  },
+  "bgTitlePlaceholder": {
+    "message": "Название фона"
+  },
+  "bgUrlPlaceholder": {
+    "message": "URL изображения (пусто — по умолчанию)"
+  },
+  "bgTypeUrl": {
+    "message": "Ссылка"
+  },
+  "bgTypeFile": {
+    "message": "Устройство"
+  },
+  "bgTypeColor": {
+    "message": "Цвет"
+  },
+  "bgTypeGradient": {
+    "message": "Градиент"
+  },
+  "bgPositionLabel": {
+    "message": "Положение"
+  },
+  "bgPositionCover": {
+    "message": "Растянуть"
+  },
+  "bgPositionContain": {
+    "message": "Вписать"
+  },
+  "bgPositionTile": {
+    "message": "Замостить"
+  },
+  "bgPositionCenter": {
+    "message": "1:1 по центру"
+  },
+  "gradientAngle": {
+    "message": "Угол градиента"
+  },
+  "fileBackground": {
+    "message": "Картинка с устройства"
+  },
+  "errNoFile": {
+    "message": "Выберите файл изображения."
+  },
+  "errFileTooBig": {
+    "message": "Не удалось сохранить картинку: недостаточно места в хранилище браузера."
+  },
+  "engineNamePlaceholder": {
+    "message": "Название"
+  },
+  "engineUrlPlaceholder": {
+    "message": "URL с %s (например https://www.google.com/search?q=%s)"
+  },
+  "edit": {
+    "message": "Редактировать"
+  },
+  "editShort": {
+    "message": "Ред."
+  },
+  "delete": {
+    "message": "Удалить"
+  },
+  "select": {
+    "message": "Выбрать"
+  },
+  "openInNewTab": {
+    "message": "Открыть в новой вкладке"
+  },
+  "copyLink": {
+    "message": "Копировать ссылку"
+  },
+  "settings": {
+    "message": "Настройки"
+  },
+  "nextBackground": {
+    "message": "Следующий фон"
+  },
+  "backgroundSettings": {
+    "message": "Настройки фонов"
+  },
+  "pasteAndSearch": {
+    "message": "Вставить и искать"
+  },
+  "paste": {
+    "message": "Вставить"
+  },
+  "copy": {
+    "message": "Копировать"
+  },
+  "cut": {
+    "message": "Вырезать"
+  },
+  "clear": {
+    "message": "Очистить"
+  },
+  "searchEngineSettings": {
+    "message": "Настройки поисковиков"
+  },
+  "createBookmark": {
+    "message": "Создать закладку"
+  },
+  "pasteAndCreate": {
+    "message": "Вставить и создать"
+  },
+  "sortAsc": {
+    "message": "Сортировать А-Я"
+  },
+  "sortDesc": {
+    "message": "Сортировать Я-А"
+  },
+  "emptyList": {
+    "message": "Список пуст."
+  },
+  "noImage": {
+    "message": "Нет"
+  },
+  "importSuccess": {
+    "message": "Настройки импортированы"
+  },
   "importSkipped": {
     "message": "Настройки импортированы. Пропущено некорректных элементов: $count$",
-    "placeholders": { "count": { "content": "$1" } }
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
   },
   "importError": {
     "message": "Ошибка импорта: $error$",
-    "placeholders": { "error": { "content": "$1" } }
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
   },
-  "errTitleAndUrl": { "message": "Введите название и URL." },
-  "errInvalidUrl": { "message": "Введите корректный URL." },
-  "errBookmarkUrl": { "message": "Введите URL закладки." },
-  "errTitle": { "message": "Введите название." },
-  "errNameAndUrl": { "message": "Введите название и URL с %s." },
-  "errEngineUrl": { "message": "Введите URL с %s." },
-  "copyFailed": { "message": "Не удалось скопировать текст." },
-  "cutFailed": { "message": "Не удалось вырезать текст." },
-  "defaultBackground": { "message": "По умолчанию" },
-  "defaultScreen": { "message": "Главная" },
-  "screenName": { "message": "Экран $n$", "placeholders": { "n": { "content": "$1" } } },
-  "emptyScreen": { "message": "На этом экране пока нет закладок." },
-  "emptyScreenAdd": { "message": "Добавить закладку" },
-  "tabScreens": { "message": "Экраны" },
-  "tabPlugins": { "message": "Плагины" },
-  "pluginsEmpty": { "message": "Плагины не установлены." },
-  "pluginOpen": { "message": "Открыть" },
-  "pluginRemove": { "message": "Удалить" },
-  "pluginRestore": { "message": "Восстановить встроенные" },
-  "pluginRemoveConfirm": { "message": "Удалить плагин $name$?", "placeholders": { "name": { "content": "$1" } } },
-  "surfacePanel": { "message": "Панель" },
-  "surfaceFloating": { "message": "Плавающее окно" },
-  "surfaceTiles": { "message": "Плитка" },
-  "surfaceStripTop": { "message": "Над закладками" },
-  "surfaceStripBottom": { "message": "Под закладками" },
-  "surfaceOff": { "message": "Выкл." },
-  "pluginInstall": { "message": "Установить из файла…" },
-  "pluginInstallConfirm": { "message": "$name$ запрашивает: $permissions$. Установить?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
-  "pluginInstallInvalid": { "message": "Некорректный файл плагина: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginInstallManifestOnly": { "message": "Вы выбрали манифест, а не пакет плагина. Нужен JSON {manifest, code}; встроенные плагины возвращаются кнопкой «Восстановить встроенные»." },
-  "pluginGrantBookmarks": { "message": "Разрешить доступ к закладкам" },
-  "pluginBookmarksGranted": { "message": "Доступ к закладкам разрешён" },
-  "pluginBookmarksDenied": { "message": "Доступ к закладкам не выдан: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginGrantPending": { "message": "Ожидаем подтверждение в Chrome…" },
-  "pluginGrantHint": { "message": "Если окно с запросом не появилось, нажмите иконку TabVale на панели браузера и разрешите доступ к закладкам." },
-  "pluginGrantReload": { "message": "Браузер не видит разрешение в манифесте. Перезагрузите расширение на странице расширений (кнопка «Обновить») и попробуйте снова." },
-  "pluginPermNetwork": { "message": "сеть: $count$", "placeholders": { "count": { "content": "$1" } } },
-  "pluginPermStorage": { "message": "хранилище: $kb$ КБ", "placeholders": { "kb": { "content": "$1" } } },
-  "pluginPlacementLabel": { "message": "Размещение плагина $name$", "placeholders": { "name": { "content": "$1" } } },
-  "screenLabel": { "message": "Экран" },
-  "addScreen": { "message": "＋ Добавить экран" },
-  "screenTitlePlaceholder": { "message": "Название экрана" },
-  "deleteScreenTitle": { "message": "Удалить экран?" },
-  "moveToHome": { "message": "Перенести на Главную" },
-  "deleteWithScreen": { "message": "Удалить вместе с экраном" },
-  "moveToScreenTitle": { "message": "Переместить на экран" },
-  "moveToScreen": { "message": "Переместить на экран…" },
-  "bookmarksCount": { "message": "$n$ закладок", "placeholders": { "n": { "content": "$1" } } },
-  "moveLeft": { "message": "Сдвинуть влево" },
-  "moveRight": { "message": "Сдвинуть вправо" },
-  "mainScreenCannotDelete": { "message": "Экран «Главная» удалить нельзя. Переименуйте его или удалите другой экран." }
+  "errTitleAndUrl": {
+    "message": "Введите название и URL."
+  },
+  "errInvalidUrl": {
+    "message": "Введите корректный URL."
+  },
+  "errBookmarkUrl": {
+    "message": "Введите URL закладки."
+  },
+  "errTitle": {
+    "message": "Введите название."
+  },
+  "errNameAndUrl": {
+    "message": "Введите название и URL с %s."
+  },
+  "errEngineUrl": {
+    "message": "Введите URL с %s."
+  },
+  "copyFailed": {
+    "message": "Не удалось скопировать текст."
+  },
+  "cutFailed": {
+    "message": "Не удалось вырезать текст."
+  },
+  "defaultBackground": {
+    "message": "По умолчанию"
+  },
+  "defaultScreen": {
+    "message": "Главная"
+  },
+  "screenName": {
+    "message": "Экран $n$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyScreen": {
+    "message": "На этом экране пока нет закладок."
+  },
+  "emptyScreenAdd": {
+    "message": "Добавить закладку"
+  },
+  "tabScreens": {
+    "message": "Экраны"
+  },
+  "tabPlugins": {
+    "message": "Плагины"
+  },
+  "pluginsEmpty": {
+    "message": "Плагинов пока нет. Скачайте .tvp на сайте и установите файлом."
+  },
+  "pluginOpen": {
+    "message": "Открыть"
+  },
+  "pluginRemove": {
+    "message": "Удалить"
+  },
+  "pluginMenuConfigure": {
+    "message": "Настроить плагин"
+  },
+  "pluginMenuSettings": {
+    "message": "Настройки плагинов"
+  },
+  "pluginMenuDisable": {
+    "message": "Выключить"
+  },
+  "pluginMenuRemove": {
+    "message": "Удалить"
+  },
+  "pluginRemoveConfirm": {
+    "message": "Удалить плагин $name$?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "surfacePanel": {
+    "message": "Панель"
+  },
+  "surfaceFloating": {
+    "message": "Плавающее окно"
+  },
+  "surfaceTiles": {
+    "message": "Плитка"
+  },
+  "surfaceStripTop": {
+    "message": "Над закладками"
+  },
+  "surfaceStripBottom": {
+    "message": "Под закладками"
+  },
+  "surfaceOff": {
+    "message": "Выкл."
+  },
+  "pluginInstall": {
+    "message": "Установить из файла…"
+  },
+  "pluginInstallConfirm": {
+    "message": "$name$ запрашивает: $permissions$. Установить?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "permissions": {
+        "content": "$2"
+      }
+    }
+  },
+  "pluginInstallInvalid": {
+    "message": "Некорректный файл плагина: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginInstallManifestOnly": {
+    "message": "Вы выбрали манифест, а не пакет плагина. Нужен JSON {manifest, code}; встроенные плагины возвращаются кнопкой «Восстановить встроенные»."
+  },
+  "pluginGrantBookmarks": {
+    "message": "Разрешить доступ к закладкам"
+  },
+  "pluginBookmarksGranted": {
+    "message": "Доступ к закладкам разрешён"
+  },
+  "pluginBookmarksDenied": {
+    "message": "Доступ к закладкам не выдан: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginGrantPending": {
+    "message": "Ожидаем подтверждение в Chrome…"
+  },
+  "pluginGrantHint": {
+    "message": "Если окно с запросом не появилось, нажмите иконку TabVale на панели браузера и разрешите доступ к закладкам."
+  },
+  "pluginGrantReload": {
+    "message": "Браузер не видит разрешение в манифесте. Перезагрузите расширение на странице расширений (кнопка «Обновить») и попробуйте снова."
+  },
+  "pluginPermNetwork": {
+    "message": "сеть: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPermStorage": {
+    "message": "хранилище: $kb$ КБ",
+    "placeholders": {
+      "kb": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPlacementLabel": {
+    "message": "Размещение плагина $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "screenLabel": {
+    "message": "Экран"
+  },
+  "addScreen": {
+    "message": "＋ Добавить экран"
+  },
+  "screenTitlePlaceholder": {
+    "message": "Название экрана"
+  },
+  "deleteScreenTitle": {
+    "message": "Удалить экран?"
+  },
+  "moveToHome": {
+    "message": "Перенести на Главную"
+  },
+  "deleteWithScreen": {
+    "message": "Удалить вместе с экраном"
+  },
+  "moveToScreenTitle": {
+    "message": "Переместить на экран"
+  },
+  "moveToScreen": {
+    "message": "Переместить на экран…"
+  },
+  "bookmarksCount": {
+    "message": "$n$ закладок",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveLeft": {
+    "message": "Сдвинуть влево"
+  },
+  "moveRight": {
+    "message": "Сдвинуть вправо"
+  },
+  "mainScreenCannotDelete": {
+    "message": "Экран «Главная» удалить нельзя. Переименуйте его или удалите другой экран."
+  },
+  "pluginCatalog": {
+    "message": "Открыть каталог плагинов"
+  }
 }

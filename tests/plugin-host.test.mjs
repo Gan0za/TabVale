@@ -41,6 +41,11 @@ assert.ok(source.includes("sandbox/plugin-host.html"), 'панель грузи�
 assert.ok(source.includes('renderPluginStrip'), 'есть рендер полосы плагинов');
 assert.ok(css.includes('.plugin-strip-item'), 'есть стили элемента полосы');
 assert.ok(source.includes('renderPluginFloating'), 'есть рендер плавающих окон');
+assert.ok(source.includes('tabvale:context-menu'), 'правый клик в полосе доходит до хоста');
+assert.ok(read('sandbox/plugin-host.js').includes('tabvale:context-menu'), 'sandbox передаёт правый клик');
+assert.ok(read('newtab/core/render.js').includes("case 'plugin':"), 'есть меню плагина');
+assert.ok(read('newtab/features/context-menu.js').includes('pluginConfigure'), 'пункт «Настроить плагин» работает');
+assert.ok(source.includes('.plugin-panel, .plugin-dock, .plugin-tile, .modal'), 'клик вне панели её закрывает');
 assert.ok(source.includes('openFloatingWindow'), 'док показывает плавающее окно');
 assert.ok(source.includes('clampFloatingWindows'), 'позиция окна пересчитывается при ресайзе');
 assert.ok(css.includes('.plugin-floating'), 'есть стили плавающего окна');
@@ -57,8 +62,10 @@ assert.ok(html.includes('.tvp'), 'диалог выбора файла прин�
 assert.ok(source.includes('renderPluginManager'), 'есть рендер менеджера');
 assert.ok(source.includes('setPluginPlacement'), 'размещение меняется из менеджера');
 assert.ok(source.includes('removePlugin'), 'плагин можно удалить');
-assert.ok(source.includes('pluginRemovedBuiltins'), 'удалённые встроенные запоминаются');
-assert.ok(source.includes("t('pluginRestore')"), 'есть восстановление встроенных');
+assert.ok(!source.includes('installBuiltinPlugins'), 'встроенные не ставятся автоматически');
+assert.ok(!source.includes('pluginRemovedBuiltins'), 'нет списка удалённых встроенных');
+assert.ok(source.includes("t('pluginCatalog')"), 'пустой менеджер ведёт в каталог');
+assert.ok(source.includes('PLUGIN_CATALOG_URL'), 'адрес каталога задан');
 assert.ok(source.includes("t('pluginOpen')"), 'кнопки менеджера локализованы');
 assert.ok(source.includes("t('pluginRemoveConfirm'"), 'подтверждение удаления локализовано');
 assert.ok(css.includes('.plugin-manager-item'), 'есть стили менеджера');
@@ -80,6 +87,8 @@ assert.ok(source.includes('plugin-manager-grant'), 'в менеджере ест
 assert.ok(source.includes("case 'ui.openManager'"), 'панель может привести к менеджеру');
 assert.ok(css.includes('.plugin-manager-highlight'), 'нужная строка менеджера подсвечивается');
 assert.ok(read('sandbox/plugin-host.js').includes('openManager'), 'метод openManager есть в sandbox-API');
+assert.ok(read('sandbox/plugin-host.js').includes('icon.favicon'), 'иконка сайта есть в sandbox-API');
+assert.ok(read('newtab/features/plugins.js').includes("case 'icon.favicon'"), 'хост отдаёт favicon плагинам');
 assert.ok(read('plugins/com.tabvale.bookmarks/plugin.js').includes('api.ui.openManager'), 'импортёр ведёт к выдаче доступа');
 assert.ok(source.includes('tabvale:bookmarks-permission'), 'хост принимает сообщение о выданном доступе');
 assert.ok(source.includes('onBookmarksPermission'), 'выдача доступа применяется к открытым панелям');

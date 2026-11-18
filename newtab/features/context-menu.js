@@ -114,6 +114,24 @@ const contextActions = {
         alert(t('copyFailed'));
     }),
 
+    // Плагины. «Настроить» ведёт в менеджер на строке плагина: своей
+    // страницы настроек у плагинов пока нет.
+    pluginConfigure: (data) => {
+        openSettingsModal('plugins');
+        if (typeof focusPluginManagerRow === 'function') focusPluginManagerRow(data.pluginId);
+    },
+    pluginManager: () => openSettingsModal('plugins'),
+    pluginDisable: (data) => {
+        if (typeof installedPluginCache === 'undefined' || typeof setPluginPlacement !== 'function') return;
+        const record = installedPluginCache.find((item) => item.id === data.pluginId);
+        if (record) setPluginPlacement(record, 'off');
+    },
+    pluginRemove: (data) => {
+        if (typeof installedPluginCache === 'undefined' || typeof removePlugin !== 'function') return;
+        const record = installedPluginCache.find((item) => item.id === data.pluginId);
+        if (record) removePlugin(record);
+    },
+
     // Создание новой закладки: открываем форму закладок в настройках
     addBookmark: () => {
         managedScreenId = currentState.currentScreenId;
@@ -232,6 +250,22 @@ function detectMenuTarget(target) {
     if (bookmarkTile) {
         const index = Number(bookmarkTile.dataset.index);
         return { type: 'bookmark', data: { index, url: currentState.bookmarks[index]?.url } };
+    }
+
+    // Плагины: плитка в сетке закладок, виджет полосы, заголовок панели.
+    // Содержимое полосы и панели — sandbox-iframe: правый клик внутри
+    // него приходит отдельным сообщением (см. onPluginMessage).
+    const pluginTile = target.closest?.('.plugin-tile');
+    if (pluginTile) {
+        return { type: 'plugin', data: { pluginId: pluginTile.dataset.pluginId, surface: 'tiles' } };
+    }
+    const pluginStrip = target.closest?.('.plugin-strip-item');
+    if (pluginStrip) {
+        return { type: 'plugin', data: { pluginId: pluginStrip.dataset.pluginId, surface: 'strip' } };
+    }
+    const pluginPanel = target.closest?.('.plugin-panel');
+    if (pluginPanel) {
+        return { type: 'plugin', data: { pluginId: pluginPanel.dataset.pluginId, surface: 'panel' } };
     }
 
     // Клик по модалке настроек: интересуют только строки списков

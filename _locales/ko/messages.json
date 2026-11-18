@@ -275,31 +275,128 @@
   "tabScreens": {
     "message": "화면"
   },
-  "tabPlugins": { "message": "플러그인" },
-  "pluginsEmpty": { "message": "설치된 플러그인이 없습니다." },
-  "pluginOpen": { "message": "열기" },
-  "pluginRemove": { "message": "제거" },
-  "pluginRestore": { "message": "기본 플러그인 복원" },
-  "pluginRemoveConfirm": { "message": "플러그인 $name$을(를) 제거할까요?", "placeholders": { "name": { "content": "$1" } } },
-  "surfacePanel": { "message": "패널" },
-  "surfaceFloating": { "message": "플로팅 창" },
-  "surfaceTiles": { "message": "타일" },
-  "surfaceStripTop": { "message": "북마크 위" },
-  "surfaceStripBottom": { "message": "북마크 아래" },
-  "surfaceOff": { "message": "끔" },
-  "pluginInstall": { "message": "파일에서 설치…" },
-  "pluginInstallConfirm": { "message": "$name$ 요청: $permissions$. 설치할까요?", "placeholders": { "name": { "content": "$1" }, "permissions": { "content": "$2" } } },
-  "pluginInstallInvalid": { "message": "잘못된 플러그인 파일: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginInstallManifestOnly": { "message": "이것은 매니페스트이며 플러그인 패키지가 아닙니다. JSON {manifest, code}을 사용하세요. 기본 플러그인은 \"기본 플러그인 복원\"으로 돌아옵니다." },
-  "pluginGrantBookmarks": { "message": "북마크 접근 허용" },
-  "pluginBookmarksGranted": { "message": "북마크 접근 허용됨" },
-  "pluginBookmarksDenied": { "message": "북마크 접근이 허용되지 않았습니다: $error$", "placeholders": { "error": { "content": "$1" } } },
-  "pluginGrantPending": { "message": "Chrome에서 확인을 기다리는 중…" },
-  "pluginGrantHint": { "message": "요청이 표시되지 않으면 브라우저 도구 모음의 TabVale 아이콘을 클릭하고 북마크 접근을 허용하세요." },
-  "pluginGrantReload": { "message": "브라우저가 매니페스트에서 권한을 찾지 못했습니다. 확장 프로그램 페이지에서 확장 프로그램을 다시 로드한 후 다시 시도하세요." },
-  "pluginPermNetwork": { "message": "네트워크: $count$", "placeholders": { "count": { "content": "$1" } } },
-  "pluginPermStorage": { "message": "저장소: $kb$ KB", "placeholders": { "kb": { "content": "$1" } } },
-  "pluginPlacementLabel": { "message": "$name$ 배치", "placeholders": { "name": { "content": "$1" } } },
+  "tabPlugins": {
+    "message": "플러그인"
+  },
+  "pluginsEmpty": {
+    "message": "아직 플러그인이 없습니다. 사이트에서 .tvp를 내려받아 파일로 설치하세요."
+  },
+  "pluginOpen": {
+    "message": "열기"
+  },
+  "pluginRemove": {
+    "message": "제거"
+  },
+  "pluginMenuConfigure": {
+    "message": "플러그인 구성"
+  },
+  "pluginMenuSettings": {
+    "message": "플러그인 설정"
+  },
+  "pluginMenuDisable": {
+    "message": "끄기"
+  },
+  "pluginMenuRemove": {
+    "message": "삭제"
+  },
+  "pluginRemoveConfirm": {
+    "message": "플러그인 $name$을(를) 제거할까요?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "surfacePanel": {
+    "message": "패널"
+  },
+  "surfaceFloating": {
+    "message": "플로팅 창"
+  },
+  "surfaceTiles": {
+    "message": "타일"
+  },
+  "surfaceStripTop": {
+    "message": "북마크 위"
+  },
+  "surfaceStripBottom": {
+    "message": "북마크 아래"
+  },
+  "surfaceOff": {
+    "message": "끔"
+  },
+  "pluginInstall": {
+    "message": "파일에서 설치…"
+  },
+  "pluginInstallConfirm": {
+    "message": "$name$ 요청: $permissions$. 설치할까요?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "permissions": {
+        "content": "$2"
+      }
+    }
+  },
+  "pluginInstallInvalid": {
+    "message": "잘못된 플러그인 파일: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginInstallManifestOnly": {
+    "message": "이것은 매니페스트이며 플러그인 패키지가 아닙니다. JSON {manifest, code}을 사용하세요. 기본 플러그인은 \"기본 플러그인 복원\"으로 돌아옵니다."
+  },
+  "pluginGrantBookmarks": {
+    "message": "북마크 접근 허용"
+  },
+  "pluginBookmarksGranted": {
+    "message": "북마크 접근 허용됨"
+  },
+  "pluginBookmarksDenied": {
+    "message": "북마크 접근이 허용되지 않았습니다: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginGrantPending": {
+    "message": "Chrome에서 확인을 기다리는 중…"
+  },
+  "pluginGrantHint": {
+    "message": "요청이 표시되지 않으면 브라우저 도구 모음의 TabVale 아이콘을 클릭하고 북마크 접근을 허용하세요."
+  },
+  "pluginGrantReload": {
+    "message": "브라우저가 매니페스트에서 권한을 찾지 못했습니다. 확장 프로그램 페이지에서 확장 프로그램을 다시 로드한 후 다시 시도하세요."
+  },
+  "pluginPermNetwork": {
+    "message": "네트워크: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPermStorage": {
+    "message": "저장소: $kb$ KB",
+    "placeholders": {
+      "kb": {
+        "content": "$1"
+      }
+    }
+  },
+  "pluginPlacementLabel": {
+    "message": "$name$ 배치",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
   "screenLabel": {
     "message": "화면"
   },
@@ -340,5 +437,8 @@
   },
   "mainScreenCannotDelete": {
     "message": "홈 화면은 삭제할 수 없습니다. 이름을 바꾸거나 다른 화면을 삭제하세요."
+  },
+  "pluginCatalog": {
+    "message": "플러그인 카탈로그 열기"
   }
 }

@@ -154,7 +154,9 @@ const send = (method, params = {}) => new Promise((resolve, reject) => {
 });
 const evaluate = async (expression, contextId) => {
   const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true, contextId });
-  if (r.exceptionDetails) throw new Error(r.exceptionDetails.text);
+  if (r.exceptionDetails) {
+    throw new Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text);
+  }
   return r.result.value;
 };
 
@@ -277,6 +279,43 @@ const diagnostics = await evaluate(`(async () => {
   };
 })()`);
 console.log('diagnostics:', diagnostics);
+
+// Плагины больше не устанавливаются сами: ставим нужные из собранных .tvp,
+// как это сделает пользователь через «Установить из файла».
+await send('DOM.enable');
+await evaluate('window.confirm = () => true');
+const installFromCatalog = async (id) => {
+  const documentNode = await send('DOM.getDocument');
+  const fileInput = await send('DOM.querySelector', {
+    nodeId: documentNode.root.nodeId,
+    selector: '#plugin-package-file',
+  });
+  await send('DOM.setFileInputFiles', {
+    files: [path.join(EXT, 'docs', 'plugins', `${id}.tvp`)],
+    nodeId: fileInput.nodeId,
+  });
+  await sleep(700);
+};
+for (const id of ['com.tabvale.clock', 'com.tabvale.pomodoro', 'com.tabvale.layout', 'com.tabvale.apps', 'com.tabvale.bookmarks']) {
+  await installFromCatalog(id);
+}
+const installedForSmoke = await evaluate(`document.querySelectorAll('.plugin-manager-item').length`);
+console.log('no default plugins, installed for smoke:', installedForSmoke);
+
+await evaluate(`(async () => {
+  const place = async (id, value) => {
+    const select = document.querySelector('.plugin-manager-item[data-plugin-id="' + id + '"] .plugin-manager-surface');
+    if (!select) return;
+    select.value = value;
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  };
+  await place('com.tabvale.clock', 'strip:top');
+  await place('com.tabvale.pomodoro', 'strip:top');
+  await place('com.tabvale.layout', 'panel');
+  await place('com.tabvale.apps', 'panel');
+  await place('com.tabvale.bookmarks', 'panel');
+})()`);
 
 const dock = await evaluate(`(() => {
   const buttons = [...document.querySelectorAll('.plugin-dock-button')];
@@ -469,6 +508,33 @@ localizedManagerName = await evaluate(`(async () => {
 })()`);
 console.log('localized manager name:', localizedManagerName);
 
+// Меню плагина по правому клику на заголовке панели; клик вне панели её закрывает.
+// Настройки на время проверки прячем: оверлей перекрывает панель.
+await evaluate(`(() => {
+  document.getElementById('settings-modal')?.classList.add('hidden');
+  document.getElementById('overlay')?.classList.add('hidden');
+  document.querySelector('.plugin-dock-button[data-plugin-id="com.tabvale.layout"]')?.click();
+})()`);
+await sleep(700);
+const pluginMenu = await evaluate(`(() => {
+  const header = document.querySelector('.plugin-panel-header');
+  if (!header) return null;
+  const overlayHidden = document.getElementById('overlay').classList.contains('hidden');
+  header.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, clientX: 240, clientY: 240 }));
+  const menu = document.getElementById('custom-context-menu');
+  return { overlayHidden, open: !menu.classList.contains('hidden'), text: menu.textContent };
+})()`);
+console.log('plugin menu:', pluginMenu);
+await evaluate(`closeContextMenu()`);
+const outsideClose = await evaluate(`(() => {
+  if (!document.querySelector('.plugin-panel')) return 'not-open';
+  document.getElementById('main-container').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  return document.querySelector('.plugin-panel') ? 'open' : 'closed';
+})()`);
+console.log('outside click:', outsideClose);
+await evaluate(`openSettingsModal('plugins')`);
+await sleep(300);
+
 const openByManager = await evaluate(`(async () => {
   document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-open')?.click();
   await new Promise((resolve) => setTimeout(resolve, 800));
@@ -521,21 +587,23 @@ console.log('removal:', removal);
 
 await send('Page.reload');
 await sleep(2500);
+await evaluate('window.confirm = () => true');
 const afterReload = await evaluate(`({
   dock: document.querySelectorAll('.plugin-dock-button').length,
   strip: document.querySelectorAll('.plugin-strip-item').length,
 })`);
 console.log('after reload:', afterReload);
 
-const restored = await evaluate(`(async () => {
-  document.getElementById('settings-button')?.click();
-  const tab = [...document.querySelectorAll('.settings-tab')].find((item) => item.dataset.tab === 'plugins');
-  tab?.click();
-  document.querySelector('.plugin-manager-restore')?.click();
-  await new Promise((resolve) => setTimeout(resolve, 900));
-  return { dock: document.querySelectorAll('.plugin-dock-button').length };
-})()`);
-console.log('restored:', restored);
+// Кнопки «Восстановить встроенные» больше нет: вернуть плагин можно
+// только установкой из каталога.
+const restoreButton = await evaluate(`!!document.querySelector('.plugin-manager-restore')`);
+console.log('restore button present:', restoreButton);
+await installFromCatalog('com.tabvale.clock');
+const reinstalled = await evaluate(`({
+  dock: document.querySelectorAll('.plugin-dock-button').length,
+  strip: document.querySelectorAll('.plugin-strip-item').length,
+})`);
+console.log('clock reinstalled:', reinstalled);
 
 const testPackage = path.join(os.tmpdir(), 'tabvale-test-plugin.json');
 fs.writeFileSync(testPackage, JSON.stringify({
@@ -672,6 +740,16 @@ await sleep(800);
 const tilePanel = await evaluate(`!!document.querySelector('.plugin-panel')`);
 tileWorks = tileCount === 1 && tilePanel;
 console.log('plugin tile:', { tileCount, tilePanel });
+// Плитки не исчезают при переключении экрана: renderBookmarks чистит контейнер.
+const tilesAfterSwitch = await evaluate(`(() => {
+  const first = currentState.currentScreenId;
+  currentState.screens.push({ id: 'smoke-tiles', title: 'Smoke tiles', bookmarks: [] });
+  switchScreen('smoke-tiles');
+  const count = document.querySelectorAll('.plugin-tile').length;
+  switchScreen(first);
+  return count;
+})()`);
+console.log('tiles after screen switch:', tilesAfterSwitch);
 await evaluate(`document.querySelector('.plugin-panel-close')?.click()`);
 await sleep(300);
 
@@ -938,7 +1016,10 @@ const passed = dock.count > 0
     && zone.bottom === 1 && zone.top === 0
     && removal.rows === baselineRows - 1 && removal.dock === baselineDock
     && afterReload.dock === baselineDock && afterReload.strip === baselineStrip - 1
-    && restored.dock === baselineDock
+    && restoreButton === false
+    && reinstalled.dock === baselineDock && reinstalled.strip === baselineStrip
+    && installedForSmoke === 5
+    && Array.isArray(diagnostics.records) && diagnostics.records.length === 0
     && installed.dock === baselineDock + 1 && installed.rows === baselineRows + 1
     && cleaned.dock === baselineDock
     && tvpInstalled.dock === baselineDock + 1 && tvpInstalled.rows === baselineRows + 1
@@ -953,6 +1034,9 @@ const passed = dock.count > 0
     && pomodoroFits
     && appLauncherFits
     && tileWorks
+    && tilesAfterSwitch === 1
+    && pluginMenu?.open === true && /Настройки плагинов/.test(pluginMenu.text)
+    && outsideClose === 'closed'
     && floatingWorks
     && panelToManager.clicked && panelToManager.open && panelToManager.pane && panelToManager.highlighted
     && grantRequested

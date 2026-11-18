@@ -94,6 +94,7 @@
         <tbody>
           <tr><td>Bookmarks (title, URL, icon)</td><td>chrome.storage.sync</td><td>None; browser sync only between the user's devices</td></tr>
           <tr><td>Site icons (images)</td><td>IndexedDB <code>tabvale-icons</code></td><td>None; taken from the browser's local favicon cache</td></tr>
+          <tr><td>Plugins: packages, manifests and their settings</td><td>IndexedDB <code>tabvale-plugins</code>, <code>chrome.storage.local</code> (<code>plugin:*</code>)</td><td>None</td></tr>
           <tr><td>Screens (title, order, bookmark membership)</td><td>chrome.storage.sync</td><td>None</td></tr>
           <tr><td>Active screen</td><td>chrome.storage.local</td><td>None; device-specific</td></tr>
           <tr><td>Backgrounds: URL, color or gradient</td><td>chrome.storage.sync</td><td>None</td></tr>
@@ -123,6 +124,13 @@
       are loaded by the browser from addresses the user entered. When adding a
       bookmark, the extension may ask the browser for access to that specific
       site to read its title; without permission the request is not made.
+    </p>
+    <p>
+      Plugins are installed only from a <code>.tvp</code> file the user picks;
+      the extension never downloads plugin code. Plugin code runs in an isolated
+      sandbox page without <code>chrome.*</code>, and its network requests are
+      limited to the hosts listed in the plugin manifest and go through the
+      extension.
     </p>
 
     <h2>Export and deletion</h2>

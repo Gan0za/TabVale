@@ -359,6 +359,16 @@ function getContextMenuItems(type, data = {}) {
             items.push({ action: 'openSettings', label: t('settings') });
             return items;
         }
+        case 'plugin':
+            // Меню плагина: своя строка в менеджере, сами настройки,
+            // выключение без удаления и удаление с подтверждением.
+            return [
+                { action: 'pluginConfigure', label: t('pluginMenuConfigure') },
+                { action: 'pluginManager', label: t('pluginMenuSettings') },
+                { separator: true },
+                { action: 'pluginDisable', label: t('pluginMenuDisable') },
+                { action: 'pluginRemove', label: t('pluginMenuRemove') },
+            ];
         case 'settingsRow':
             // Меню строки в модалке настроек — повторяет её кнопки.
             // У закладок нет кнопки "Выбрать", поэтому пункт добавляется по флагу.

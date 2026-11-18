@@ -5,8 +5,12 @@
 # Собирает dist/tabvale_v{VERSION}.zip — ровно тот архив, который
 # загружается в Chrome Web Store. В zip попадают ТОЛЬКО рантайм-файлы:
 #
-#   manifest.json, background.js, newtab/, sandbox/, plugins/,
+#   manifest.json, background.js, newtab/, sandbox/,
 #   assets/icons/icon*.png, _locales/
+#
+# Плагины в архив не входят: они не ставятся по умолчанию, а скачиваются
+# с сайта (.tvp) и устанавливаются из файла. Исходники и готовые пакеты
+# остаются в репозитории: plugins/ и docs/plugins/.
 #
 # Что НЕ попадает и почему:
 #   - tests/, tools/, .gitignore — рабочие файлы разработки
@@ -33,7 +37,6 @@ FILES=(
     manifest.json
     background.js
     sandbox
-    plugins
     newtab
     assets/icons/icon16.png
     assets/icons/icon48.png

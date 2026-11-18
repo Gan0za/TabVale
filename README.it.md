@@ -2,47 +2,55 @@
 
 **Read in:** [English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Français](README.fr.md) · [Español](README.es.md) · [Português (Brasil)](README.pt-BR.md) · [Italiano](README.it.md) · [Polski](README.pl.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) · [中文](README.zh.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-> Traduzione breve. Il README in inglese è la fonte di verità. Traduzione
-> realizzata da un non madrelingua; correzioni benvenute tramite GitHub Issues.
+> Traduzione breve. Il README in inglese è la fonte di verità. Traduzione di un non madrelingua; correzioni benvenute via GitHub Issues.
 
-Estensione per Chrome e Microsoft Edge che sostituisce la pagina della nuova
-scheda con una dashboard personalizzabile: ricerca, più schermate di
-segnalibri e sfondi.
+Un’estensione per Chrome e Microsoft Edge che sostituisce la nuova scheda con
+una dashboard personalizzabile: ricerca, più schermate di segnalibri, sfondi e
+plugin opzionali.
 
-## Funzionalità
+## Funzioni
 
-- Ricerca con motore selezionabile; l'elenco è modificabile.
-- Più schermate di segnalibri: cambio con punti, scorrimento su area vuota e
-  `Alt+←/→`.
-- Segnalibri con icone e ordinamento tramite trascinamento; spostamento tra
-  schermate.
+- Ricerca con motore selezionabile; l’elenco è modificabile e ogni motore ha la sua icona.
+- Più schermate di segnalibri: punti, scorrimento su area vuota, `Alt+←/→`; spostamento dei segnalibri tra schermate.
+- Segnalibri con icone (in cache locale), ordinamento tramite trascinamento, modifica ed eliminazione.
 - Sfondi: URL, file locale, colore o gradiente.
-- Temi (automatico/chiaro/scuro) e 13 lingue dell'interfaccia.
+- Temi auto/chiaro/scuro e 13 lingue dell’interfaccia.
+- Plugin — solo quelli che installi: orologio, note, tastiera, timer, password, meteo, statistiche GitHub, avvio applicazioni, RSS, importazione segnalibri.
 - Importazione ed esportazione delle impostazioni in JSON.
 
 ## Installazione
 
-1. Aprire `chrome://extensions` o `edge://extensions`.
-2. Attivare la modalità sviluppatore.
-3. Fare clic su «Carica estensione non pacchettizzata» e scegliere la radice
-   del progetto.
-4. Aprire una nuova scheda.
+1. Apri `chrome://extensions` o `edge://extensions`.
+2. Attiva la modalità sviluppatore.
+3. «Carica estensione non pacchettizzata» e scegli la cartella del progetto.
+4. Apri una nuova scheda.
 
-## Screenshot
+## Plugin
 
-[Pagina iniziale](docs/screenshots/01-main-dark.png) · [Tutti gli screenshot](docs/screenshots/)
+Nessun plugin è installato per impostazione predefinita. I pacchetti `.tvp`
+sono nella [sezione «Plugin» del sito](https://gan0za.github.io/TabVale/#plugins)
+e in `docs/plugins/`. Scarica il file e installalo: Impostazioni → Plugin →
+«Installa da file…». Il gestore sceglie la zona — pannello, striscia sopra o
+sotto i segnalibri, riquadro, finestra flottante; il menu contestuale del plugin
+apre la sua riga, lo disattiva o lo rimuove.
 
-L'interfaccia negli screenshot è in inglese.
+## Sviluppo di plugin (breve)
+
+Un plugin è uno zip `.tvp` con `manifest.json`, file di codice e icona
+opzionale. Il codice definisce `mount(api)` e gira in una sandbox senza
+`chrome.*`: dati con `api.storage`, rete con `api.fetch` secondo la lista del
+manifest, interfaccia con `api.ui`, icone dei siti con `api.icon.favicon`.
+Creazione del pacchetto: `node tools/pack-plugin.mjs path/to/plugin`.
+
+Dettagli in inglese: [formato](docs/PLUGIN_SPEC.md), [API](docs/PLUGIN_API.md),
+[guida](docs/PLUGIN_GUIDE.md).
 
 ## Privacy e autorizzazioni
 
-I dati restano in `chrome.storage` e non vengono inviati a server.
-Dettagli: [PRIVACY.md](PRIVACY.md) (in inglese).
-
-## Per sviluppatori
-
-Struttura, build e test: vedere il [README in inglese](README.md).
+Segnalibri, schermate, sfondi e impostazioni stanno in `chrome.storage`; le
+icone dei siti nell’IndexedDB locale e non lasciano il dispositivo. Dettagli:
+[PRIVACY.md](PRIVACY.md) (inglese).
 
 ## Licenza
 
-MIT. Vedere [LICENSE](LICENSE).
+MIT. Vedi [LICENSE](LICENSE).

@@ -72,6 +72,7 @@ assert.equal(normalizeLang(''), 'en');
 
 // 5. Страница подключает словарь
 assert.ok(html.includes('site-i18n.js'), 'index.html подключает переводы');
-assert.ok(html.includes('id="site-lang"'), 'есть переключатель языка');
+assert.ok(html.includes('id="site-lang"'), 'есть кнопка переключателя языка');
+assert.ok(html.includes('id="site-lang-list"'), 'есть список языков');
 
 console.log('site-i18n.test.mjs: все проверки пройдены');

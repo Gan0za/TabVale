@@ -633,6 +633,116 @@
     },
   };
 
+
+  // Тексты раздела плагинов: добавляются в словари ниже.
+  const PLUGIN_TEXT = {
+    "ru": {
+      pluginsNav: "Плагины",
+      pluginsTitle: "Плагины",
+      pluginsLead: "Ничего не устанавливается само: скачайте плагин, только если он нужен, и поставьте его из файла в настройках.",
+      pluginsInstall: "Установка: Настройки → Плагины → «Установить из файла…».",
+      pluginDownload: "Скачать .tvp",
+      pluginDocs: "Как написать свой плагин",
+    },
+    "en": {
+      pluginsNav: "Plugins",
+      pluginsTitle: "Plugins",
+      pluginsLead: "Nothing is installed by default: download a plugin only if you want it and install it from a file in settings.",
+      pluginsInstall: "Install: Settings → Plugins → “Install from file…”.",
+      pluginDownload: "Download .tvp",
+      pluginDocs: "Writing your own plugin",
+    },
+    "de": {
+      pluginsNav: "Plugins",
+      pluginsTitle: "Plugins",
+      pluginsLead: "Standardmäßig wird nichts installiert: Laden Sie ein Plugin nur bei Bedarf und installieren Sie es aus einer Datei in den Einstellungen.",
+      pluginsInstall: "Installation: Einstellungen → Plugins → „Aus Datei installieren…“.",
+      pluginDownload: ".tvp herunterladen",
+      pluginDocs: "Eigenes Plugin schreiben",
+    },
+    "fr": {
+      pluginsNav: "Plugins",
+      pluginsTitle: "Plugins",
+      pluginsLead: "Rien n'est installé par défaut : téléchargez un plugin si vous le souhaitez et installez-le depuis un fichier dans les réglages.",
+      pluginsInstall: "Installation : Réglages → Plugins → « Installer depuis un fichier… ».",
+      pluginDownload: "Télécharger .tvp",
+      pluginDocs: "Écrire votre propre plugin",
+    },
+    "es": {
+      pluginsNav: "Plugins",
+      pluginsTitle: "Plugins",
+      pluginsLead: "No se instala nada por defecto: descarga un plugin solo si lo quieres e instálalo desde un archivo en los ajustes.",
+      pluginsInstall: "Instalación: Ajustes → Plugins → «Instalar desde archivo…».",
+      pluginDownload: "Descargar .tvp",
+      pluginDocs: "Escribir tu propio plugin",
+    },
+    "pt-BR": {
+      pluginsNav: "Plugins",
+      pluginsTitle: "Plugins",
+      pluginsLead: "Nada é instalado por padrão: baixe um plugin apenas se quiser e instale-o a partir de um arquivo nas configurações.",
+      pluginsInstall: "Instalação: Configurações → Plugins → “Instalar do arquivo…”.",
+      pluginDownload: "Baixar .tvp",
+      pluginDocs: "Escrever seu próprio plugin",
+    },
+    "it": {
+      pluginsNav: "Plugin",
+      pluginsTitle: "Plugin",
+      pluginsLead: "Niente viene installato di default: scarica un plugin solo se lo vuoi e installalo da file nelle impostazioni.",
+      pluginsInstall: "Installazione: Impostazioni → Plugin → «Installa da file…».",
+      pluginDownload: "Scarica .tvp",
+      pluginDocs: "Scrivere il tuo plugin",
+    },
+    "pl": {
+      pluginsNav: "Wtyczki",
+      pluginsTitle: "Wtyczki",
+      pluginsLead: "Nic nie jest instalowane domyślnie: pobierz wtyczkę tylko wtedy, gdy jej chcesz, i zainstaluj ją z pliku w ustawieniach.",
+      pluginsInstall: "Instalacja: Ustawienia → Wtyczki → „Zainstaluj z pliku…”.",
+      pluginDownload: "Pobierz .tvp",
+      pluginDocs: "Napisz własną wtyczkę",
+    },
+    "tr": {
+      pluginsNav: "Eklentiler",
+      pluginsTitle: "Eklentiler",
+      pluginsLead: "Varsayılan olarak hiçbir şey yüklenmez: yalnızca istediğiniz eklentiyi indirin ve ayarlardan dosyadan yükleyin.",
+      pluginsInstall: "Kurulum: Ayarlar → Eklentiler → “Dosyadan yükle…”.",
+      pluginDownload: ".tvp indir",
+      pluginDocs: "Kendi eklentinizi yazın",
+    },
+    "uk": {
+      pluginsNav: "Плагіни",
+      pluginsTitle: "Плагіни",
+      pluginsLead: "Нічого не встановлюється саме: завантажте плагін, лише якщо він потрібен, і встановіть його файлом у налаштуваннях.",
+      pluginsInstall: "Встановлення: Налаштування → Плагіни → «Установити з файлу…».",
+      pluginDownload: "Завантажити .tvp",
+      pluginDocs: "Як написати власний плагін",
+    },
+    "zh-CN": {
+      pluginsNav: "插件",
+      pluginsTitle: "插件",
+      pluginsLead: "默认不安装任何插件:需要时再下载,并在设置中通过文件安装。",
+      pluginsInstall: "安装:设置 → 插件 →“从文件安装…”。",
+      pluginDownload: "下载 .tvp",
+      pluginDocs: "编写自己的插件",
+    },
+    "ja": {
+      pluginsNav: "プラグイン",
+      pluginsTitle: "プラグイン",
+      pluginsLead: "既定では何もインストールされません。必要なプラグインだけをダウンロードし、設定でファイルからインストールします。",
+      pluginsInstall: "インストール:設定 → プラグイン →「ファイルからインストール…」。",
+      pluginDownload: ".tvp をダウンロード",
+      pluginDocs: "自分のプラグインを書く",
+    },
+    "ko": {
+      pluginsNav: "플러그인",
+      pluginsTitle: "플러그인",
+      pluginsLead: "기본으로 설치되는 플러그인은 없습니다. 필요한 플러그인만 내려받아 설정에서 파일로 설치하세요.",
+      pluginsInstall: "설치: 설정 → 플러그인 → “파일에서 설치…”.",
+      pluginDownload: ".tvp 내려받기",
+      pluginDocs: "나만의 플러그인 만들기",
+    },
+  };
+  for (const [lang, extra] of Object.entries(PLUGIN_TEXT)) Object.assign(DICT[lang], extra);
+
   function normalizeLang(raw) {
     const value = String(raw || '').toLowerCase().replace('_', '-');
     const map = {
@@ -663,6 +773,60 @@
     });
   }
 
+  // Каталог приходит из docs/plugins/catalog.json, который собирает
+  // tools/build-plugins.mjs вместе с .tvp-пакетами.
+  let pluginCatalogPromise = null;
+
+  function loadPluginCatalog() {
+    if (!pluginCatalogPromise) {
+      pluginCatalogPromise = fetch('plugins/catalog.json')
+        .then((response) => (response.ok ? response.json() : []))
+        .catch(() => []);
+    }
+    return pluginCatalogPromise;
+  }
+
+  function renderPluginCatalog(lang) {
+    const container = document.getElementById('plugin-catalog');
+    if (!container) return;
+
+    loadPluginCatalog().then((items) => {
+      container.textContent = '';
+      for (const item of Array.isArray(items) ? items : []) {
+        const card = document.createElement('article');
+        card.className = 'card plugin-card';
+
+        if (item.icon) {
+          const image = document.createElement('img');
+          image.src = `plugins/${item.icon}`;
+          image.alt = '';
+          image.width = 32;
+          image.height = 32;
+          card.append(image);
+        }
+
+        const name = document.createElement('h3');
+        name.textContent = item.locales?.[lang]?.name || item.locales?.en?.name || item.name || item.id;
+
+        const version = document.createElement('p');
+        version.className = 'plugin-version';
+        version.textContent = `v${item.version}`;
+
+        const text = document.createElement('p');
+        text.textContent = item.description || '';
+
+        const download = document.createElement('a');
+        download.className = 'btn';
+        download.href = `plugins/${item.file}`;
+        download.download = item.file;
+        download.textContent = DICT[lang]?.pluginDownload || DICT.en.pluginDownload;
+
+        card.append(name, version, text, download);
+        container.append(card);
+      }
+    });
+  }
+
   function applyLang(code) {
     const lang = DICT[code] ? code : 'en';
     const dict = DICT[lang];
@@ -689,34 +853,79 @@
     });
 
     document.title = dict.title;
+    renderPluginCatalog(lang);
   }
 
   function init() {
     captureOriginals();
 
-    const select = document.getElementById('site-lang');
-    if (select) {
-      const auto = document.createElement('option');
-      auto.value = 'auto';
-      auto.textContent = 'Auto';
-      select.append(auto);
-      LANGUAGES.forEach(([code, name]) => {
-        const option = document.createElement('option');
-        option.value = code;
-        option.textContent = name;
-        select.append(option);
-      });
-      select.addEventListener('change', () => {
-        const value = select.value;
-        try { localStorage.setItem(STORAGE_KEY, value); } catch { /* приватный режим */ }
-        applyLang(value === 'auto' ? detectLang() : value);
-      });
-    }
+    // Свой список вместо нативного <select>: системный popup в Edge
+    // рисовал светлый список поверх тёмной страницы, и языки терялись.
+    const button = document.getElementById('site-lang');
+    const list = document.getElementById('site-lang-list');
+    const entries = [['auto', 'Auto'], ...LANGUAGES];
 
     let stored = 'auto';
     try { stored = localStorage.getItem(STORAGE_KEY) || 'auto'; } catch { /* приватный режим */ }
-    if (select) select.value = stored;
-    applyLang(stored === 'auto' ? detectLang() : stored);
+
+    const labelFor = (value) => (entries.find(([code]) => code === value) || entries[0])[1];
+
+    const closeList = () => {
+      if (!list) return;
+      list.hidden = true;
+      button?.setAttribute('aria-expanded', 'false');
+    };
+
+    const choose = (value) => {
+      stored = value;
+      try { localStorage.setItem(STORAGE_KEY, value); } catch { /* приватный режим */ }
+      applyLang(value === 'auto' ? detectLang() : value);
+      if (button) button.textContent = labelFor(value);
+      if (list) {
+        list.querySelectorAll('button').forEach((item) => {
+          item.setAttribute('aria-selected', String(item.dataset.value === value));
+        });
+      }
+      closeList();
+    };
+
+    if (button && list) {
+      for (const [code, name] of entries) {
+        const item = document.createElement('li');
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.dataset.value = code;
+        option.setAttribute('role', 'option');
+        option.textContent = name;
+        option.addEventListener('click', () => choose(code));
+        item.append(option);
+        list.append(item);
+      }
+
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const open = list.hidden;
+        if (!open) { closeList(); return; }
+        list.hidden = false;
+        button.setAttribute('aria-expanded', 'true');
+        list.querySelector('button[aria-selected="true"]')?.focus();
+      });
+
+      document.addEventListener('click', (event) => {
+        if (list.hidden) return;
+        if (list.contains(event.target)) return;
+        closeList();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !list.hidden) {
+          closeList();
+          button.focus();
+        }
+      });
+    }
+
+    choose(stored);
   }
 
   if (document.readyState === 'loading') {
