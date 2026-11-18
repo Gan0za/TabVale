@@ -15,7 +15,7 @@ isteğe bağlı eklentiler.
 - Yer imleri simgelerle (yerel önbellek), sürükleyerek sıralama, düzenleme ve silme.
 - Arka planlar: URL, yerel dosya, renk veya gradyan.
 - Otomatik/açık/koyu tema ve 13 arayüz dili.
-- Eklentiler — yalnızca sizin kurduklarınız: saat, notlar, klavye, zamanlayıcı, parolalar, hava durumu, GitHub istatistikleri, uygulama başlatıcı, RSS, görevler, yer imi içe aktarma.
+- Eklentiler — yalnızca sizin kurduklarınız: saat, notlar, klavye, zamanlayıcı, parolalar, hava durumu, GitHub istatistikleri, uygulama başlatıcı, RSS, görevler, özlü sözler, yer imi içe aktarma.
 - Ayarların JSON olarak içe ve dışa aktarımı.
 
 ## Kurulum

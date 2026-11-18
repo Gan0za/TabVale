@@ -1,0 +1,93 @@
+{
+  "schema": 1,
+  "id": "com.tabvale.quotes",
+  "name": "Quotes",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "minAppVersion": "1.2.0",
+  "entry": "plugin.js",
+  "icon": "icon.svg",
+  "description": "A short proverb or thought for the day.",
+  "author": "TabVale",
+  "permissions": {
+    "network": [],
+    "capabilities": [],
+    "storageKB": 8
+  },
+  "surfaces": {
+    "strip": {
+      "positions": [
+        "top",
+        "bottom"
+      ],
+      "height": [
+        64,
+        120
+      ]
+    },
+    "panel": {
+      "sides": [
+        "right",
+        "left"
+      ],
+      "width": [
+        280,
+        420
+      ],
+      "height": [
+        220,
+        420
+      ],
+      "mode": [
+        "overlay"
+      ]
+    },
+    "tiles": {
+      "span": [
+        1,
+        1
+      ]
+    }
+  },
+  "locales": {
+    "ru": {
+      "name": "Цитаты"
+    },
+    "en": {
+      "name": "Quotes"
+    },
+    "de": {
+      "name": "Zitate"
+    },
+    "fr": {
+      "name": "Citations"
+    },
+    "es": {
+      "name": "Citas"
+    },
+    "pt-BR": {
+      "name": "Citações"
+    },
+    "it": {
+      "name": "Citazioni"
+    },
+    "pl": {
+      "name": "Cytaty"
+    },
+    "tr": {
+      "name": "Özlü sözler"
+    },
+    "uk": {
+      "name": "Цитати"
+    },
+    "zh-CN": {
+      "name": "格言"
+    },
+    "ja": {
+      "name": "ことわざ"
+    },
+    "ko": {
+      "name": "명언"
+    }
+  }
+}

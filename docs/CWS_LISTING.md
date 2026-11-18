@@ -31,7 +31,7 @@ Features:
 - Light, dark and automatic themes.
 - English, Russian, German, French, Spanish, Portuguese (Brazil), Italian, Polish, Turkish, Ukrainian, Chinese, Japanese and Korean UI.
 - Context menus for bookmarks, the page background, the search field and settings rows.
-- Optional plugins (clock, notes, layout converter, timer, weather, GitHub stats, app launcher, RSS reader, tasks, bookmark importer) installed from a `.tvp` file; nothing is installed by default.
+- Optional plugins (clock, notes, layout converter, timer, weather, GitHub stats, app launcher, RSS reader, tasks, quotes, bookmark importer) installed from a `.tvp` file; nothing is installed by default.
 - JSON import and export.
 - Responsive layout for narrow windows.
 

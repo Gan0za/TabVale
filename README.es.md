@@ -15,7 +15,7 @@ plugins opcionales.
 - Marcadores con iconos (en caché local), ordenar arrastrando, editar y borrar.
 - Fondos: URL, archivo local, color o degradado.
 - Temas automático/claro/oscuro y 13 idiomas de interfaz.
-- Plugins — solo los que usted instala: reloj, notas, teclado, temporizador, contraseñas, tiempo, estadísticas de GitHub, lanzador de aplicaciones, RSS, tareas, importación de marcadores.
+- Plugins — solo los que usted instala: reloj, notas, teclado, temporizador, contraseñas, tiempo, estadísticas de GitHub, lanzador de aplicaciones, RSS, tareas, citas, importación de marcadores.
 - Importación y exportación de ajustes en JSON.
 
 ## Instalación

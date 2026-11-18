@@ -50,6 +50,11 @@
     "path": "com.tabvale.todo/"
   },
   {
+    "id": "com.tabvale.quotes",
+    "version": "1.0.0",
+    "path": "com.tabvale.quotes/"
+  },
+  {
     "id": "com.tabvale.bookmarks",
     "version": "1.0.3",
     "path": "com.tabvale.bookmarks/"

@@ -491,6 +491,55 @@
     }
   },
   {
+    "id": "com.tabvale.quotes",
+    "name": "Quotes",
+    "version": "1.0.0",
+    "file": "com.tabvale.quotes.tvp",
+    "icon": "com.tabvale.quotes.svg",
+    "description": "A short proverb or thought for the day.",
+    "locales": {
+      "ru": {
+        "name": "Цитаты"
+      },
+      "en": {
+        "name": "Quotes"
+      },
+      "de": {
+        "name": "Zitate"
+      },
+      "fr": {
+        "name": "Citations"
+      },
+      "es": {
+        "name": "Citas"
+      },
+      "pt-BR": {
+        "name": "Citações"
+      },
+      "it": {
+        "name": "Citazioni"
+      },
+      "pl": {
+        "name": "Cytaty"
+      },
+      "tr": {
+        "name": "Özlü sözler"
+      },
+      "uk": {
+        "name": "Цитати"
+      },
+      "zh-CN": {
+        "name": "格言"
+      },
+      "ja": {
+        "name": "ことわざ"
+      },
+      "ko": {
+        "name": "명언"
+      }
+    }
+  },
+  {
     "id": "com.tabvale.bookmarks",
     "name": "Bookmark importer",
     "version": "1.0.3",
