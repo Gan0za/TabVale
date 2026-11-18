@@ -29,6 +29,12 @@ backgrounds.
 - **Context menus** for bookmark tiles, the page background, the search field,
   the empty bookmarks area and settings rows.
 - **JSON import and export** of settings.
+- **Plugins** — clock, notes, layout converter, timer, password generator,
+  weather, GitHub stats, app launcher, RSS and bookmark importer. Each plugin
+  can live in the dock panel, as a bookmark tile, in the strip above or below
+  bookmarks, or in a floating window. The manager installs packages from a
+  `.tvp` file; a plugin's context menu opens its settings row, or disables and
+  removes it.
 - **Responsive layout** for narrow windows and mobile orientation.
 
 ## Screenshots
