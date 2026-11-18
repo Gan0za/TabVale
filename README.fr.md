@@ -15,7 +15,7 @@ arrière-plans et plugins optionnels.
 - Favoris avec icônes (mises en cache localement), tri par glisser-déposer, édition et suppression.
 - Arrière-plans : URL, fichier local, couleur ou dégradé.
 - Thèmes auto/clair/sombre et 13 langues d’interface.
-- Plugins — uniquement ceux que vous installez : horloge, notes, clavier, minuteur, mots de passe, météo, statistiques GitHub, lanceur d’applications, RSS, import de favoris.
+- Plugins — uniquement ceux que vous installez : horloge, notes, clavier, minuteur, mots de passe, météo, statistiques GitHub, lanceur d’applications, RSS, tâches, import de favoris.
 - Import et export des réglages en JSON.
 
 ## Installation

@@ -30,7 +30,7 @@ backgrounds.
   the empty bookmarks area and settings rows.
 - **JSON import and export** of settings.
 - **Plugins** — clock, notes, layout converter, timer, password generator,
-  weather, GitHub stats, app launcher, RSS and bookmark importer. Nothing is
+  weather, GitHub stats, app launcher, RSS, tasks and bookmark importer. Nothing is
   installed by default: download a `.tvp` package from the site's Plugins
   section and install it in Settings → Plugins. Each plugin can live in the
   dock panel, as a bookmark tile, in the strip above or below bookmarks, or in

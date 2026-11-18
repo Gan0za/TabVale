@@ -15,7 +15,7 @@ wtyczki.
 - Zakładki z ikonami (buforowanymi lokalnie), sortowanie przeciąganiem, edycja i usuwanie.
 - Tła: adres, plik lokalny, kolor lub gradient.
 - Motywy auto/jasny/ciemny i 13 języków interfejsu.
-- Wtyczki — tylko te, które sam zainstalujesz: zegar, notatki, klawiatura, minutnik, hasła, pogoda, statystyki GitHub, launcher aplikacji, RSS, import zakładek.
+- Wtyczki — tylko te, które sam zainstalujesz: zegar, notatki, klawiatura, minutnik, hasła, pogoda, statystyki GitHub, launcher aplikacji, RSS, zadania, import zakładek.
 - Import i eksport ustawień w JSON.
 
 ## Instalacja

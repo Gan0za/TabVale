@@ -29,6 +29,8 @@ function makeElement(tag) {
         append(...children) { this.children.push(...children); },
         addEventListener(type, fn) { this.listeners[type] = fn; },
         setAttribute(name, value) { this.attrs[name] = String(value); },
+        select() { this.selected = true; },
+        setSelectionRange() {},
         focus() {},
     };
     // Как в DOM: установка текста заменяет детей, пустая строка очищает.
@@ -45,12 +47,15 @@ function makeElement(tag) {
 const documentStub = {
     createElement: makeElement,
     createElementNS: (ns, tag) => makeElement(tag),
+    createTextNode: (text) => ({ textContent: text }),
     body: makeElement('body'),
 };
 
 function mountPlugin(file, { api, documentOverride = documentStub } = {}) {
     const source = read(file);
-    const mount = vm.runInNewContext(`${source}\n;mount`, { document: documentOverride, console, api, URL });
+    const mount = vm.runInNewContext(`${source}\n;mount`, {
+        document: documentOverride, console, api, URL, crypto, setTimeout, clearTimeout,
+    });
     mount(api);
     return documentOverride.body.children.at(-1);
 }
@@ -322,6 +327,144 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
     await flush();
     const badges = stripWrap.children[0].children.map((span) => span.textContent).join(' ');
     assert.ok(badges.includes('★ 12') && badges.includes('★ 7'), 'в полосе звёзды двух репозиториев');
+}
+
+// ---- Заметки: сохранение, очистка в два шага, превью в полосе ----
+{
+    const stored = { text: 'Первая строка\nВторая' };
+    const api = {
+        locale: 'ru',
+        surface: 'panel',
+        ui: { ready() {} },
+        storage: {
+            get: async (key) => stored[key] ?? null,
+            set: async (key, value) => { stored[key] = value; },
+        },
+    };
+    const sandboxDocument = { ...documentStub, body: makeElement('body') };
+    const wrap = mountPlugin('plugins/com.tabvale.notes/plugin.js', { api, documentOverride: sandboxDocument });
+    await flush();
+
+    const [area, row] = wrap.children;
+    assert.equal(area.value, 'Первая строка\nВторая', 'текст заметки загружен');
+    const [, clear] = row.children;
+    clear.listeners.click();
+    assert.equal(clear.textContent, 'Точно?', 'первый клик просит подтверждение');
+    clear.listeners.click();
+    await flush();
+    assert.equal(stored.text, '', 'заметка очищена');
+    assert.equal(area.value, '', 'поле очищено');
+
+    let opened = false;
+    const stripStored = { text: 'Строка один\nВторая' };
+    const stripApi = {
+        locale: 'ru',
+        surface: 'strip',
+        ui: { ready() {}, openPanel: () => { opened = true; return Promise.resolve(true); } },
+        storage: { get: async (key) => stripStored[key] ?? null, set: async () => {} },
+    };
+    const stripDocument = { ...documentStub, body: makeElement('body') };
+    const preview = mountPlugin('plugins/com.tabvale.notes/plugin.js', { api: stripApi, documentOverride: stripDocument });
+    await flush();
+    assert.equal(preview.textContent, 'Строка один', 'в полосе первая строка заметки');
+    preview.listeners.click();
+    assert.equal(opened, true, 'клик открывает панель');
+}
+
+// ---- Пароли: настройки, набор символов, выделение ----
+{
+    const stored = {};
+    const api = {
+        locale: 'ru',
+        surface: 'panel',
+        ui: { ready() {} },
+        storage: {
+            get: async (key) => stored[key] ?? null,
+            set: async (key, value) => { stored[key] = value; },
+        },
+    };
+    const sandboxDocument = { ...documentStub, body: makeElement('body') };
+    const wrap = mountPlugin('plugins/com.tabvale.passwords/plugin.js', { api, documentOverride: sandboxDocument });
+    await flush();
+
+    const [output, , optionsRow, buttonsRow] = wrap.children;
+    assert.equal(output.value.length, 20, 'пароль длины по умолчанию');
+
+    const boxes = optionsRow.children.map((label) => label.children[0]);
+    for (const box of boxes) {
+        box.checked = false;
+        box.listeners.change();
+    }
+    const generate = buttonsRow.children[0];
+    generate.listeners.click();
+    assert.ok(/^[A-Za-z]+$/.test(output.value), 'без цифр и символов — только буквы');
+    assert.equal(stored.settings.digits, false, 'настройки сохраняются');
+
+    const select = buttonsRow.children[1];
+    select.listeners.click();
+    assert.equal(output.selected, true, 'кнопка выделяет пароль');
+}
+
+// ---- Задачи: добавление, отметка, удаление, сводка в полосе ----
+{
+    const stored = {};
+    const api = {
+        locale: 'ru',
+        surface: 'panel',
+        ui: { ready() {} },
+        storage: {
+            get: async (key) => stored[key] ?? null,
+            set: async (key, value) => { stored[key] = value; },
+        },
+    };
+    const sandboxDocument = { ...documentStub, body: makeElement('body') };
+    const wrap = mountPlugin('plugins/com.tabvale.todo/plugin.js', { api, documentOverride: sandboxDocument });
+    await flush();
+
+    const [list, addToggle, form] = wrap.children;
+    assert.ok(String(list.children[0].textContent).includes('Задач пока нет'), 'пустое состояние');
+    assert.equal(form.style.display, 'none', 'форма скрыта');
+
+    addToggle.listeners.click();
+    assert.equal(form.style.display, 'flex', 'форма открывается кнопкой');
+    const [input, save] = form.children;
+    input.value = 'Позвонить';
+    save.listeners.click();
+    await flush();
+    assert.equal(stored.items.length, 1, 'задача сохранена');
+    assert.equal(form.style.display, 'none', 'форма закрылась');
+    assert.equal(list.children.length, 1, 'строка задачи в списке');
+
+    const box = list.children[0].children[0];
+    box.checked = true;
+    box.listeners.change();
+    await flush();
+    assert.equal(stored.items[0].done, true, 'задача отмечена');
+    assert.ok(String(list.children[0].children[1].style.cssText).includes('line-through'), 'выполненная зачёркнута');
+
+    list.children[0].children[2].listeners.click();
+    await flush();
+    assert.equal(stored.items.length, 0, 'задача удалена');
+
+    let opened = false;
+    const stripStored = {
+        items: [
+            { id: '1', text: 'Позвонить', done: false },
+            { id: '2', text: 'Купить', done: false },
+        ],
+    };
+    const stripApi = {
+        locale: 'ru',
+        surface: 'strip',
+        ui: { ready() {}, openPanel: () => { opened = true; return Promise.resolve(true); } },
+        storage: { get: async (key) => stripStored[key] ?? null, set: async () => {} },
+    };
+    const stripDocument = { ...documentStub, body: makeElement('body') };
+    const strip = mountPlugin('plugins/com.tabvale.todo/plugin.js', { api: stripApi, documentOverride: stripDocument });
+    await flush();
+    assert.ok(String(strip.textContent).includes('2 · Позвонить'), 'в полосе счётчик и первая задача');
+    strip.listeners.click();
+    assert.equal(opened, true, 'клик открывает панель');
 }
 
 console.log('plugin-widgets.test.mjs: все проверки пройдены');

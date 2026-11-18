@@ -52,7 +52,7 @@
   {
     "id": "com.tabvale.notes",
     "name": "Quick notes",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "file": "com.tabvale.notes.tvp",
     "icon": "com.tabvale.notes.svg",
     "description": "A small scratchpad that saves as you type.",
@@ -199,7 +199,7 @@
   {
     "id": "com.tabvale.passwords",
     "name": "Password generator",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "file": "com.tabvale.passwords.tvp",
     "icon": "com.tabvale.passwords.svg",
     "description": "Generates random passwords locally, without any permissions.",
@@ -395,7 +395,7 @@
   {
     "id": "com.tabvale.rss",
     "name": "RSS reader",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "file": "com.tabvale.rss.tvp",
     "icon": "com.tabvale.rss.svg",
     "description": "Top stories from Habr's RSS feed.",
@@ -438,6 +438,55 @@
       },
       "ko": {
         "name": "RSS 리더"
+      }
+    }
+  },
+  {
+    "id": "com.tabvale.todo",
+    "name": "Tasks",
+    "version": "1.0.0",
+    "file": "com.tabvale.todo.tvp",
+    "icon": "com.tabvale.todo.svg",
+    "description": "A small checklist that stays on your new tab.",
+    "locales": {
+      "ru": {
+        "name": "Задачи"
+      },
+      "en": {
+        "name": "Tasks"
+      },
+      "de": {
+        "name": "Aufgaben"
+      },
+      "fr": {
+        "name": "Tâches"
+      },
+      "es": {
+        "name": "Tareas"
+      },
+      "pt-BR": {
+        "name": "Tarefas"
+      },
+      "it": {
+        "name": "Attività"
+      },
+      "pl": {
+        "name": "Zadania"
+      },
+      "tr": {
+        "name": "Görevler"
+      },
+      "uk": {
+        "name": "Завдання"
+      },
+      "zh-CN": {
+        "name": "任务"
+      },
+      "ja": {
+        "name": "タスク"
+      },
+      "ko": {
+        "name": "할 일"
       }
     }
   },
