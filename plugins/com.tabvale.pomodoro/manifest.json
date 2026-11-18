@@ -1,13 +1,13 @@
 {
   "schema": 1,
   "id": "com.tabvale.pomodoro",
-  "name": "Pomodoro",
-  "version": "1.0.2",
+  "name": "Timer",
+  "version": "1.0.3",
   "apiVersion": 1,
   "minAppVersion": "1.2.0",
   "entry": "plugin.js",
   "icon": "icon.svg",
-  "description": "A 25-minute focus timer with a five-minute break.",
+  "description": "A countdown timer for the minutes you choose.",
   "author": "TabVale",
   "permissions": {
     "network": [],
@@ -57,43 +57,43 @@
   },
   "locales": {
     "ru": {
-      "name": "Помодоро"
+      "name": "Таймер"
     },
     "en": {
-      "name": "Pomodoro"
+      "name": "Timer"
     },
     "de": {
-      "name": "Pomodoro"
+      "name": "Timer"
     },
     "fr": {
-      "name": "Pomodoro"
+      "name": "Minuteur"
     },
     "es": {
-      "name": "Pomodoro"
+      "name": "Temporizador"
     },
     "pt-BR": {
-      "name": "Pomodoro"
+      "name": "Temporizador"
     },
     "it": {
-      "name": "Pomodoro"
+      "name": "Timer"
     },
     "pl": {
-      "name": "Pomodoro"
+      "name": "Minutnik"
     },
     "tr": {
-      "name": "Pomodoro"
+      "name": "Zamanlayıcı"
     },
     "uk": {
-      "name": "Помодоро"
+      "name": "Таймер"
     },
     "zh-CN": {
-      "name": "番茄钟"
+      "name": "计时器"
     },
     "ja": {
-      "name": "ポモドーロ"
+      "name": "タイマー"
     },
     "ko": {
-      "name": "뽀모도로"
+      "name": "타이머"
     }
   }
 }

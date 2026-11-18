@@ -1,7 +1,9 @@
 function mount(api) {
-    const FOCUS = 25 * 60;
     const compact = api.surface === 'strip';
-    let remaining = FOCUS;
+    const ru = api.locale?.startsWith('ru');
+    const DEFAULT_MINUTES = 5;
+    let minutes = DEFAULT_MINUTES;
+    let remaining = minutes * 60;
     let deadline = 0;
     let running = false;
     let interval = null;
@@ -21,64 +23,107 @@ function mount(api) {
 
     function button(text, padding) {
         const element = document.createElement('button');
+        element.type = 'button';
         element.textContent = text;
         element.style.cssText = `padding:${padding};border:1px solid var(--tabvale-border);border-radius:8px;` +
             'background:var(--tabvale-surface);color:var(--tabvale-text);cursor:pointer;font:inherit';
         return element;
     }
 
-    const toggle = button(compact ? '▶' : 'Start', compact ? '4px 10px' : '8px 14px');
-    const reset = button('Reset', '8px 14px');
+    const toggle = button(compact ? '▶' : (ru ? 'Старт' : 'Start'), compact ? '4px 10px' : '8px 14px');
+    const reset = button(ru ? 'Сброс' : 'Reset', '8px 14px');
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;gap:8px;align-items:center';
-
     row.append(toggle);
     if (!compact) row.append(reset);
 
-    if (compact) wrap.append(time, row);
-    else wrap.append(time, label, row);
-    document.body.append(wrap);
+    // Минуты задаёт пользователь; значение переживает перезапуск.
+    const minutesInput = document.createElement('input');
+    minutesInput.type = 'number';
+    minutesInput.min = '1';
+    minutesInput.max = '180';
+    minutesInput.style.cssText = 'width:74px;padding:6px 8px;border:1px solid var(--tabvale-border);border-radius:8px;' +
+        'background:var(--tabvale-surface);color:var(--tabvale-text);font:inherit;text-align:center';
 
     function render() {
-        const minutes = Math.floor(remaining / 60);
-        const seconds = remaining % 60;
-        time.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        const mm = Math.floor(remaining / 60);
+        const ss = remaining % 60;
+        time.textContent = `${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
         if (!compact) {
-            label.textContent = running
-                ? (api.locale?.startsWith('ru') ? 'Идёт' : 'Running')
-                : (api.locale?.startsWith('ru') ? 'Фокус' : 'Focus');
+            label.textContent = remaining === 0
+                ? (ru ? 'Время вышло' : "Time's up")
+                : (running ? (ru ? 'Идёт' : 'Running') : (ru ? 'Таймер' : 'Timer'));
         }
+    }
+
+    function stop() {
+        running = false;
+        clearInterval(interval);
+        interval = null;
+        toggle.textContent = compact ? '▶' : (ru ? 'Старт' : 'Start');
     }
 
     function tick() {
         if (!running) return;
         remaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
         render();
-        if (remaining === 0) {
-            running = false;
-            clearInterval(interval);
-            toggle.textContent = compact ? '▶' : 'Start';
-            api.ui.notify(api.locale?.startsWith('ru') ? 'Помодоро завершён' : 'Pomodoro finished');
-        }
+        if (remaining === 0) stop();
     }
 
     toggle.addEventListener('click', () => {
+        if (remaining === 0) remaining = minutes * 60;
         running = !running;
-        toggle.textContent = compact ? (running ? '❚❚' : '▶') : (running ? 'Pause' : 'Start');
+        toggle.textContent = compact
+            ? (running ? '❚❚' : '▶')
+            : (running ? (ru ? 'Пауза' : 'Pause') : (ru ? 'Старт' : 'Start'));
         if (running) {
             deadline = Date.now() + remaining * 1000;
             interval = setInterval(tick, 250);
         } else {
             clearInterval(interval);
+            interval = null;
         }
         render();
     });
 
     reset.addEventListener('click', () => {
-        running = false;
-        clearInterval(interval);
-        remaining = FOCUS;
-        toggle.textContent = 'Start';
+        stop();
+        remaining = minutes * 60;
+        render();
+    });
+
+    minutesInput.addEventListener('change', () => {
+        const next = Math.min(180, Math.max(1, Math.round(Number(minutesInput.value) || DEFAULT_MINUTES)));
+        minutes = next;
+        minutesInput.value = String(next);
+        api.storage.set('minutes', next);
+        if (!running) {
+            remaining = minutes * 60;
+            render();
+        }
+    });
+
+    if (compact) {
+        wrap.append(time, row);
+    } else {
+        const minutesRow = document.createElement('div');
+        minutesRow.style.cssText = 'display:flex;gap:8px;align-items:center;font-size:13px;color:var(--tabvale-muted)';
+        const minutesLabel = document.createElement('span');
+        minutesLabel.textContent = ru ? 'Минут' : 'Minutes';
+        minutesRow.append(minutesInput, minutesLabel);
+        wrap.append(time, label, minutesRow, row);
+    }
+    document.body.append(wrap);
+
+    api.storage.get('minutes').then((saved) => {
+        if (Number.isFinite(Number(saved)) && Number(saved) > 0) {
+            minutes = Math.min(180, Math.max(1, Math.round(Number(saved))));
+        }
+        minutesInput.value = String(minutes);
+        remaining = minutes * 60;
+        render();
+    }).catch(() => {
+        minutesInput.value = String(minutes);
         render();
     });
 

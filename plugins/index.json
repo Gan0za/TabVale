@@ -16,7 +16,7 @@
   },
   {
     "id": "com.tabvale.pomodoro",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "path": "com.tabvale.pomodoro/"
   },
   {
@@ -26,7 +26,7 @@
   },
   {
     "id": "com.tabvale.weather",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "path": "com.tabvale.weather/"
   },
   {
@@ -36,7 +36,7 @@
   },
   {
     "id": "com.tabvale.apps",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "path": "com.tabvale.apps/"
   },
   {
