@@ -143,7 +143,8 @@ the `.tvp` file and link to it.
 
 ## Where to look for examples
 
-The ten bundled plugins under `plugins/` are complete, working examples:
-clock (strip), weather (network + city setting), layout converter (two
-fields), timer (storage + interval), app launcher (external links),
-bookmark importer (capability + permission flow).
+The ten plugins in `plugins/` are complete, working examples (they are
+packaged for download, not installed by default): clock (strip), weather
+(network + city setting), layout converter (two fields), timer (storage +
+interval), app launcher (storage, favicons, external links), bookmark
+importer (capability + permission flow).
