@@ -30,10 +30,11 @@ backgrounds.
   the empty bookmarks area and settings rows.
 - **JSON import and export** of settings.
 - **Plugins** — clock, notes, layout converter, timer, password generator,
-  weather, GitHub stats, app launcher, RSS and bookmark importer. Each plugin
-  can live in the dock panel, as a bookmark tile, in the strip above or below
-  bookmarks, or in a floating window. The manager installs packages from a
-  `.tvp` file; a plugin's context menu opens its settings row, or disables and
+  weather, GitHub stats, app launcher, RSS and bookmark importer. Nothing is
+  installed by default: download a `.tvp` package from the site's Plugins
+  section and install it in Settings → Plugins. Each plugin can live in the
+  dock panel, as a bookmark tile, in the strip above or below bookmarks, or in
+  a floating window; its context menu opens the settings row, or disables and
   removes it.
 - **Responsive layout** for narrow windows and mobile orientation.
 
@@ -130,6 +131,14 @@ bash package.sh
 The script creates `dist/tabvale_v{version}.zip` with the runtime files:
 `manifest.json`, `background.js`, `newtab/`, `_locales/` and the PNG icons.
 The version is read from `manifest.json`.
+
+Plugin packages for the site are built separately:
+
+```bash
+node tools/build-plugins.mjs
+```
+
+It writes `docs/plugins/<id>.tvp` and `catalog.json` from `plugins/index.json`.
 
 ### Windows
 
