@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "id": "com.tabvale.rss",
+  "name": "RSS reader",
+  "version": "1.0.2",
+  "apiVersion": 1,
+  "minAppVersion": "1.2.0",
+  "entry": "plugin.js",
+  "icon": "icon.svg",
+  "description": "Top stories from Habr's RSS feed.",
+  "author": "TabVale",
+  "permissions": {
+    "network": [
+      "https://habr.com/*"
+    ],
+    "capabilities": [],
+    "storageKB": 16
+  },
+  "surfaces": {
+    "panel": {
+      "sides": [
+        "right",
+        "left"
+      ],
+      "width": [
+        320,
+        520
+      ],
+      "height": [
+        300,
+        600
+      ],
+      "mode": [
+        "overlay"
+      ]
+    },
+    "rail": {
+      "positions": [
+        "top"
+      ]
+    },
+    "tiles": {
+      "span": [
+        1,
+        1
+      ]
+    }
+  },
+  "locales": {
+    "ru": {
+      "name": "RSS-ридер"
+    },
+    "en": {
+      "name": "RSS reader"
+    },
+    "de": {
+      "name": "RSS-Reader"
+    },
+    "fr": {
+      "name": "Lecteur RSS"
+    },
+    "es": {
+      "name": "Lector RSS"
+    },
+    "pt-BR": {
+      "name": "Leitor RSS"
+    },
+    "it": {
+      "name": "Lettore RSS"
+    },
+    "pl": {
+      "name": "Czytnik RSS"
+    },
+    "tr": {
+      "name": "RSS okuyucu"
+    },
+    "uk": {
+      "name": "RSS-рідер"
+    },
+    "zh-CN": {
+      "name": "RSS 阅读器"
+    },
+    "ja": {
+      "name": "RSS リーダー"
+    },
+    "ko": {
+      "name": "RSS 리더"
+    }
+  }
+}

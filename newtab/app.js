@@ -55,6 +55,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     initSearch();
     initScreens();
+    initPlugins();
     initSettings();
     initBookmarks();
     initBackgrounds();

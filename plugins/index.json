@@ -1,0 +1,52 @@
+[
+  {
+    "id": "com.tabvale.clock",
+    "version": "1.0.2",
+    "path": "com.tabvale.clock/"
+  },
+  {
+    "id": "com.tabvale.notes",
+    "version": "1.0.2",
+    "path": "com.tabvale.notes/"
+  },
+  {
+    "id": "com.tabvale.layout",
+    "version": "1.0.2",
+    "path": "com.tabvale.layout/"
+  },
+  {
+    "id": "com.tabvale.pomodoro",
+    "version": "1.0.2",
+    "path": "com.tabvale.pomodoro/"
+  },
+  {
+    "id": "com.tabvale.passwords",
+    "version": "1.0.2",
+    "path": "com.tabvale.passwords/"
+  },
+  {
+    "id": "com.tabvale.weather",
+    "version": "1.0.2",
+    "path": "com.tabvale.weather/"
+  },
+  {
+    "id": "com.tabvale.github",
+    "version": "1.0.2",
+    "path": "com.tabvale.github/"
+  },
+  {
+    "id": "com.tabvale.apps",
+    "version": "1.0.2",
+    "path": "com.tabvale.apps/"
+  },
+  {
+    "id": "com.tabvale.rss",
+    "version": "1.0.2",
+    "path": "com.tabvale.rss/"
+  },
+  {
+    "id": "com.tabvale.bookmarks",
+    "version": "1.0.3",
+    "path": "com.tabvale.bookmarks/"
+  }
+]

@@ -46,7 +46,7 @@ function initSettings() {
                 const fileBackdrops = currentState.backgrounds.filter((b) => b.type === 'file');
                 const keys = fileBackdrops.map((b) => fileKey(b.fileId)).filter(Boolean);
                 if (!fileBackdrops.length) {
-                    downloadJson(buildExportPayload(currentState.backgrounds, result.theme));
+                    finishExport(currentState.backgrounds, result.theme);
                     return;
                 }
                 chrome.storage.local.get(keys, (files) => {
@@ -54,10 +54,31 @@ function initSettings() {
                     const withData = currentState.backgrounds.map((bg) => (
                         bg.type === 'file' ? { ...bg, data: (files || {})[fileKey(bg.fileId)] || '' } : bg
                     ));
-                    downloadJson(buildExportPayload(withData, result.theme));
+                    finishExport(withData, result.theme);
                 });
             });
         });
+
+        // Встроенные плагины восстанавливаются из CWS, поэтому в бэкап
+        // попадают только установленные из файла пакеты.
+        function finishExport(backgrounds, theme) {
+            dbGetAllPlugins().then((records) => {
+                const plugins = (Array.isArray(records) ? records : [])
+                    .filter((record) => record && record.source !== 'builtin')
+                    .map(({ manifest, code, enabled, icon }) => ({ manifest, code, enabled, icon }));
+
+                storageLocalGet(null, (localAll) => {
+                    const pluginData = {};
+                    for (const [key, value] of Object.entries(localAll || {})) {
+                        if (key.startsWith('plugin:')) pluginData[key] = value;
+                    }
+                    const pluginPlacements = Array.isArray(localAll?.[PLUGIN_PLACEMENTS_KEY])
+                        ? localAll[PLUGIN_PLACEMENTS_KEY]
+                        : [];
+                    downloadJson({ ...buildExportPayload(backgrounds, theme), plugins, pluginData, pluginPlacements });
+                });
+            });
+        }
 
         function buildExportPayload(backgrounds, theme) {
             return {
@@ -140,9 +161,67 @@ function initSettings() {
                 }
                 currentState = newState;
                 refreshUI();
+
+                let pluginsSkipped = 0;
+                if (Array.isArray(payload.plugins) && typeof parsePluginPackage === 'function') {
+                    for (const item of payload.plugins) {
+                        const parsed = parsePluginPackage(JSON.stringify(item));
+                        if (!parsed.ok) { pluginsSkipped++; continue; }
+
+                        // Бэкап не отменяет экран прав: код ставится только с согласия.
+                        const permissions = [
+                            t('pluginPermNetwork', { count: parsed.manifest.permissions.network.length }),
+                            t('pluginPermStorage', { kb: parsed.manifest.permissions.storageKB }),
+                            ...parsed.manifest.permissions.capabilities,
+                        ].join(', ');
+                        if (!window.confirm(t('pluginInstallConfirm', {
+                            name: parsed.manifest.name,
+                            permissions,
+                        }))) {
+                            pluginsSkipped++;
+                            continue;
+                        }
+
+                        const stored = await dbPutPlugin({
+                            id: parsed.manifest.id,
+                            version: parsed.manifest.version,
+                            manifest: parsed.manifest,
+                            code: parsed.code,
+                            icon: parsed.icon || item.icon || '',
+                            basePath: '',
+                            source: 'imported',
+                            enabled: item.enabled !== false,
+                            installedAt: Date.now(),
+                        });
+                        if (!stored) pluginsSkipped++;
+                    }
+
+                    if (payload.pluginData && typeof payload.pluginData === 'object') {
+                        const data = {};
+                        for (const [key, value] of Object.entries(payload.pluginData)) {
+                            if (key.startsWith('plugin:')) data[key] = value;
+                        }
+                        if (Object.keys(data).length) chrome.storage.local.set(data);
+                    }
+                    if (Array.isArray(payload.pluginPlacements)) {
+                        await new Promise((resolve) => storageLocalSet({
+                            [PLUGIN_PLACEMENTS_KEY]: payload.pluginPlacements,
+                        }, resolve));
+                    }
+
+                    if (typeof loadInstalledPlugins === 'function') {
+                        await loadInstalledPlugins();
+                        await loadPluginPlacements();
+                        renderPluginDock();
+                        renderPluginStrip();
+                        renderPluginFloating();
+                        renderPluginTiles();
+                        renderPluginManager();
+                    }
+                }
                 // Сообщаем не только об успехе, но и о пропущенных элементах:
                 // молчаливое отбрасывание выглядело бы как потеря данных
-                const totalSkipped = bookmarks.skipped + backgrounds.skipped + searchEngines.skipped;
+                const totalSkipped = bookmarks.skipped + backgrounds.skipped + searchEngines.skipped + pluginsSkipped;
                 // Сообщаем не только об успехе, но и о пропущенных элементах:
                 // молчаливое отбрасывание выглядело бы как потеря данных
                 alert(totalSkipped

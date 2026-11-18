@@ -21,5 +21,6 @@ const DEFAULT_BACKGROUNDS = [
     { title: 'По умолчанию', url: '' }
 ];
 
-// Заглушка, показываемая вместо не загрузившейся иконки (серый круг со знаком "?")
-const FALLBACK_ICON = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"%3E%3Ccircle cx="25" cy="25" r="20" fill="%23ccc"/%3E%3Ctext x="25" y="30" text-anchor="middle" fill="%23666" font-size="14"%3E%3F%3C/text%3E%3C/svg%3E';
+// Заглушка, показываемая вместо не найденной иконки: нейтральный глобус.
+// Знак "?" выглядел как ошибка, хотя иконки может просто не быть.
+const FALLBACK_ICON = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"%3E%3Ccircle cx="25" cy="25" r="18" fill="none" stroke="%238aa0b2" stroke-width="2.5"/%3E%3Cellipse cx="25" cy="25" rx="8" ry="18" fill="none" stroke="%238aa0b2" stroke-width="2.5"/%3E%3Cpath d="M7 25h36" stroke="%238aa0b2" stroke-width="2.5"/%3E%3C/svg%3E';

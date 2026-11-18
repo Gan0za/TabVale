@@ -20,13 +20,18 @@ const source = fs.readFileSync(path.join(projectRoot, 'background.js'), 'utf8');
 
 // --- Заглушки chrome API ---
 let clickHandler = null;
+let actionClickHandler = null;
+let permissionGranted = false;
 const createdMenus = [];
 const createdTabs = [];
+const permissionRequests = [];
+const sentMessages = [];
 
 const chromeStub = {
     runtime: {
         onInstalled: { addListener(fn) { installHandler = fn; } },
         getURL: (path) => `chrome-extension://testid/${path}`,
+        sendMessage: (message) => { sentMessages.push(message); return Promise.resolve(); },
     },
     contextMenus: {
         create: (item) => createdMenus.push(item),
@@ -34,6 +39,13 @@ const chromeStub = {
     },
     tabs: {
         create: (tab) => createdTabs.push(tab),
+    },
+    action: {
+        onClicked: { addListener(fn) { actionClickHandler = fn; } },
+    },
+    permissions: {
+        contains: (query, cb) => cb(permissionGranted),
+        request: (query, cb) => { permissionRequests.push(query); cb(true); },
     },
 };
 
@@ -63,5 +75,29 @@ assert.ok(
 // Клик по несуществующему пункту ничего не открывает
 clickHandler({ menuItemId: 'unknownItem' }, {});
 assert.equal(createdTabs.length, 1, 'неизвестный пункт игнорируется');
+
+// --- Тест 3: клик по иконке без доступа запрашивает bookmarks ---
+// Клик по иконке — жест в интерфейсе браузера: только оттуда запрос
+// гарантированно показывает диалог Chrome.
+assert.ok(actionClickHandler, 'background.js подписан на клик по иконке');
+actionClickHandler();
+
+assert.equal(permissionRequests.length, 1, 'запрос прав отправлен');
+assert.deepEqual(Array.from(permissionRequests[0].permissions), ['bookmarks'], 'запрос прав — bookmarks');
+assert.equal(sentMessages.length, 1, 'об результате уведомлена вкладка');
+assert.equal(sentMessages[0].type, 'tabvale:bookmarks-permission', 'тип сообщения');
+assert.equal(sentMessages[0].granted, true, 'сообщение несёт выданный доступ');
+assert.equal(createdTabs.length, 1, 'пока доступ не выдан, настройки не открываются');
+
+// --- Тест 4: когда доступ уже есть, иконка открывает настройки ---
+permissionGranted = true;
+actionClickHandler();
+
+assert.equal(permissionRequests.length, 1, 'повторный запрос не нужен');
+assert.equal(createdTabs.length, 2, 'клик по иконке открывает настройки');
+assert.ok(
+    createdTabs[1].url.includes('newtab/index.html?settings=1'),
+    'открывается страница настроек'
+);
 
 console.log('background.test.mjs: все проверки пройдены');

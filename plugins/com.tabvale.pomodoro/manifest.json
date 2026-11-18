@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "id": "com.tabvale.pomodoro",
+  "name": "Pomodoro",
+  "version": "1.0.2",
+  "apiVersion": 1,
+  "minAppVersion": "1.2.0",
+  "entry": "plugin.js",
+  "icon": "icon.svg",
+  "description": "A 25-minute focus timer with a five-minute break.",
+  "author": "TabVale",
+  "permissions": {
+    "network": [],
+    "capabilities": [],
+    "storageKB": 16
+  },
+  "surfaces": {
+    "panel": {
+      "sides": [
+        "right",
+        "left"
+      ],
+      "width": [
+        280,
+        420
+      ],
+      "height": [
+        240,
+        420
+      ],
+      "mode": [
+        "overlay"
+      ]
+    },
+    "strip": {
+      "positions": [
+        "top",
+        "bottom"
+      ],
+      "height": [
+        64,
+        120
+      ],
+      "default": true
+    },
+    "rail": {
+      "positions": [
+        "top"
+      ]
+    },
+    "tiles": {
+      "span": [
+        1,
+        1
+      ]
+    }
+  },
+  "locales": {
+    "ru": {
+      "name": "Помодоро"
+    },
+    "en": {
+      "name": "Pomodoro"
+    },
+    "de": {
+      "name": "Pomodoro"
+    },
+    "fr": {
+      "name": "Pomodoro"
+    },
+    "es": {
+      "name": "Pomodoro"
+    },
+    "pt-BR": {
+      "name": "Pomodoro"
+    },
+    "it": {
+      "name": "Pomodoro"
+    },
+    "pl": {
+      "name": "Pomodoro"
+    },
+    "tr": {
+      "name": "Pomodoro"
+    },
+    "uk": {
+      "name": "Помодоро"
+    },
+    "zh-CN": {
+      "name": "番茄钟"
+    },
+    "ja": {
+      "name": "ポモドーロ"
+    },
+    "ko": {
+      "name": "뽀모도로"
+    }
+  }
+}

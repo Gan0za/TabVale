@@ -39,3 +39,34 @@ chrome.contextMenus.onClicked.addListener((info) => {
 function openSettings() {
     chrome.tabs.create({ url: chrome.runtime.getURL("newtab/index.html?settings=1") });
 }
+
+// -----------------------------------------------------------------------------
+// Левый клик по иконке расширения.
+//
+// Если доступ к закладкам ещё не выдан, запрашиваем его отсюда: клик по
+// иконке — настоящий жест в интерфейсе браузера, поэтому Chrome обязан
+// показать диалог. Новую вкладку о результате уведомляем сообщением, чтобы
+// открытые панели плагинов перечитали закладки. Когда доступ уже есть,
+// клик просто открывает настройки.
+// -----------------------------------------------------------------------------
+chrome.action.onClicked.addListener(() => {
+    chrome.permissions.contains({ permissions: ["bookmarks"] }, (granted) => {
+        if (granted) {
+            openSettings();
+            return;
+        }
+        chrome.permissions.request({ permissions: ["bookmarks"] }, (result) => {
+            void chrome.runtime.lastError;
+            try {
+                const sent = chrome.runtime.sendMessage({
+                    type: "tabvale:bookmarks-permission",
+                    granted: Boolean(result)
+                });
+                // В открытой вкладке может не быть слушателя — это не ошибка.
+                if (sent && typeof sent.catch === "function") sent.catch(() => {});
+            } catch {
+                // игнорируем: сообщать некуда
+            }
+        });
+    });
+});

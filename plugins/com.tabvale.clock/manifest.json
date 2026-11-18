@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "id": "com.tabvale.clock",
+  "name": "Clock",
+  "version": "1.0.2",
+  "apiVersion": 1,
+  "minAppVersion": "1.2.0",
+  "entry": "plugin.js",
+  "icon": "icon.svg",
+  "description": "A calm clock and date for the side panel.",
+  "author": "TabVale",
+  "permissions": {
+    "network": [],
+    "capabilities": [],
+    "storageKB": 16
+  },
+  "surfaces": {
+    "tiles": {
+      "span": [
+        1,
+        1
+      ]
+    },
+    "strip": {
+      "positions": [
+        "top",
+        "bottom"
+      ],
+      "height": [
+        64,
+        140
+      ],
+      "default": true
+    },
+    "panel": {
+      "sides": [
+        "right",
+        "left"
+      ],
+      "width": [
+        280,
+        420
+      ],
+      "height": [
+        200,
+        420
+      ],
+      "mode": [
+        "overlay"
+      ]
+    },
+    "rail": {
+      "positions": [
+        "top"
+      ]
+    }
+  },
+  "locales": {
+    "ru": {
+      "name": "Часы",
+      "description": "Спокойные часы и дата в боковой панели."
+    },
+    "de": {
+      "name": "Uhr",
+      "description": "Ruhige Uhr mit Datum für die Seitenleiste."
+    },
+    "fr": {
+      "name": "Horloge",
+      "description": "Une horloge calme avec la date dans le panneau latéral."
+    },
+    "es": {
+      "name": "Reloj",
+      "description": "Un reloj tranquilo con la fecha en el panel lateral."
+    },
+    "pt-BR": {
+      "name": "Relógio"
+    },
+    "it": {
+      "name": "Orologio"
+    },
+    "pl": {
+      "name": "Zegar"
+    },
+    "tr": {
+      "name": "Saat"
+    },
+    "uk": {
+      "name": "Годинник"
+    },
+    "zh-CN": {
+      "name": "时钟"
+    },
+    "ja": {
+      "name": "時計"
+    },
+    "ko": {
+      "name": "시계"
+    }
+  }
+}

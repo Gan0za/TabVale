@@ -119,7 +119,7 @@ async function fetchPageTitle(urlString) {
 function fillBookmarkDetails(urlString) {
     const hostname = suggestNameFromUrl(urlString);
     bookmarkTitleInput.value = hostname;
-    bookmarkIconInput.value = `https://${new URL(urlString).hostname}/favicon.ico`;
+    bookmarkIconInput.value = defaultIconUrl(urlString);
     // <title> получаем в фоне и подставляем, если пользователь ещё
     // не начал печатать своё название
     fetchPageTitle(urlString).then((title) => {
@@ -209,6 +209,7 @@ function refreshUI() {
     renderBookmarkScreenSelect();
     renderSearchEngineDropdown(currentState.searchEngines, currentState.currentSearchEngineIndex);
     renderBookmarks(bookmarksContainer, currentState.bookmarks);
+    if (typeof renderPluginTiles === 'function') renderPluginTiles();
     const managed = managedScreen();
     renderManagerList(bookmarkManagerList, managed ? managed.bookmarks : currentState.bookmarks, renderBookmarkManagerItem);
     renderManagerList(backgroundManagerList, currentState.backgrounds, (bg, idx) => renderBackgroundManagerItem(bg, idx, currentState.currentBackgroundIndex));

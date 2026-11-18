@@ -40,7 +40,7 @@ function initBookmarks() {
         refreshBookmarkIconButton.addEventListener('click', () => {
             const normalizedUrl = normalizeUrl(bookmarkUrlInput.value.trim());
             if (!normalizedUrl) { alert(t('errInvalidUrl')); return; }
-            bookmarkIconInput.value = `https://${new URL(normalizedUrl).hostname}/favicon.ico`;
+            bookmarkIconInput.value = defaultIconUrl(normalizedUrl);
         });
 
         // Кнопка "Сохранить" в форме закладок
@@ -57,7 +57,7 @@ function initBookmarks() {
             let urlObj;
             try { urlObj = new URL(normalizedUrl); } catch { alert(t('errInvalidUrl')); return; }
 
-            const bookmarkData = { title, url: normalizedUrl, icon: icon || `https://${urlObj.hostname}/favicon.ico` };
+            const bookmarkData = { title, url: normalizedUrl, icon: icon || defaultIconUrl(normalizedUrl) };
 
             const target = screenById(editingBookmarkScreenId) || managedScreen();
             const targetBookmarks = target ? target.bookmarks : currentState.bookmarks;
@@ -68,6 +68,8 @@ function initBookmarks() {
             }
 
             saveState({ screens: currentState.screens });
+            // Кэш иконок обновляем после сохранения; неудача ничего не стирает.
+            refreshIconCache(normalizedUrl);
             refreshUI();
             hideAddForm('bookmark'); // прячем форму после сохранения
         });

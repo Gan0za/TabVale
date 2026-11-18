@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "id": "com.tabvale.bookmarks",
+  "name": "Bookmark importer",
+  "version": "1.0.3",
+  "apiVersion": 1,
+  "minAppVersion": "1.2.0",
+  "entry": "plugin.js",
+  "icon": "icon.svg",
+  "description": "Moves bookmarks from the browser into the active screen.",
+  "author": "TabVale",
+  "permissions": {
+    "network": [],
+    "capabilities": [
+      "bookmarks.read"
+    ],
+    "storageKB": 32
+  },
+  "surfaces": {
+    "panel": {
+      "sides": [
+        "right",
+        "left"
+      ],
+      "width": [
+        340,
+        560
+      ],
+      "height": [
+        380,
+        700
+      ],
+      "mode": [
+        "overlay"
+      ]
+    },
+    "rail": {
+      "positions": [
+        "top"
+      ]
+    },
+    "tiles": {
+      "span": [
+        1,
+        1
+      ]
+    }
+  },
+  "locales": {
+    "ru": {
+      "name": "Импорт закладок"
+    },
+    "en": {
+      "name": "Bookmark importer"
+    },
+    "de": {
+      "name": "Lesezeichen-Import"
+    },
+    "fr": {
+      "name": "Importateur de favoris"
+    },
+    "es": {
+      "name": "Importador de marcadores"
+    },
+    "pt-BR": {
+      "name": "Importador de favoritos"
+    },
+    "it": {
+      "name": "Importatore segnalibri"
+    },
+    "pl": {
+      "name": "Importer zakładek"
+    },
+    "tr": {
+      "name": "Yer imi içe aktarıcı"
+    },
+    "uk": {
+      "name": "Імпорт закладок"
+    },
+    "zh-CN": {
+      "name": "书签导入"
+    },
+    "ja": {
+      "name": "ブックマーク取り込み"
+    },
+    "ko": {
+      "name": "북마크 가져오기"
+    }
+  }
+}

@@ -180,15 +180,18 @@ sandbox.confirm = () => true;
 byId('reset-settings').click();
 await new Promise((r) => setTimeout(r, 10));
 
-// saveState пишет состояние, storageSet({theme}) — отдельный вызов после
-const saved = syncSets.filter((s) => s.screens).at(-1);
-assert.ok(saved, 'после сброса состояние сохранено');
-assert.equal(saved.screens[0].bookmarks.length, 2, 'закладки — дефолтный набор');
-assert.equal(saved.currentScreenId, undefined, 'активный экран не пишется в sync');
-assert.equal(saved.searchEngines.length, 3, 'поисковики — дефолтный набор');
-assert.equal(saved.backgrounds.length, 1, 'фоны — дефолтный набор');
-assert.equal(saved.currentBackgroundIndex, 0, 'выбран первый дефолтный фон');
-assert.equal(saved.currentSearchEngineIndex, 0, 'выбран первый дефолтный поисковик');
+// saveState пишет состояние раздельно: settings, screensMeta и screen:*
+const settingsSaved = syncSets.filter((s) => s.searchEngines).at(-1);
+const metaSaved = syncSets.filter((s) => Array.isArray(s.screensMeta)).at(-1);
+const mainSaved = syncSets.filter((s) => s['screen:main']).at(-1);
+assert.ok(settingsSaved, 'после сброса настройки сохранены');
+assert.ok(metaSaved && mainSaved, 'экраны сохранены раздельно');
+assert.equal(mainSaved['screen:main'].bookmarks.length, 2, 'закладки — дефолтный набор');
+assert.equal(settingsSaved.currentScreenId, undefined, 'активный экран не пишется в sync');
+assert.equal(settingsSaved.searchEngines.length, 3, 'поисковики — дефолтный набор');
+assert.equal(settingsSaved.backgrounds.length, 1, 'фоны — дефолтный набор');
+assert.equal(settingsSaved.currentBackgroundIndex, 0, 'выбран первый дефолтный фон');
+assert.equal(settingsSaved.currentSearchEngineIndex, 0, 'выбран первый дефолтный поисковик');
 
 assert.ok(localRemoved.includes('bgFile:bg1'), 'картинка file-фона удалена из storage.local');
 assert.equal(localFiles['other'], 'keep me', 'чужие ключи storage.local не тронуты');

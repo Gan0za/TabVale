@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "id": "com.tabvale.apps",
+  "name": "App launcher",
+  "version": "1.0.2",
+  "apiVersion": 1,
+  "minAppVersion": "1.2.0",
+  "entry": "plugin.js",
+  "icon": "icon.svg",
+  "description": "Opens Obsidian and VS Code through their URL schemes.",
+  "author": "TabVale",
+  "permissions": {
+    "network": [],
+    "capabilities": [],
+    "storageKB": 16
+  },
+  "surfaces": {
+    "strip": {
+      "positions": [
+        "top",
+        "bottom"
+      ],
+      "height": [
+        64,
+        120
+      ]
+    },
+    "panel": {
+      "sides": [
+        "right",
+        "left"
+      ],
+      "width": [
+        280,
+        420
+      ],
+      "height": [
+        220,
+        360
+      ],
+      "mode": [
+        "overlay"
+      ]
+    },
+    "rail": {
+      "positions": [
+        "top"
+      ]
+    },
+    "tiles": {
+      "span": [
+        1,
+        1
+      ]
+    }
+  },
+  "locales": {
+    "ru": {
+      "name": "Запуск приложений"
+    },
+    "en": {
+      "name": "App launcher"
+    },
+    "de": {
+      "name": "App-Starter"
+    },
+    "fr": {
+      "name": "Lanceur d’applications"
+    },
+    "es": {
+      "name": "Lanzador de aplicaciones"
+    },
+    "pt-BR": {
+      "name": "Iniciador de aplicativos"
+    },
+    "it": {
+      "name": "Avvio app"
+    },
+    "pl": {
+      "name": "Uruchamianie aplikacji"
+    },
+    "tr": {
+      "name": "Uygulama başlatıcı"
+    },
+    "uk": {
+      "name": "Запуск застосунків"
+    },
+    "zh-CN": {
+      "name": "应用启动器"
+    },
+    "ja": {
+      "name": "アプリ起動"
+    },
+    "ko": {
+      "name": "앱 실행기"
+    }
+  }
+}

@@ -16,6 +16,8 @@ if (Test-Path $zip) { Remove-Item $zip -Force }
 $items = @(
     'manifest.json',
     'background.js',
+    'sandbox',
+    'plugins',
     'newtab',
     '_locales',
     'assets/icons/icon16.png',
@@ -43,6 +45,8 @@ try {
     foreach ($required in @(
         'manifest.json',
         'background.js',
+        'sandbox/plugin-host.html',
+        'plugins/index.json',
         'newtab/index.html',
         '_locales/ru/messages.json',
         '_locales/en/messages.json',

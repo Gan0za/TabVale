@@ -24,11 +24,38 @@
  */
 function getIconUrl(bookmark) {
     if (bookmark.icon) return bookmark.icon;
-    try {
-        return `https://${new URL(bookmark.url).hostname}/favicon.ico`;
-    } catch {
-        return FALLBACK_ICON;
-    }
+    return defaultIconUrl(bookmark.url);
+}
+
+/**
+ * Подставляет иконку плитки: кэш, затем favicon браузера, затем ссылка.
+ * Владелец картинки — сама плитка; устаревший кэш тихо обновляется,
+ * когда сеть и сайт доступны.
+ */
+function applyBookmarkIcon(img, bookmark) {
+    resolveBookmarkIcon(bookmark).then((result) => {
+        if (result?.src) img.src = result.src;
+        if (result?.cached && result.stale) refreshIconCache(bookmark.url);
+    }).catch(() => {});
+}
+
+/** Дочитывает иконку из кэша в уже отрисованную картинку. */
+function applyCachedIcon(img, pageUrl) {
+    cachedIconOnly(pageUrl).then((src) => {
+        if (!src) return;
+        img.src = src;
+        // Иконка могла быть скрыта, пока логотипа не было.
+        if (img.style?.display === 'none') img.style.display = 'inline';
+    }).catch(() => {});
+}
+
+/** То же, но с догревом кэша: для поисковиков и их логотипов-ссылок. */
+function applyWarmIcon(img, pageUrl) {
+    ensureCachedIcon(pageUrl).then((src) => {
+        if (!src) return;
+        img.src = src;
+        if (img.style?.display === 'none') img.style.display = 'inline';
+    }).catch(() => {});
 }
 
 /**
@@ -65,7 +92,16 @@ function buildBookmarkTile(bookmark, index) {
     const img = document.createElement('img');
     img.alt = 'icon';
     img.draggable = false;
-    setImageSource(img, getIconUrl(bookmark), FALLBACK_ICON);
+    // Заглушка сразу, затем иконка из кэша/браузера: так плитка не мигает
+    // пустым квадратом, а сохранённая иконка видна и без сети.
+    img.src = FALLBACK_ICON;
+    // Ссылка из настроек может не открыться — тогда снова заглушка,
+    // но уже без каскада повторных загрузок.
+    img.onerror = () => {
+        img.onerror = null;
+        img.src = FALLBACK_ICON;
+    };
+    applyBookmarkIcon(img, bookmark);
 
     const link = document.createElement('a');
     link.href = bookmark.url;
@@ -128,6 +164,8 @@ function renderSearchEngineDropdown(engines, selectedIndex) {
     } else {
         iconEl.style.display = 'none';
     }
+    // Кэш может дать иконку и без логотипа, и без сети.
+    applyWarmIcon(iconEl, selected.url);
     nameEl.textContent = selected.name;
 
     // Собираем список заново при каждом вызове — данных немного,
@@ -141,6 +179,7 @@ function renderSearchEngineDropdown(engines, selectedIndex) {
 
         const img = document.createElement('img');
         setImageSource(img, engine.logo || '', '');
+        applyWarmIcon(img, engine.url);
 
         const label = document.createElement('span');
         label.textContent = engine.name;
@@ -207,6 +246,9 @@ function buildManagerListItem({ buttons, selected, imageUrl, emptyImageText, tit
     if (imageUrl) {
         imageEl = document.createElement('img');
         setImageSource(imageEl, imageUrl, '');
+        if ((rowType === 'bookmark' || rowType === 'searchEngine') && subtitle) {
+            applyCachedIcon(imageEl, subtitle);
+        }
     } else {
         imageEl = document.createElement('div');
         imageEl.className = 'no-preview no-logo';

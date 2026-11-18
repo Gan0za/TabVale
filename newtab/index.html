@@ -60,6 +60,7 @@
             <button class="settings-tab" data-tab="backgrounds" data-i18n="tabBackgrounds">Фоны</button>
             <button class="settings-tab" data-tab="search-engines" data-i18n="tabSearchEngines">Поисковые системы</button>
             <button class="settings-tab" data-tab="screens" data-i18n="tabScreens">Экраны</button>
+            <button class="settings-tab" data-tab="plugins" data-i18n="tabPlugins">Плагины</button>
         </div>
         <div class="settings-content">
             <!-- Общие настройки: язык, тема, импорт/экспорт -->
@@ -213,6 +214,11 @@
                     </div>
                 </div>
             </div>
+            <div class="settings-pane" data-pane="plugins">
+                <div id="plugins-manager-list" class="modal-list"></div>
+                <button id="install-plugin-file" class="btn" data-i18n="pluginInstall">Установить из файла…</button>
+                <input id="plugin-package-file" type="file" accept=".json,.tvp,application/json,application/zip" style="display:none" />
+            </div>
         </div>
         <div class="modal-actions">
             <button id="close-settings" class="btn" data-i18n="closeButton">Закрыть</button>
@@ -240,6 +246,12 @@
 
     <script src="core/config.js"></script>
     <script src="core/storage.js"></script>
+    <script src="core/icon-store.js"></script>
+    <script src="core/plugins.js"></script>
+    <script src="core/plugin-broker.js"></script>
+    <script src="core/plugin-registry.js"></script>
+    <script src="core/plugin-placements.js"></script>
+    <script src="core/plugin-db.js"></script>
     <script src="core/i18n.js"></script>
     <script src="core/render.js"></script>
     <script src="core/state.js"></script>
@@ -255,6 +267,7 @@
     <script src="features/backgrounds.js"></script>
     <script src="features/search-engines.js"></script>
     <script src="features/screens.js"></script>
+    <script src="features/plugins.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
