@@ -23,7 +23,8 @@ import { SOURCE as js } from './_source.mjs';
 // --- Статические проверки: ключевые части нового механизма на месте ---
 assert.ok(js.includes('reorderBookmarksAnimated'), 'есть перестановка с FLIP без пересоздания узлов');
 assert.ok(!js.includes('renderBookmarksAnimated'), 'старая полная перерисовка удалена');
-assert.ok(js.includes('appendChild(el)'), 'узлы плиток перемещаются, а не пересоздаются');
+assert.ok(js.includes('insertBefore(el, firstPluginTile)'), 'закладки вставляются перед плитками плагинов');
+assert.ok(js.includes("querySelector('.plugin-tile')"), 'позиция плиток плагинов учитывается');
 assert.ok(js.includes('el.dataset.index = i'), 'dataset.index синхронизируется после перестановки');
 // Перестановка ищет узлы по очередям на каждый URL — дубликаты URL не теряются
 assert.ok(/queues\.get\(b\.url\)/.test(js), 'узлы ищутся очередями по url (дубликаты безопасны)');

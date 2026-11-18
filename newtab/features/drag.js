@@ -62,10 +62,16 @@ function reorderBookmarksAnimated(fromIndex, toIndex) {
         queue.push(el);
         queues.set(el.dataset.url, queue);
     });
+    // Плитки плагинов живут в том же контейнере и всегда стоят после
+    // закладок; appendChild перенёс бы закладки за них, и плитки уехали
+    // бы в начало сетки.
+    const firstPluginTile = bookmarksContainer.querySelector
+        ? bookmarksContainer.querySelector('.plugin-tile')
+        : null;
     currentState.bookmarks
         .map((b) => queues.get(b.url)?.shift())
         .filter(Boolean)
-        .forEach((el) => bookmarksContainer.appendChild(el));
+        .forEach((el) => bookmarksContainer.insertBefore(el, firstPluginTile));
 
     // Синхронизируем индексы с новым порядком (от dataset.index зависят
     // редактирование/удаление по клику) и одним проходом снимаем новые
