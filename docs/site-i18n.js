@@ -652,7 +652,9 @@
   const originalAttrs = new Map();
 
   function captureOriginals() {
-    document.querySelectorAll('[data-i18n]').forEach((el) => originals.set(el, el.textContent));
+    // Храним исходную разметку: в английской версии в текстах есть
+    // <kbd> и <code>, которые textContent бы стёр.
+    document.querySelectorAll('[data-i18n]').forEach((el) => originals.set(el, el.innerHTML));
     document.querySelectorAll('[data-i18n-attr]').forEach((el) => {
       el.getAttribute('data-i18n-attr').split(',').forEach((pair) => {
         const [attr] = pair.split(':');
@@ -670,7 +672,11 @@
     document.querySelectorAll('[data-i18n]').forEach((el) => {
       const key = el.dataset.i18n;
       const original = originals.get(el);
-      el.textContent = lang === 'en' ? original : (dict[key] || original);
+      if (lang === 'en') {
+        if (el.innerHTML !== original) el.innerHTML = original;
+      } else {
+        el.textContent = dict[key] || el.textContent;
+      }
     });
 
     document.querySelectorAll('[data-i18n-attr]').forEach((el) => {
