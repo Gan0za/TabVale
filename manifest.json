@@ -11,7 +11,8 @@
     "storage",
     "unlimitedStorage",
     "contextMenus",
-    "clipboardRead"
+    "clipboardRead",
+    "favicon"
   ],
   "host_permissions": [
     "https://api.open-meteo.com/*",

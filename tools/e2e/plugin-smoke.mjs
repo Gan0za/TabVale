@@ -297,6 +297,33 @@ const icons = await evaluate(`(() => {
 })()`);
 console.log('plugin icons:', icons);
 
+// Иконки закладок: байты должны прийти из favicon-кэша браузера и осесть
+// в IndexedDB, чтобы пережить оффлайн и недоступность сайта.
+await sleep(1200);
+const bookmarkIcons = await evaluate(`(async () => {
+  const tiles = [...document.querySelectorAll('.bookmark img')];
+  const db = await new Promise((resolve) => {
+    const request = indexedDB.open('tabvale-icons', 1);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => resolve(null);
+  });
+  let records = [];
+  if (db && db.objectStoreNames.contains('icons')) {
+    records = await new Promise((resolve) => {
+      const all = db.transaction('icons', 'readonly').objectStore('icons').getAll();
+      all.onsuccess = () => resolve(all.result || []);
+      all.onerror = () => resolve([]);
+    });
+  }
+  return {
+    tiles: tiles.length,
+    dataTiles: tiles.filter((img) => String(img.getAttribute('src') || '').startsWith('data:')).length,
+    cached: records.length,
+    cachedBytes: records.filter((record) => String(record.dataUrl || '').startsWith('data:')).length,
+  };
+})()`);
+console.log('bookmark icons:', bookmarkIcons);
+
 const strip = await evaluate(`(() => {
   const items = [...document.querySelectorAll('.plugin-strip-item')];
   return { count: items.length, id: items[0]?.dataset.pluginId || '' };
@@ -863,6 +890,25 @@ const networkProbe = await evaluate(`(async () => {
 })()`);
 console.log('network probe:', networkProbe);
 
+// Оффлайн: после перезагрузки без сети иконки должны остаться из кэша.
+await send('Network.enable');
+await send('Network.emulateNetworkConditions', {
+  offline: true, latency: 0, downloadThroughput: 0, uploadThroughput: 0,
+});
+await send('Page.reload');
+await sleep(2500);
+const offlineIcons = await evaluate(`(() => {
+  const tiles = [...document.querySelectorAll('.bookmark img')];
+  return {
+    tiles: tiles.length,
+    dataTiles: tiles.filter((img) => String(img.getAttribute('src') || '').startsWith('data:')).length,
+  };
+})()`);
+console.log('offline bookmark icons:', offlineIcons);
+await send('Network.emulateNetworkConditions', {
+  offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1,
+});
+
 console.log('logs:', logs.slice(-8));
 console.log('exceptions:', errors.slice(0, 5));
 ws.close();
@@ -875,6 +921,9 @@ const passed = dock.count > 0
     && icons.dock > 0 && icons.dock === icons.dockWithImage
     && icons.rows > 0 && icons.rows === icons.rowsWithImage
     && floatingStart?.headerIcon === true
+    && bookmarkIcons.tiles > 0 && bookmarkIcons.dataTiles === bookmarkIcons.tiles
+    && bookmarkIcons.cached >= bookmarkIcons.tiles
+    && offlineIcons.tiles === bookmarkIcons.tiles && offlineIcons.dataTiles === offlineIcons.tiles
     && timePattern.test(stripText.trim())
     && panelText.trim().length > 0
     && manager.rows > 0

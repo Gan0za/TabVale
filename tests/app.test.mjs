@@ -97,6 +97,14 @@ const titleEl = link.children.find((c) => c.className === 'bookmark-title');
 assert.equal(titleEl.textContent, '<img src=x onerror=alert(1)>', 'название — как текст');
 assert.ok(!titleEl.children.length, 'внутри нет DOM-детей из названия');
 
+// --- Тест 2.5: недоступная иконка возвращает заглушку, а не пустое место ---
+const offlineTile = buildBookmarkTile({ title: 'Offline', url: 'https://offline.local' }, 1);
+const offlineLink = offlineTile.children.find((child) => child.className === 'bookmark-link');
+const offlineImg = offlineLink.children.find((child) => child.tagName === 'img');
+assert.ok(String(offlineImg.src).startsWith('data:image/svg'), 'сразу показывается заглушка');
+offlineImg.onerror();
+assert.ok(String(offlineImg.src).startsWith('data:image/svg'), 'после ошибки загрузки — снова заглушка');
+
 // --- Тест 3: setImageSource ---
 const img = makeElement('img');
 setImageSource(img, '', '');

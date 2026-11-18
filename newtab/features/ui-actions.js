@@ -119,7 +119,7 @@ async function fetchPageTitle(urlString) {
 function fillBookmarkDetails(urlString) {
     const hostname = suggestNameFromUrl(urlString);
     bookmarkTitleInput.value = hostname;
-    bookmarkIconInput.value = `https://${new URL(urlString).hostname}/favicon.ico`;
+    bookmarkIconInput.value = defaultIconUrl(urlString);
     // <title> получаем в фоне и подставляем, если пользователь ещё
     // не начал печатать своё название
     fetchPageTitle(urlString).then((title) => {

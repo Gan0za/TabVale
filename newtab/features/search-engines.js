@@ -25,7 +25,7 @@ function initSearchEngines() {
         if (!normalizedUrl || !normalizedUrl.includes('%s')) { alert(t('errEngineUrl')); return; }
 
         newSearchEngineName.value = suggestNameFromUrl(normalizedUrl);
-        newSearchEngineLogo.value = `https://${new URL(normalizedUrl.replace('%s', '')).hostname}/favicon.ico`;
+        newSearchEngineLogo.value = defaultIconUrl(normalizedUrl.replace('%s', ''));
         expandDetails(searchEngineDetails);
         toggleSearchEngineStep({ editing: true });
         newSearchEngineName.focus();
@@ -42,7 +42,7 @@ function initSearchEngines() {
     refreshSearchEngineIconButton.addEventListener('click', () => {
         const normalizedUrl = normalizeUrl(newSearchEngineUrl.value.trim());
         if (!normalizedUrl || !normalizedUrl.includes('%s')) { alert(t('errEngineUrl')); return; }
-        newSearchEngineLogo.value = `https://${new URL(normalizedUrl.replace('%s', '')).hostname}/favicon.ico`;
+        newSearchEngineLogo.value = defaultIconUrl(normalizedUrl.replace('%s', ''));
     });
 
     saveSearchEngineButton.addEventListener('click', () => {
@@ -61,6 +61,7 @@ function initSearchEngines() {
         }
 
         saveState({ searchEngines: currentState.searchEngines });
+        refreshIconCache(engineData.url);
         refreshUI();
         hideAddForm('searchEngine');
     });
