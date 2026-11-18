@@ -71,7 +71,7 @@ All screenshots are 1280×800 and use fictional demo data.
 ```
 tabvale/
 ├── manifest.json              # Extension manifest (Manifest V3)
-├── background.js              # Service worker: extension icon menu
+├── background.js              # Service worker: icon menu and bookmark permission
 ├── newtab/
 │   ├── index.html             # New tab page
 │   ├── styles.css             # Styles
@@ -79,9 +79,15 @@ tabvale/
 │   ├── core/                  # Core
 │   │   ├── config.js          # Defaults
 │   │   ├── storage.js         # chrome.storage, migrations, screens/backgrounds
+│   │   ├── icon-store.js      # Site icon cache in IndexedDB
 │   │   ├── i18n.js            # t()/applyLocale localization
 │   │   ├── render.js          # Rendering and context menu definitions
-│   │   └── state.js           # DOM references and current state
+│   │   ├── state.js           # DOM references and current state
+│   │   ├── plugins.js         # Manifest validation and placement clamping
+│   │   ├── plugin-broker.js   # RPC allowlist, storage and fetch rules
+│   │   ├── plugin-registry.js # Built-in catalog index
+│   │   ├── plugin-placements.js # Surfaces and stored placement
+│   │   └── plugin-db.js       # Installed packages in IndexedDB
 │   └── features/              # Feature modules
 │       ├── screens.js         # Screens, dots, swipe, moving bookmarks
 │       ├── bookmarks.js       # Bookmark form and actions
@@ -94,24 +100,33 @@ tabvale/
 │       ├── theme.js           # Theme
 │       ├── language.js        # Language switching
 │       ├── popovers.js        # Popover closing
+│       ├── plugins.js         # Plugin host: dock, panel, strip, tiles, manager
 │       └── ui-actions.js      # Shared actions and refreshUI
+├── sandbox/                   # Isolated plugin runtime (no chrome.*)
+├── plugins/                   # Plugin sources: manifest.json, plugin.js, icon.svg
 ├── _locales/                  # 13 languages
 ├── assets/icons/              # Extension icons 16/48/128
-├── docs/                      # GitHub Pages site, CWS listing, screenshots
-│   ├── screenshots/
-│   ├── CWS_LISTING.md
-│   ├── index.html
+├── docs/                      # GitHub Pages site and store materials
+│   ├── index.html             # Landing page, plugin catalog
 │   ├── privacy.html
-│   ├── icon.png
-│   └── icon-preview.png
+│   ├── PLUGIN_SPEC.md         # Package and manifest reference
+│   ├── PLUGIN_API.md          # Sandbox API reference
+│   ├── PLUGIN_GUIDE.md        # Authoring walkthrough
+│   ├── plugins/               # Built .tvp packages and catalog.json
+│   ├── screenshots/
+│   └── CWS_LISTING.md
 ├── tests/                     # Node tests (vm sandbox)
-├── tools/screenshot-sandbox/  # Screenshot generator
+├── tools/
+│   ├── build-plugins.mjs      # Builds docs/plugins from plugins/index.json
+│   ├── pack-plugin.mjs        # Packs any plugin folder into a .tvp
+│   ├── zip.mjs                # Minimal zip writer for packages
+│   └── screenshot-sandbox/    # Screenshot generator
 ├── package.sh                 # Builds dist/tabvale_v{version}.zip (bash)
 ├── package.ps1                # Windows build (PowerShell)
 ├── PRIVACY.md                 # Privacy policy
 ├── CWS_REVIEW_NOTES.md        # Chrome Web Store review texts
 ├── LICENSE                    # MIT
-├── README.*.md                # Short translations
+├── README.*.md                # Short translations with a plugin overview
 └── README.md
 ```
 
