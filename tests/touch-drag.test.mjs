@@ -71,6 +71,18 @@ function makeElement(id = '') {
             this.children.push(c);
             return c;
         },
+        insertBefore(c, reference) {
+            const oldParent = c.parentNode;
+            if (oldParent) {
+                const pos = oldParent.children.indexOf(c);
+                if (pos !== -1) oldParent.children.splice(pos, 1);
+            }
+            c.parentNode = el;
+            const index = reference ? this.children.indexOf(reference) : -1;
+            if (index === -1) this.children.push(c);
+            else this.children.splice(index, 0, c);
+            return c;
+        },
         append(...cs) { cs.forEach((c) => { c.parentNode = el; this.children.push(c); }); },
         remove() {},
         setAttribute() {},

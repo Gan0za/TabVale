@@ -52,7 +52,7 @@
   {
     "id": "com.tabvale.notes",
     "name": "Quick notes",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "file": "com.tabvale.notes.tvp",
     "icon": "com.tabvale.notes.svg",
     "description": "A small scratchpad that saves as you type.",
@@ -199,7 +199,7 @@
   {
     "id": "com.tabvale.passwords",
     "name": "Password generator",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "file": "com.tabvale.passwords.tvp",
     "icon": "com.tabvale.passwords.svg",
     "description": "Generates random passwords locally, without any permissions.",
@@ -297,7 +297,7 @@
   {
     "id": "com.tabvale.github",
     "name": "GitHub stats",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "file": "com.tabvale.github.tvp",
     "icon": "com.tabvale.github.svg",
     "description": "Stars, forks and issues for the repositories you choose.",
@@ -346,7 +346,7 @@
   {
     "id": "com.tabvale.apps",
     "name": "App launcher",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "file": "com.tabvale.apps.tvp",
     "icon": "com.tabvale.apps.svg",
     "description": "Launch your own applications from the new tab.",
@@ -395,7 +395,7 @@
   {
     "id": "com.tabvale.rss",
     "name": "RSS reader",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "file": "com.tabvale.rss.tvp",
     "icon": "com.tabvale.rss.svg",
     "description": "Top stories from Habr's RSS feed.",
@@ -438,6 +438,104 @@
       },
       "ko": {
         "name": "RSS 리더"
+      }
+    }
+  },
+  {
+    "id": "com.tabvale.todo",
+    "name": "Tasks",
+    "version": "1.0.0",
+    "file": "com.tabvale.todo.tvp",
+    "icon": "com.tabvale.todo.svg",
+    "description": "A small checklist that stays on your new tab.",
+    "locales": {
+      "ru": {
+        "name": "Задачи"
+      },
+      "en": {
+        "name": "Tasks"
+      },
+      "de": {
+        "name": "Aufgaben"
+      },
+      "fr": {
+        "name": "Tâches"
+      },
+      "es": {
+        "name": "Tareas"
+      },
+      "pt-BR": {
+        "name": "Tarefas"
+      },
+      "it": {
+        "name": "Attività"
+      },
+      "pl": {
+        "name": "Zadania"
+      },
+      "tr": {
+        "name": "Görevler"
+      },
+      "uk": {
+        "name": "Завдання"
+      },
+      "zh-CN": {
+        "name": "任务"
+      },
+      "ja": {
+        "name": "タスク"
+      },
+      "ko": {
+        "name": "할 일"
+      }
+    }
+  },
+  {
+    "id": "com.tabvale.quotes",
+    "name": "Quotes",
+    "version": "1.0.0",
+    "file": "com.tabvale.quotes.tvp",
+    "icon": "com.tabvale.quotes.svg",
+    "description": "A short proverb or thought for the day.",
+    "locales": {
+      "ru": {
+        "name": "Цитаты"
+      },
+      "en": {
+        "name": "Quotes"
+      },
+      "de": {
+        "name": "Zitate"
+      },
+      "fr": {
+        "name": "Citations"
+      },
+      "es": {
+        "name": "Citas"
+      },
+      "pt-BR": {
+        "name": "Citações"
+      },
+      "it": {
+        "name": "Citazioni"
+      },
+      "pl": {
+        "name": "Cytaty"
+      },
+      "tr": {
+        "name": "Özlü sözler"
+      },
+      "uk": {
+        "name": "Цитати"
+      },
+      "zh-CN": {
+        "name": "格言"
+      },
+      "ja": {
+        "name": "ことわざ"
+      },
+      "ko": {
+        "name": "명언"
       }
     }
   },

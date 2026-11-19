@@ -1,7 +1,9 @@
 function mount(api) {
     const ru = api.locale?.startsWith('ru');
     const compact = api.surface === 'strip';
-    const ALLOWED = ['https:', 'http:', 'obsidian:', 'vscode:'];
+    const NS = 'http://www.w3.org/2000/svg';
+    const BLOCKED = ['javascript:', 'data:', 'blob:', 'vbscript:', 'file:'];
+    const STRIP_LIMIT = 3;
 
     const DEFAULT_APPS = [
         { title: 'Obsidian', description: ru ? 'Открыть хранилище' : 'Open vault', url: 'obsidian://open' },
@@ -9,59 +11,51 @@ function mount(api) {
     ];
     let apps = DEFAULT_APPS.map((app) => ({ ...app }));
 
-    const wrap = document.createElement('div');
-    wrap.style.cssText = compact
-        ? 'display:flex;align-items:stretch;gap:8px;height:100%;padding:8px;overflow-x:auto'
-        : 'display:flex;flex-direction:column;height:100%;padding:12px;gap:8px';
+    // Контурные значки: у известных приложений свои, у остальных — окно.
+    const GLYPHS = {
+        'obsidian:': ['M12 3l6 5-2.5 13h-7L6 8l6-5Z', 'M6 8h12'],
+        'vscode:': ['M9 8l-4 4 4 4', 'M15 8l4 4-4 4'],
+        window: ['M4 6h16v12H4z', 'M4 10h16', 'M7 8h.01'],
+        grid: ['M4 4h6v6H4z', 'M14 4h6v6h-6z', 'M4 14h6v6H4z', 'M14 14h6v6h-6z'],
+    };
 
-    const list = document.createElement('div');
-    list.style.cssText = compact
-        ? 'display:flex;gap:8px;align-items:stretch;min-width:0'
-        : 'flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column';
-
-    const addRow = document.createElement('div');
-    addRow.style.cssText = 'display:flex;flex-direction:column;gap:6px;flex:0 0 auto';
-
-    const urlInput = input(ru ? 'Ссылка приложения' : 'App URL');
-    const titleInput = input(ru ? 'Название' : 'Title');
-    const descInput = input(ru ? 'Описание (необязательно)' : 'Description (optional)');
-
-    const addButton = document.createElement('button');
-    addButton.type = 'button';
-    addButton.textContent = ru ? 'Добавить приложение' : 'Add application';
-    addButton.style.cssText = 'padding:8px 10px;border:1px solid var(--tabvale-border);border-radius:8px;' +
-        'background:var(--tabvale-surface);color:var(--tabvale-text);cursor:pointer;font:inherit';
-
-    const status = document.createElement('div');
-    status.style.cssText = 'font-size:12px;color:var(--tabvale-muted);min-height:15px';
-
-    function input(placeholder) {
-        const field = document.createElement('input');
-        field.type = 'text';
-        field.placeholder = placeholder;
-        field.style.cssText = 'padding:7px 9px;border:1px solid var(--tabvale-border);border-radius:8px;' +
-            'background:var(--tabvale-surface);color:var(--tabvale-text);font:inherit';
-        return field;
+    function glyph(paths, size) {
+        const svg = document.createElementNS(NS, 'svg');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('stroke-width', '1.8');
+        svg.setAttribute('stroke-linecap', 'round');
+        svg.setAttribute('stroke-linejoin', 'round');
+        svg.style.cssText = `width:${size}px;height:${size}px;flex:0 0 auto;color:var(--tabvale-muted)`;
+        for (const d of paths) {
+            const path = document.createElementNS(NS, 'path');
+            path.setAttribute('d', d);
+            svg.append(path);
+        }
+        return svg;
     }
 
-    function letter(title) {
-        const span = document.createElement('span');
-        span.textContent = (title || '?').slice(0, 1).toUpperCase();
-        span.style.cssText = 'width:20px;height:20px;flex:0 0 auto;display:inline-flex;align-items:center;' +
-            'justify-content:center;border-radius:5px;background:var(--tabvale-surface);color:var(--tabvale-text);' +
-            'font-size:11px;font-weight:600';
-        return span;
+    function parseUrl(url) {
+        try { return new URL(url); } catch { return null; }
     }
 
-    // Иконка приложения: favicon сайта из кэша браузера, иначе буква.
-    function icon(app, size) {
+    function isWeb(url) {
+        const parsed = parseUrl(url);
+        return !!parsed && (parsed.protocol === 'https:' || parsed.protocol === 'http:');
+    }
+
+    // Иконка приложения: своя у известных, favicon у сайтов, окно у прочих.
+    function appIcon(app, size) {
         const box = document.createElement('span');
         box.style.cssText = `width:${size}px;height:${size}px;flex:0 0 auto;display:inline-flex;` +
             'align-items:center;justify-content:center';
-        let parsed = null;
-        try { parsed = new URL(app.url); } catch { /* не ссылка */ }
-        if (parsed && (parsed.protocol === 'https:' || parsed.protocol === 'http:')) {
-            box.append(letter(app.title));
+
+        const parsed = parseUrl(app.url);
+        const protocol = parsed ? parsed.protocol : '';
+        box.append(glyph(GLYPHS[protocol] || GLYPHS.window, size));
+
+        if (isWeb(app.url)) {
             api.icon.favicon(app.url).then((dataUrl) => {
                 if (!dataUrl) return;
                 const image = document.createElement('img');
@@ -73,93 +67,197 @@ function mount(api) {
                 box.textContent = '';
                 box.append(image);
             }).catch(() => {});
-            return box;
         }
-        box.append(letter(app.title));
         return box;
-    }
-
-    function isWebUrl(url) {
-        try {
-            const parsed = new URL(url);
-            return parsed.protocol === 'https:' || parsed.protocol === 'http:';
-        } catch {
-            return false;
-        }
     }
 
     function open(app) {
         api.ui.openExternal(app.url).catch(() => {
-            status.textContent = ru ? 'Не удалось открыть приложение' : 'Could not open the application';
+            if (!compact) status.textContent = ru ? 'Не удалось открыть приложение' : 'Could not open the application';
         });
     }
 
-    function render() {
-        list.textContent = '';
+    function field(placeholder) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = placeholder;
+        input.style.cssText = 'padding:7px 9px;border:1px solid var(--tabvale-border);border-radius:8px;' +
+            'background:var(--tabvale-surface);color:var(--tabvale-text);font:inherit';
+        return input;
+    }
 
-        for (const app of apps) {
+    function flatButton(text) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = text;
+        button.style.cssText = 'padding:8px 10px;border:1px solid var(--tabvale-border);border-radius:8px;' +
+            'background:var(--tabvale-surface);color:var(--tabvale-text);cursor:pointer;font:inherit';
+        return button;
+    }
+
+    if (compact) {
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:8px;height:100%;' +
+            'padding:8px;overflow:hidden';
+
+        function stripButton(app) {
             const button = document.createElement('button');
             button.type = 'button';
-            button.style.cssText = compact
-                ? 'flex:1 0 auto;display:flex;align-items:center;gap:6px;padding:6px 10px;' +
-                  'border:1px solid var(--tabvale-border);border-radius:8px;background:var(--tabvale-surface);' +
-                  'color:var(--tabvale-text);cursor:pointer;font:600 13px system-ui,sans-serif;white-space:nowrap'
-                : 'display:flex;align-items:center;gap:10px;padding:10px 4px;border:0;border-bottom:1px solid var(--tabvale-border);' +
-                  'background:transparent;color:var(--tabvale-text);cursor:pointer;font:inherit;text-align:left';
+            button.title = app.title;
+            button.setAttribute('aria-label', app.title);
+            button.style.cssText = 'width:34px;height:34px;flex:0 0 auto;display:inline-flex;align-items:center;' +
+                'justify-content:center;padding:0;border:1px solid var(--tabvale-border);border-radius:9px;' +
+                'background:var(--tabvale-surface);color:var(--tabvale-text);cursor:pointer';
+            button.append(appIcon(app, 20));
             button.addEventListener('click', () => open(app));
+            return button;
+        }
 
-            const text = document.createElement('span');
-            text.style.cssText = compact ? 'display:flex;align-items:center' : 'display:flex;flex-direction:column;gap:2px;flex:1;min-width:0';
+        function renderStrip() {
+            wrap.textContent = '';
+            for (const app of apps.slice(0, STRIP_LIMIT)) wrap.append(stripButton(app));
+
+            // Кнопка оконного режима: полный список и добавление приложений.
+            const windowButton = document.createElement('button');
+            windowButton.type = 'button';
+            windowButton.title = ru ? 'Открыть список' : 'Open the list';
+            windowButton.setAttribute('aria-label', ru ? 'Открыть список' : 'Open the list');
+            windowButton.style.cssText = 'width:34px;height:34px;flex:0 0 auto;display:inline-flex;align-items:center;' +
+                'justify-content:center;padding:0;border:1px solid var(--tabvale-border);border-radius:9px;' +
+                'background:var(--tabvale-surface);color:var(--tabvale-text);cursor:pointer';
+            windowButton.append(glyph(GLYPHS.grid, 18));
+            windowButton.addEventListener('click', () => {
+                api.ui.openPanel().catch(() => {});
+            });
+            wrap.append(windowButton);
+        }
+
+        document.body.append(wrap);
+        api.storage.get('apps').then((saved) => {
+            if (Array.isArray(saved) && saved.length) {
+                apps = saved
+                    .filter((app) => app && typeof app.title === 'string' && typeof app.url === 'string')
+                    .map((app) => ({ title: app.title, description: String(app.description || ''), url: app.url }));
+            }
+            renderStrip();
+        }).catch(() => renderStrip());
+
+        renderStrip();
+        api.ui.ready();
+        return;
+    }
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;height:100%;padding:12px;gap:8px';
+
+    const list = document.createElement('div');
+    list.style.cssText = 'flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column';
+
+    const addToggle = flatButton(ru ? '＋ Добавить приложение' : '＋ Add application');
+    addToggle.style.flex = '0 0 auto';
+
+    const form = document.createElement('div');
+    form.style.cssText = 'display:none;flex-direction:column;gap:6px;flex:0 0 auto;padding-top:8px;' +
+        'border-top:1px solid var(--tabvale-border)';
+    form.style.display = 'none';
+
+    const urlInput = field(ru ? 'Ссылка приложения' : 'App URL');
+    const titleInput = field(ru ? 'Название' : 'Title');
+    const descInput = field(ru ? 'Описание (необязательно)' : 'Description (optional)');
+
+    const actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;gap:6px';
+    const saveButton = flatButton(ru ? 'Сохранить' : 'Save');
+    const cancelButton = flatButton(ru ? 'Отмена' : 'Cancel');
+    actions.append(saveButton, cancelButton);
+
+    const status = document.createElement('div');
+    status.style.cssText = 'font-size:12px;color:var(--tabvale-muted);min-height:15px';
+
+    wrap.append(list, addToggle, form);
+    form.append(urlInput, titleInput, descInput, actions, status);
+    document.body.append(wrap);
+
+    function showForm() {
+        form.style.display = 'flex';
+        addToggle.style.display = 'none';
+        status.textContent = '';
+        urlInput.focus();
+    }
+
+    function hideForm() {
+        form.style.display = 'none';
+        addToggle.style.display = '';
+        urlInput.value = '';
+        titleInput.value = '';
+        descInput.value = '';
+        status.textContent = '';
+    }
+
+    function renderPanel() {
+        list.textContent = '';
+        if (!apps.length) {
+            const empty = document.createElement('div');
+            empty.style.cssText = 'padding:12px 4px;font-size:13px;color:var(--tabvale-muted)';
+            empty.textContent = ru ? 'Пока нет приложений' : 'No applications yet';
+            list.append(empty);
+        }
+
+        for (const app of apps) {
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 0;' +
+                'border-bottom:1px solid var(--tabvale-border)';
+
+            const text = document.createElement('button');
+            text.type = 'button';
+            text.style.cssText = 'flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:0;' +
+                'border:0;background:transparent;color:var(--tabvale-text);cursor:pointer;font:inherit;text-align:left';
+            text.addEventListener('click', () => open(app));
 
             const title = document.createElement('span');
             title.textContent = app.title;
-            if (!compact) title.style.fontWeight = '600';
+            title.style.cssText = 'font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
             text.append(title);
 
-            if (!compact && app.description) {
+            if (app.description) {
                 const description = document.createElement('span');
                 description.textContent = app.description;
-                description.style.cssText = 'font-size:12px;color:var(--tabvale-muted);overflow:hidden;text-overflow:ellipsis';
+                description.style.cssText = 'font-size:12px;color:var(--tabvale-muted);overflow:hidden;' +
+                    'text-overflow:ellipsis;white-space:nowrap';
                 text.append(description);
             }
 
-            // В полосе имя уже есть, поэтому без иконки сайта буква-заглушка
-            // только дублирует первую букву названия.
-            if (!compact || isWebUrl(app.url)) button.append(text, icon(app, compact ? 16 : 22));
-            else button.append(text);
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.textContent = '×';
+            remove.title = ru ? 'Удалить' : 'Remove';
+            remove.style.cssText = 'flex:0 0 auto;border:0;background:transparent;color:var(--tabvale-muted);' +
+                'font-size:16px;cursor:pointer';
+            remove.addEventListener('click', async () => {
+                apps = apps.filter((item) => item !== app);
+                await api.storage.set('apps', apps);
+                renderPanel();
+            });
 
-            if (!compact) {
-                const remove = document.createElement('span');
-                remove.textContent = '×';
-                remove.title = ru ? 'Удалить' : 'Remove';
-                remove.style.cssText = 'padding:0 6px;color:var(--tabvale-muted);font-size:16px';
-                remove.addEventListener('click', async (event) => {
-                    event.stopPropagation();
-                    apps = apps.filter((item) => item !== app);
-                    await api.storage.set('apps', apps);
-                    render();
-                });
-                button.append(remove);
-            }
-
-            list.append(button);
+            row.append(text, appIcon(app, 22), remove);
+            list.append(row);
         }
     }
 
-    async function addApp() {
+    async function saveApp() {
         const url = urlInput.value.trim();
         const title = titleInput.value.trim();
         if (!url || !title) {
             status.textContent = ru ? 'Нужны ссылка и название' : 'A URL and a title are required';
             return;
         }
-        let parsed;
-        try { parsed = new URL(url); } catch {
+        const parsed = parseUrl(url);
+        if (!parsed) {
             status.textContent = ru ? 'Некорректная ссылка' : 'Invalid URL';
             return;
         }
-        if (!ALLOWED.includes(parsed.protocol)) {
-            status.textContent = ru ? 'Поддерживаются https, http, obsidian:// и vscode://' : 'Supported: https, http, obsidian:// and vscode://';
+        if (BLOCKED.includes(parsed.protocol)) {
+            status.textContent = ru ? 'Эта схема ссылки не поддерживается' : 'This URL scheme is not supported';
             return;
         }
         if (apps.some((app) => app.url === url)) {
@@ -167,28 +265,19 @@ function mount(api) {
             return;
         }
         apps = [...apps, { title, description: descInput.value.trim(), url }];
-        urlInput.value = '';
-        titleInput.value = '';
-        descInput.value = '';
-        status.textContent = '';
         await api.storage.set('apps', apps);
-        render();
+        hideForm();
+        renderPanel();
     }
 
-    addButton.addEventListener('click', addApp);
-    for (const field of [urlInput, titleInput, descInput]) {
-        field.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') addApp();
+    addToggle.addEventListener('click', showForm);
+    saveButton.addEventListener('click', saveApp);
+    cancelButton.addEventListener('click', hideForm);
+    for (const input of [urlInput, titleInput, descInput]) {
+        input.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') saveApp();
         });
     }
-
-    if (compact) {
-        wrap.append(list);
-    } else {
-        addRow.append(urlInput, titleInput, descInput, addButton, status);
-        wrap.append(list, addRow);
-    }
-    document.body.append(wrap);
 
     api.storage.get('apps').then((saved) => {
         if (Array.isArray(saved) && saved.length) {
@@ -196,9 +285,9 @@ function mount(api) {
                 .filter((app) => app && typeof app.title === 'string' && typeof app.url === 'string')
                 .map((app) => ({ title: app.title, description: String(app.description || ''), url: app.url }));
         }
-        render();
-    }).catch(() => render());
+        renderPanel();
+    }).catch(() => renderPanel());
 
-    render();
+    renderPanel();
     api.ui.ready();
 }

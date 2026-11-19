@@ -1054,8 +1054,13 @@ h1, h2 {
     overflow: hidden;
 }
 
+/* Список языков растёт вверх от нижнего края экрана: вниз он уходил за
+   границу окна и часть языков была недоступна. */
 #language-menu {
-    top: 58px;
+    top: auto;
+    bottom: 0;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
 }
 
 .theme-menu button {

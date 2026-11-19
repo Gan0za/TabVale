@@ -187,8 +187,12 @@ function swatchDataUrl(bg) {
         return `data:image/svg+xml,${encodeURIComponent(svg)}`;
     }
     if (bg?.type === 'gradient' && bg.from && bg.to) {
+        // Угол CSS отсчитывается от «вверх» по часовой стрелке, а базовый
+        // вектор SVG-градиента смотрит вправо: отсюда сдвиг на 90°.
+        const angle = Number.isFinite(Number(bg.angle)) ? Number(bg.angle) : 160;
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50">`
-            + `<defs><linearGradient id="g" gradientTransform="rotate(${bg.angle || 160}, 25, 25)">`
+            + `<defs><linearGradient id="g" gradientUnits="userSpaceOnUse"`
+            + ` gradientTransform="rotate(${angle - 90} 25 25)">`
             + `<stop offset="0" stop-color="${bg.from}"/>`
             + `<stop offset="1" stop-color="${bg.to}"/>`
             + `</linearGradient></defs>`

@@ -1,0 +1,93 @@
+{
+  "schema": 1,
+  "id": "com.tabvale.todo",
+  "name": "Tasks",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "minAppVersion": "1.2.0",
+  "entry": "plugin.js",
+  "icon": "icon.svg",
+  "description": "A small checklist that stays on your new tab.",
+  "author": "TabVale",
+  "permissions": {
+    "network": [],
+    "capabilities": [],
+    "storageKB": 32
+  },
+  "surfaces": {
+    "strip": {
+      "positions": [
+        "top",
+        "bottom"
+      ],
+      "height": [
+        64,
+        120
+      ]
+    },
+    "panel": {
+      "sides": [
+        "right",
+        "left"
+      ],
+      "width": [
+        280,
+        420
+      ],
+      "height": [
+        240,
+        520
+      ],
+      "mode": [
+        "overlay"
+      ]
+    },
+    "tiles": {
+      "span": [
+        1,
+        1
+      ]
+    }
+  },
+  "locales": {
+    "ru": {
+      "name": "Задачи"
+    },
+    "en": {
+      "name": "Tasks"
+    },
+    "de": {
+      "name": "Aufgaben"
+    },
+    "fr": {
+      "name": "Tâches"
+    },
+    "es": {
+      "name": "Tareas"
+    },
+    "pt-BR": {
+      "name": "Tarefas"
+    },
+    "it": {
+      "name": "Attività"
+    },
+    "pl": {
+      "name": "Zadania"
+    },
+    "tr": {
+      "name": "Görevler"
+    },
+    "uk": {
+      "name": "Завдання"
+    },
+    "zh-CN": {
+      "name": "任务"
+    },
+    "ja": {
+      "name": "タスク"
+    },
+    "ko": {
+      "name": "할 일"
+    }
+  }
+}

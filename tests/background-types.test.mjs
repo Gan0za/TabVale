@@ -160,8 +160,12 @@ assert.ok(decodeURIComponent(colorSwatch).includes('#0044ff'), 'превью ц�
 const gradSwatch = swatchDataUrl({ type: 'gradient', title: 'G', from: '#111111', to: '#222222', angle: 45 });
 assert.ok(gradSwatch.startsWith('data:image/svg+xml,'), 'превью градиента — SVG data:URL');
 const decodedGrad = decodeURIComponent(gradSwatch);
-assert.ok(decodedGrad.includes('#111111') && decodedGrad.includes('#222222') && decodedGrad.includes('rotate(45'),
-    'превью градиента содержит from/to и поворот угла');
+assert.ok(
+    decodedGrad.includes('#111111') && decodedGrad.includes('#222222'),
+    'превью градиента содержит оба цвета'
+);
+assert.ok(decodedGrad.includes('gradientUnits="userSpaceOnUse"'), 'градиент задан в координатах холста');
+assert.ok(decodedGrad.includes('rotate(-45'), 'угол CSS переведён в поворот SVG');
 assert.equal(swatchDataUrl({ type: 'url', title: 'U', url: 'https://a.com' }), null, 'у url-фона нет swatch');
 
 // --- Пресеты градиентов ---

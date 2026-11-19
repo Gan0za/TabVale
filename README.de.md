@@ -15,7 +15,7 @@ Hintergründe und optionale Plugins.
 - Lesezeichen mit Symbolen (lokal zwischengespeichert), Ziehen zum Sortieren, Bearbeiten und Löschen.
 - Hintergründe: URL, lokale Datei, Farbe oder Verlauf.
 - Designs automatisch/hell/dunkel und 13 Sprachen der Oberfläche.
-- Plugins — nur die, die Sie selbst installieren: Uhr, Notizen, Tastaturbelegung, Timer, Passwörter, Wetter, GitHub-Statistik, App-Starter, RSS, Lesezeichen-Import.
+- Plugins — nur die, die Sie selbst installieren: Uhr, Notizen, Tastaturbelegung, Timer, Passwörter, Wetter, GitHub-Statistik, App-Starter, RSS, Aufgaben, Zitate, Lesezeichen-Import.
 - Import und Export der Einstellungen als JSON.
 
 ## Installation

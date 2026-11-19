@@ -15,7 +15,7 @@ plugin opzionali.
 - Segnalibri con icone (in cache locale), ordinamento tramite trascinamento, modifica ed eliminazione.
 - Sfondi: URL, file locale, colore o gradiente.
 - Temi auto/chiaro/scuro e 13 lingue dell’interfaccia.
-- Plugin — solo quelli che installi: orologio, note, tastiera, timer, password, meteo, statistiche GitHub, avvio applicazioni, RSS, importazione segnalibri.
+- Plugin — solo quelli che installi: orologio, note, tastiera, timer, password, meteo, statistiche GitHub, avvio applicazioni, RSS, attività, citazioni, importazione segnalibri.
 - Importazione ed esportazione delle impostazioni in JSON.
 
 ## Installazione

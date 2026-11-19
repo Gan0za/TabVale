@@ -29,6 +29,8 @@ function makeElement(tag) {
         append(...children) { this.children.push(...children); },
         addEventListener(type, fn) { this.listeners[type] = fn; },
         setAttribute(name, value) { this.attrs[name] = String(value); },
+        select() { this.selected = true; },
+        setSelectionRange() {},
         focus() {},
     };
     // Как в DOM: установка текста заменяет детей, пустая строка очищает.
@@ -45,12 +47,15 @@ function makeElement(tag) {
 const documentStub = {
     createElement: makeElement,
     createElementNS: (ns, tag) => makeElement(tag),
+    createTextNode: (text) => ({ textContent: text }),
     body: makeElement('body'),
 };
 
 function mountPlugin(file, { api, documentOverride = documentStub } = {}) {
     const source = read(file);
-    const mount = vm.runInNewContext(`${source}\n;mount`, { document: documentOverride, console, api, URL });
+    const mount = vm.runInNewContext(`${source}\n;mount`, {
+        document: documentOverride, console, api, URL, crypto, setTimeout, clearTimeout,
+    });
     mount(api);
     return documentOverride.body.children.at(-1);
 }
@@ -163,7 +168,7 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
     assert.equal(failingWrap.children[1].textContent, 'Нет связи с Open-Meteo', 'ошибка названа понятно');
 }
 
-// ---- Приложения: свои записи, favicon из кэша, открытие и удаление ----
+// ---- Приложения: иконки, форма по кнопке, полоса из трёх и окно ----
 {
     const stored = {};
     const opened = [];
@@ -171,7 +176,11 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
     const api = {
         locale: 'ru',
         surface: 'panel',
-        ui: { ready() {}, openExternal: (url) => { opened.push(url); return Promise.resolve(true); } },
+        ui: {
+            ready() {},
+            openExternal: (url) => { opened.push(url); return Promise.resolve(true); },
+            openPanel: () => { opened.push('PANEL'); return Promise.resolve(true); },
+        },
         storage: {
             get: async (key) => stored[key] ?? null,
             set: async (key, value) => { stored[key] = value; },
@@ -185,47 +194,85 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
     await flush();
 
     const list = wrap.children[0];
-    const addRow = wrap.children[1];
+    const addToggle = wrap.children[1];
+    const form = wrap.children[2];
     assert.equal(list.children.length, 2, 'два приложения по умолчанию');
-    list.children[0].listeners.click();
+    assert.equal(form.style.display, 'none', 'форма добавления скрыта');
+    for (const row of list.children) {
+        assert.equal(row.children[1].children[0].tagName, 'svg', 'у приложения значок, а не буква');
+    }
+    list.children[0].children[0].listeners.click();
     assert.deepEqual(opened, ['obsidian://open'], 'клик открывает приложение');
 
-    const [urlInput, titleInput, descInput, addButton] = addRow.children;
+    addToggle.listeners.click();
+    assert.equal(form.style.display, 'flex', 'форма открылась по кнопке');
+    assert.equal(addToggle.style.display, 'none', 'кнопка спряталась');
+
+    const [urlInput, titleInput, descInput, actions, status] = form.children;
+    const [save, cancel] = actions.children;
     urlInput.value = 'https://example.com/app';
     titleInput.value = 'Example';
     descInput.value = 'Демо';
-    addButton.listeners.click();
+    save.listeners.click();
     await flush();
     await flush();
 
     assert.equal(stored.apps.length, 3, 'приложение сохранено');
-    assert.equal(stored.apps[2].title, 'Example');
-    assert.equal(stored.apps[2].description, 'Демо');
     assert.equal(list.children.length, 3, 'строка появилась в списке');
+    assert.equal(form.style.display, 'none', 'после сохранения форма скрыта');
+    assert.equal(addToggle.style.display, '', 'кнопка добавления вернулась');
     assert.ok(faviconCalls >= 1, 'для http-ссылки запрошена иконка сайта');
+    assert.equal(list.children[2].children[1].children[0].tagName, 'img', 'подставлен favicon');
 
-    const custom = list.children[2];
-    const iconBox = custom.children.at(-2);
-    assert.equal(iconBox.children[0]?.tagName, 'img', 'подставлен favicon');
-    assert.equal(iconBox.children[0]?.src, 'data:image/png;base64,AAA');
-
-    const remove = custom.children.at(-1);
-    remove.listeners.click({ stopPropagation() {} });
+    list.children[2].children[2].listeners.click();
     await flush();
     assert.equal(stored.apps.length, 2, 'приложение удалено');
-    assert.equal(list.children.length, 2, 'строка исчезла');
 
-    const failing = { ...api };
-    const failDoc = { ...documentStub, body: makeElement('body') };
-    const failWrap = mountPlugin('plugins/com.tabvale.apps/plugin.js', { api: { ...failing, surface: 'panel' }, documentOverride: failDoc });
+    addToggle.listeners.click();
+    urlInput.value = 'steam://run/440';
+    titleInput.value = 'Steam';
+    cancel.listeners.click();
+    assert.equal(form.style.display, 'none', 'отмена скрывает форму');
+    assert.equal(stored.apps.length, 2, 'отмена ничего не добавила');
+
+    addToggle.listeners.click();
+    urlInput.value = 'steam://run/440';
+    titleInput.value = 'Steam';
+    save.listeners.click();
     await flush();
-    const failAdd = failWrap.children[1];
-    const [badUrl, badTitle, , badButton] = failAdd.children;
-    badUrl.value = 'ftp://example.com';
-    badTitle.value = 'FTP';
-    badButton.listeners.click();
     await flush();
-    assert.ok(String(failAdd.children.at(-1).textContent).includes('Поддерживаются'), 'чужая схема отклоняется');
+    assert.equal(stored.apps.length, 3, 'приложение со своим протоколом принимается');
+
+    addToggle.listeners.click();
+    urlInput.value = 'javascript:alert(1)';
+    titleInput.value = 'Bad';
+    save.listeners.click();
+    await flush();
+    assert.ok(String(status.textContent).includes('не поддерживается'), 'опасная схема отклоняется');
+    assert.equal(stored.apps.length, 3, 'опасная схема не сохраняется');
+
+    // Полоса: первые три приложения значками и кнопка оконного режима.
+    const stripStored = {
+        apps: Array.from({ length: 5 }, (_, index) => ({
+            title: `App ${index}`, description: '', url: `https://a${index}.example`,
+        })),
+    };
+    const stripApi = {
+        ...api,
+        surface: 'strip',
+        storage: { get: async (key) => stripStored[key] ?? null, set: async () => {} },
+    };
+    const stripDocument = { ...documentStub, body: makeElement('body') };
+    const stripWrap = mountPlugin('plugins/com.tabvale.apps/plugin.js', { api: stripApi, documentOverride: stripDocument });
+    await flush();
+    await flush();
+    assert.equal(stripWrap.children.length, 4, 'три приложения и кнопка окна');
+    for (const button of stripWrap.children) {
+        assert.equal(button.children.length, 1, 'в полосе только значки');
+    }
+    stripWrap.children[3].listeners.click();
+    await flush();
+    assert.ok(opened.includes('PANEL'), 'кнопка окна открывает панель');
 }
 
 // ---- GitHub: список своих репозиториев в панели, звёзды в полосе ----
@@ -267,11 +314,184 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
     assert.equal(list.children.length, 2, 'две строки в списке');
     assert.ok(summary.textContent.includes('Репозитории: 2'));
 
-    const stripApi = { ...api, surface: 'strip' };
+    // Полоса показывает первые два репозитория из списка.
+    const stripStored = { repos: ['Gan0za/TabVale', 'foo/bar'] };
+    const stripApi = {
+        ...api,
+        surface: 'strip',
+        storage: { get: async (key) => stripStored[key] ?? null, set: async () => {} },
+    };
     const stripDocument = { ...documentStub, body: makeElement('body') };
     const stripWrap = mountPlugin('plugins/com.tabvale.github/plugin.js', { api: stripApi, documentOverride: stripDocument });
     await flush();
-    assert.equal(stripWrap.children[0].textContent, '★ 12', 'в полосе только звёзды');
+    await flush();
+    const badges = stripWrap.children[0].children.map((span) => span.textContent).join(' ');
+    assert.ok(badges.includes('★ 12') && badges.includes('★ 7'), 'в полосе звёзды двух репозиториев');
+}
+
+// ---- Заметки: сохранение, очистка в два шага, превью в полосе ----
+{
+    const stored = { text: 'Первая строка\nВторая' };
+    const api = {
+        locale: 'ru',
+        surface: 'panel',
+        ui: { ready() {} },
+        storage: {
+            get: async (key) => stored[key] ?? null,
+            set: async (key, value) => { stored[key] = value; },
+        },
+    };
+    const sandboxDocument = { ...documentStub, body: makeElement('body') };
+    const wrap = mountPlugin('plugins/com.tabvale.notes/plugin.js', { api, documentOverride: sandboxDocument });
+    await flush();
+
+    const [area, row] = wrap.children;
+    assert.equal(area.value, 'Первая строка\nВторая', 'текст заметки загружен');
+    const [, clear] = row.children;
+    clear.listeners.click();
+    assert.equal(clear.textContent, 'Точно?', 'первый клик просит подтверждение');
+    clear.listeners.click();
+    await flush();
+    assert.equal(stored.text, '', 'заметка очищена');
+    assert.equal(area.value, '', 'поле очищено');
+
+    let opened = false;
+    const stripStored = { text: 'Строка один\nВторая' };
+    const stripApi = {
+        locale: 'ru',
+        surface: 'strip',
+        ui: { ready() {}, openPanel: () => { opened = true; return Promise.resolve(true); } },
+        storage: { get: async (key) => stripStored[key] ?? null, set: async () => {} },
+    };
+    const stripDocument = { ...documentStub, body: makeElement('body') };
+    const preview = mountPlugin('plugins/com.tabvale.notes/plugin.js', { api: stripApi, documentOverride: stripDocument });
+    await flush();
+    assert.equal(preview.textContent, 'Строка один', 'в полосе первая строка заметки');
+    preview.listeners.click();
+    assert.equal(opened, true, 'клик открывает панель');
+}
+
+// ---- Пароли: настройки, набор символов, выделение ----
+{
+    const stored = {};
+    const api = {
+        locale: 'ru',
+        surface: 'panel',
+        ui: { ready() {} },
+        storage: {
+            get: async (key) => stored[key] ?? null,
+            set: async (key, value) => { stored[key] = value; },
+        },
+    };
+    const sandboxDocument = { ...documentStub, body: makeElement('body') };
+    const wrap = mountPlugin('plugins/com.tabvale.passwords/plugin.js', { api, documentOverride: sandboxDocument });
+    await flush();
+
+    const [output, , optionsRow, buttonsRow] = wrap.children;
+    assert.equal(output.value.length, 20, 'пароль длины по умолчанию');
+
+    const boxes = optionsRow.children.map((label) => label.children[0]);
+    for (const box of boxes) {
+        box.checked = false;
+        box.listeners.change();
+    }
+    const generate = buttonsRow.children[0];
+    generate.listeners.click();
+    assert.ok(/^[A-Za-z]+$/.test(output.value), 'без цифр и символов — только буквы');
+    assert.equal(stored.settings.digits, false, 'настройки сохраняются');
+
+    const select = buttonsRow.children[1];
+    select.listeners.click();
+    assert.equal(output.selected, true, 'кнопка выделяет пароль');
+}
+
+// ---- Задачи: добавление, отметка, удаление, сводка в полосе ----
+{
+    const stored = {};
+    const api = {
+        locale: 'ru',
+        surface: 'panel',
+        ui: { ready() {} },
+        storage: {
+            get: async (key) => stored[key] ?? null,
+            set: async (key, value) => { stored[key] = value; },
+        },
+    };
+    const sandboxDocument = { ...documentStub, body: makeElement('body') };
+    const wrap = mountPlugin('plugins/com.tabvale.todo/plugin.js', { api, documentOverride: sandboxDocument });
+    await flush();
+
+    const [list, addToggle, form] = wrap.children;
+    assert.ok(String(list.children[0].textContent).includes('Задач пока нет'), 'пустое состояние');
+    assert.equal(form.style.display, 'none', 'форма скрыта');
+
+    addToggle.listeners.click();
+    assert.equal(form.style.display, 'flex', 'форма открывается кнопкой');
+    const [input, save] = form.children;
+    input.value = 'Позвонить';
+    save.listeners.click();
+    await flush();
+    assert.equal(stored.items.length, 1, 'задача сохранена');
+    assert.equal(form.style.display, 'none', 'форма закрылась');
+    assert.equal(list.children.length, 1, 'строка задачи в списке');
+
+    const box = list.children[0].children[0];
+    box.checked = true;
+    box.listeners.change();
+    await flush();
+    assert.equal(stored.items[0].done, true, 'задача отмечена');
+    assert.ok(String(list.children[0].children[1].style.cssText).includes('line-through'), 'выполненная зачёркнута');
+
+    list.children[0].children[2].listeners.click();
+    await flush();
+    assert.equal(stored.items.length, 0, 'задача удалена');
+
+    let opened = false;
+    const stripStored = {
+        items: [
+            { id: '1', text: 'Позвонить', done: false },
+            { id: '2', text: 'Купить', done: false },
+        ],
+    };
+    const stripApi = {
+        locale: 'ru',
+        surface: 'strip',
+        ui: { ready() {}, openPanel: () => { opened = true; return Promise.resolve(true); } },
+        storage: { get: async (key) => stripStored[key] ?? null, set: async () => {} },
+    };
+    const stripDocument = { ...documentStub, body: makeElement('body') };
+    const strip = mountPlugin('plugins/com.tabvale.todo/plugin.js', { api: stripApi, documentOverride: stripDocument });
+    await flush();
+    assert.ok(String(strip.textContent).includes('2 · Позвонить'), 'в полосе счётчик и первая задача');
+    strip.listeners.click();
+    assert.equal(opened, true, 'клик открывает панель');
+}
+
+// ---- Цитаты: панель и полоса, кнопка меняет цитату ----
+{
+    const api = {
+        locale: 'ru',
+        surface: 'panel',
+        ui: { ready() {} },
+        storage: { get: async () => null, set: async () => {} },
+    };
+    const sandboxDocument = { ...documentStub, body: makeElement('body') };
+    const wrap = mountPlugin('plugins/com.tabvale.quotes/plugin.js', { api, documentOverride: sandboxDocument });
+    await flush();
+
+    const [quote, next] = wrap.children;
+    const first = quote.textContent;
+    assert.ok(first.length > 3, 'панель показывает цитату');
+    next.listeners.click();
+    assert.notEqual(quote.textContent, first, 'кнопка меняет цитату');
+
+    const stripApi = { ...api, surface: 'strip' };
+    const stripDocument = { ...documentStub, body: makeElement('body') };
+    const strip = mountPlugin('plugins/com.tabvale.quotes/plugin.js', { api: stripApi, documentOverride: stripDocument });
+    const stripFirst = strip.textContent;
+    assert.ok(stripFirst.length > 3, 'полоса показывает цитату');
+    strip.listeners.click();
+    assert.notEqual(strip.textContent, stripFirst, 'клик в полосе меняет цитату');
 }
 
 console.log('plugin-widgets.test.mjs: все проверки пройдены');

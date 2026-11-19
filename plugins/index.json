@@ -6,7 +6,7 @@
   },
   {
     "id": "com.tabvale.notes",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "path": "com.tabvale.notes/"
   },
   {
@@ -21,7 +21,7 @@
   },
   {
     "id": "com.tabvale.passwords",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "path": "com.tabvale.passwords/"
   },
   {
@@ -31,18 +31,28 @@
   },
   {
     "id": "com.tabvale.github",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "path": "com.tabvale.github/"
   },
   {
     "id": "com.tabvale.apps",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "path": "com.tabvale.apps/"
   },
   {
     "id": "com.tabvale.rss",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "path": "com.tabvale.rss/"
+  },
+  {
+    "id": "com.tabvale.todo",
+    "version": "1.0.0",
+    "path": "com.tabvale.todo/"
+  },
+  {
+    "id": "com.tabvale.quotes",
+    "version": "1.0.0",
+    "path": "com.tabvale.quotes/"
   },
   {
     "id": "com.tabvale.bookmarks",

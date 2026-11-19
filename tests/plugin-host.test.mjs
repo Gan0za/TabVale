@@ -88,6 +88,8 @@ assert.ok(source.includes("case 'ui.openManager'"), 'панель может п�
 assert.ok(css.includes('.plugin-manager-highlight'), 'нужная строка менеджера подсвечивается');
 assert.ok(read('sandbox/plugin-host.js').includes('openManager'), 'метод openManager есть в sandbox-API');
 assert.ok(read('sandbox/plugin-host.js').includes('icon.favicon'), 'иконка сайта есть в sandbox-API');
+assert.ok(read('sandbox/plugin-host.js').includes('openPanel'), 'открытие панели есть в sandbox-API');
+assert.ok(source.includes("case 'ui.openPanel'"), 'хост открывает панель плагина');
 assert.ok(read('newtab/features/plugins.js').includes("case 'icon.favicon'"), 'хост отдаёт favicon плагинам');
 assert.ok(read('plugins/com.tabvale.bookmarks/plugin.js').includes('api.ui.openManager'), 'импортёр ведёт к выдаче доступа');
 assert.ok(source.includes('tabvale:bookmarks-permission'), 'хост принимает сообщение о выданном доступе');

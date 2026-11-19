@@ -722,11 +722,12 @@ await evaluate(`(async () => {
 })()`);
 const launcherFrames = await readSandboxFrames();
 const launcherFrame = launcherFrames.find((item) => /com\.tabvale\.apps \(strip\)/.test(item.docTitle));
+// В полосе только значки: два приложения и кнопка оконного режима.
+const launcherButtons = await frameEval(/com\.tabvale\.apps \(strip\)/, 'document.querySelectorAll("button").length');
 appLauncherFits = !!launcherFrame
-    && /Obsidian/.test(launcherFrame.text)
-    && /VS Code/.test(launcherFrame.text)
+    && launcherButtons === 3
     && launcherFrame.scrollH <= launcherFrame.clientH + 1;
-console.log('app launcher strip:', launcherFrame, 'fits:', appLauncherFits);
+console.log('app launcher strip:', launcherFrame, 'buttons:', launcherButtons, 'fits:', appLauncherFits);
 
 await evaluate(`(async () => {
   const select = document.querySelector('.plugin-manager-item[data-plugin-id="com.tabvale.clock"] .plugin-manager-surface');
@@ -750,6 +751,59 @@ const tilesAfterSwitch = await evaluate(`(() => {
   return count;
 })()`);
 console.log('tiles after screen switch:', tilesAfterSwitch);
+
+// Перестановка закладок не должна выталкивать плитки плагинов наверх.
+const tileOrder = await evaluate(`(() => {
+  const container = document.getElementById('bookmarks-container');
+  if (currentState.bookmarks.length < 2 || !container.querySelector('.plugin-tile')) return null;
+  reorderBookmarksAnimated(0, 1);
+  return {
+    firstIsBookmark: !!container.firstElementChild?.classList.contains('bookmark'),
+    lastIsTile: !!container.lastElementChild?.classList.contains('plugin-tile'),
+    tiles: container.querySelectorAll('.plugin-tile').length,
+  };
+})()`);
+console.log('tile order after reorder:', tileOrder);
+
+// Меню языков не должно уходить за нижний край окна.
+const languageMenu = await evaluate(`(async () => {
+  const toggle = document.getElementById('language-toggle');
+  const menu = document.getElementById('language-menu');
+  toggle?.click();
+  await new Promise((resolve) => setTimeout(resolve, 250));
+  const rect = menu.getBoundingClientRect();
+  const result = {
+    open: !menu.classList.contains('hidden'),
+    bottom: Math.round(rect.bottom),
+    viewport: window.innerHeight,
+    buttons: menu.querySelectorAll('button').length,
+  };
+  toggle?.click();
+  return result;
+})()`);
+console.log('language menu:', languageMenu);
+
+// То же меню в низком окне: список должен уместиться и прокручиваться.
+await send('Emulation.setDeviceMetricsOverride', { width: 1000, height: 420, deviceScaleFactor: 1, mobile: false });
+await sleep(300);
+const languageMenuSmall = await evaluate(`(async () => {
+  const toggle = document.getElementById('language-toggle');
+  const menu = document.getElementById('language-menu');
+  toggle?.click();
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  const rect = menu.getBoundingClientRect();
+  const result = {
+    open: !menu.classList.contains('hidden'),
+    top: Math.round(rect.top),
+    bottom: Math.round(rect.bottom),
+    viewport: window.innerHeight,
+    scrollable: menu.scrollHeight > menu.clientHeight,
+  };
+  toggle?.click();
+  return result;
+})()`);
+await send('Emulation.clearDeviceMetricsOverride');
+console.log('language menu, 420px:', languageMenuSmall);
 await evaluate(`document.querySelector('.plugin-panel-close')?.click()`);
 await sleep(300);
 
@@ -1035,6 +1089,10 @@ const passed = dock.count > 0
     && appLauncherFits
     && tileWorks
     && tilesAfterSwitch === 1
+    && tileOrder?.firstIsBookmark === true && tileOrder?.lastIsTile === true && tileOrder?.tiles === 1
+    && languageMenu?.open === true && languageMenu?.bottom <= languageMenu?.viewport + 1 && languageMenu?.buttons >= 13
+    && languageMenuSmall?.open === true && languageMenuSmall?.top >= -1
+    && languageMenuSmall?.bottom <= languageMenuSmall?.viewport + 1
     && pluginMenu?.open === true && /Настройки плагинов/.test(pluginMenu.text)
     && outsideClose === 'closed'
     && floatingWorks

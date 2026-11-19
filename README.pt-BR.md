@@ -15,7 +15,7 @@ opcionais.
 - Favoritos com ícones (em cache local), ordenação por arrastar, edição e exclusão.
 - Fundos: URL, arquivo local, cor ou gradiente.
 - Temas automático/claro/escuro e 13 idiomas de interface.
-- Plugins — apenas os que você instalar: relógio, notas, teclado, timer, senhas, clima, estatísticas do GitHub, inicializador de aplicativos, RSS, importação de favoritos.
+- Plugins — apenas os que você instalar: relógio, notas, teclado, timer, senhas, clima, estatísticas do GitHub, inicializador de aplicativos, RSS, tarefas, citações, importação de favoritos.
 - Importação e exportação de ajustes em JSON.
 
 ## Instalação
